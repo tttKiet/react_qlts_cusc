@@ -1,22 +1,19 @@
 import { Input } from "@nextui-org/react";
 import { useState } from "react";
 
-import AuthService from "../service/AuthService";
+// import AuthService from "../services/AuthService";
+import { useAuth } from "../hooks";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
 
   const haneleLogin = async () => {
-    const res = await AuthService.login({
+    const res = await login({
       TENDANGNHAP: username,
       MATKHAU: password,
     });
-    if (res && res.data.statusCode == 200) {
-      console.log("susscess");
-    }
-
-    console.log("res", res);
   };
 
   return (
@@ -55,6 +52,7 @@ function Login() {
                           Hệ thống quản lý tuyển sinh
                         </h4>
                       </div>
+
                       <form>
                         <p className="mb-4">Vùi lòng nhập tài khoản</p>
                         {/*Username input*/}
@@ -67,7 +65,6 @@ function Login() {
                             label="Tên đăng nhập"
                             onChange={(e) => setUsername(e.target.value)}
                           />
-
                         </div>
                         {/*Password input*/}
                         <div
@@ -83,9 +80,9 @@ function Login() {
                         {/*Submit button*/}
                         <div className="mb-12 pb-1 pt-1 text-center">
                           <button
+                            type="button"
                             onClick={haneleLogin}
                             className="mb-3 inline-block w-full rounded-lg text-white p-3 text-lg bg-gradient-to-r from-slate-500 to-slate-800"
-                            type="button"
                           >
                             Đăng nhập
                           </button>
