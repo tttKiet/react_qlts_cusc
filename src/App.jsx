@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import LayoutAdmin from "./Layouts/LayoutAdmin/LayoutAdmin";
 import AdminHomePage from "./pages/AdminHomePage";
 import Footer from "./Layouts/OnlyLayout/Footer";
+import ManagerUser from "./pages/ManagerUser";
 
 const LayoutOnly = () => {
   return (
@@ -46,12 +47,17 @@ function App() {
 
     },
     {
-      path: '/admin/trangchu',
+      path: '/admin',
       element: <LayoutAdmin />,
       children: [{
         index: true,
         element: <AdminHomePage />
-      }]
+      },
+      {
+        path: "manager/user",
+        element: <ManagerUser />
+      }
+      ]
     }
   ])
 

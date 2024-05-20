@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function Footer() {
     return (
         <>
-            <footer className="absolute bg-white shadow dark:bg-gray-900 w-100 min-w-full bottom-0">
+            <footer className="bg-white shadow-sm dark:bg-gray-900 w-100 min-w-full bottom-0">
                 <div className="w-full mx-auto px-10 py-2">
                     <div className="grid grid-cols-3">
                         <div>
