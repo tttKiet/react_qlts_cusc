@@ -12,14 +12,14 @@ function useAuth() {
       router.push("/admin");
     } else if (res?.user?.role?.keyType === "doctor") {
       router.push("/doctor");
-    } else if (res?.user?.role?.keyType === "hospital_manager") {
+    } else if (res?.user?.role?.keyType === "hospital_manager") { 
       router.push("/staff");
     } else {
       router.push("/");
     }
 
     await mutate();
-    return res;
+    return res;  
   }
 
   async function logout() {
