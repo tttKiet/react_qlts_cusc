@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.titlePage {
+  @apply text-lg font-medium
+}
+
+

@@ -6,6 +6,7 @@ import {
     PieChartOutlined,
     TeamOutlined,
     UserOutlined,
+    DashboardOutlined
 
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
@@ -23,13 +24,13 @@ function getItem(label, key, icon, children) {
 }
 const items = [
     // getItem(<img src='/image/Logo.png' />, '0   '),
-    getItem('Option 1', '1', <PieChartOutlined />),
-    getItem('Option 2', '2', <DesktopOutlined />),
-    getItem('User', 'sub1', <UserOutlined />, [
-        getItem('Tom', '3'),
-        getItem('Bill', '4'),
+    getItem(<Link to={"/admin"}>Dashboard</Link>, '1', <DashboardOutlined />),
+    getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
+        getItem(<Link to={"/admin/manager/user"}>Danh sách người dùng</Link>, '2'),
+        getItem('Bill', '3'),
         getItem('Alex', '5'),
     ]),
+
     getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
     getItem('Files', '9', <FileOutlined />),
 ];
@@ -45,8 +46,8 @@ const LayoutAdmin = () => {
                 minHeight: '100vh',
             }}
         >
-            <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-                <div className="demo-logo-vertical ps-3"  >
+            <Sider collapsible collapsed={collapsed} width={230} onCollapse={(value) => setCollapsed(value)}>
+                <div className="demo-logo-vertical ps-3 mb-1"  >
                     <img src='/image/Logo.png' className='w-32 mt-auto' />
                 </div>
                 <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" className='p-0'
