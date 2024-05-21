@@ -8,6 +8,7 @@ import {
   UserOutlined,
   DashboardOutlined,
 } from "@ant-design/icons";
+import { Button, Result } from "antd";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { Outlet } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,6 +18,7 @@ import {
   faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import useAuth from "../../hooks/useAuth";
+import { useSelector } from "react-redux";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -43,12 +45,27 @@ const items = [
 ];
 
 const LayoutAdmin = () => {
-  const {} = useAuth();
-
+  const { profile, isLoading } = useAuth();
+  const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  // KIỂM TRA QUYỀN ĐĂNG NHẬP
+  if (!isAuthenticated) {
+    return (
+      <div>
+        <Result
+          status="403"
+          title="403"
+          subTitle="Sorry, you are not authorized to access this page."
+          extra={<Button type="primary">Back Home</Button>}
+        />
+      </div>
+    );
+  }
+
   return (
     <Layout
       style={{
@@ -79,7 +96,12 @@ const LayoutAdmin = () => {
             padding: 0,
             background: colorBgContainer,
           }}
-        />
+        >
+          <div className="flex justify-center">
+            {/* <div>MAADMIN: {profile?.MAADMIN}</div>
+            <div>TENDANGNHAP: {profile?.TENDANGNHAP}</div> */}
+          </div>
+        </Header>
         <Content
           style={{
             margin: "0 16px",

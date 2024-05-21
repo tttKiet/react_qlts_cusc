@@ -12,6 +12,7 @@ const initialState = {
     GIOITINH: "",
     EMAIL: "",
     DIACHI: "",
+    ROLE: "",
   },
 };
 
@@ -30,6 +31,7 @@ export const accountSlice = createSlice({
       state.user.GIOITINH = action.payload.GIOITINH;
       state.user.EMAIL = action.payload.EMAIL;
       state.user.DIACHI = action.payload.DIACHI;
+      state.user.ROLE = action.payload.ROLE;
     },
 
     doLogoutAction: (state, action) => {
@@ -43,6 +45,7 @@ export const accountSlice = createSlice({
         GIOITINH: "",
         EMAIL: "",
         DIACHI: "",
+        ROLE: "",
       };
     },
   },

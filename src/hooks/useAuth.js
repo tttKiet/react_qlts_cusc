@@ -4,33 +4,42 @@ import AuthService from "../services/AuthService";
 import { useDispatch, useSelector } from "react-redux";
 import { doLoginAction, doLogoutAction } from "../redux/account/accountSlide";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import { getProfileLoginStore } from "../redux/selector/accountSelector";
 
 function useAuth() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { data, error, mutate } = useSWR("/api/v1/auth/profile", {
+  const profileSelector = useSelector(getProfileLoginStore);
+
+  const { data, error, mutate, isLoading } = useSWR("/api/v1/auth/profile", {
     dedupingInterval: 5000,
     revalidateOnFocus: false,
+    fallbackData: profileSelector,
     onSuccess(data, key, config) {
+      console.log("profile", data);
       let dataAccount = {};
-      if (data.account?.MAADMIN) {
+      if (data?.MAADMIN) {
         dataAccount = {
-          MAADMIN: data.account?.MAADMIN,
-          TENDANGNHAP: data.account?.TENDANGNHAP,
-          SDT: data.account?.SDT,
-          HOTEN: data?.account?.admin?.HOTEN,
-          EMAIL: data.account?.admin?.EMAIL,
-          DIACHI: data.account?.admin?.DIACHI,
+          MAADMIN: data.MAADMIN,
+          TENDANGNHAP: data.TENDANGNHAP,
+          SDT: data.SDT,
+          HOTEN: data?.admin?.HOTEN,
+          EMAIL: data.admin?.EMAIL,
+          DIACHI: data.admin?.DIACHI,
+          ROLE: "ADMIN",
         };
       } else {
+        console.log("123");
         dataAccount = {
-          MAADMIN: data?.account?.MAADMIN,
-          TENDANGNHAP: data?.account?.TENDANGNHAP,
-          SDT: data?.account?.SDT,
-          HOTEN: data?.account?.usermanager?.HOTEN,
-          EMAIL: data?.account?.usermanager?.EMAIL,
-          DIACHI: data?.account?.usermanager?.DIACHI,
+          MAADMIN: data?.MAADMIN,
+          TENDANGNHAP: data?.TENDANGNHAP,
+          SDT: data?.SDT,
+          HOTEN: data?.usermanager?.HOTEN,
+          EMAIL: data?.usermanager?.EMAIL,
+          DIACHI: data?.usermanager?.DIACHI,
+          ROLE: "USER_MANAGER",
         };
       }
 
@@ -97,6 +106,7 @@ function useAuth() {
 
   return {
     profile: data,
+    isLoading,
     login,
     logout,
   };
