@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isAuthenticated: false,
   isLoading: true,
+
   user: {
     MAADMIN: "",
     TENDANGNHAP: "",
@@ -32,6 +33,7 @@ export const accountSlice = createSlice({
     },
 
     doLogoutAction: (state, action) => {
+      localStorage.removeItem("accessToken");
       state.isAuthenticated = false;
       state.user = {
         MAADMIN: "",

@@ -9,11 +9,45 @@ function useAuth() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { data, error, mutate } = useSWR("/api/v1/auth/profile", {
+    dedupingInterval: 5000,
+    revalidateOnFocus: false,
+    onSuccess(data, key, config) {
+      let dataAccount = {};
+      if (data.account?.MAADMIN) {
+        dataAccount = {
+          MAADMIN: data.account?.MAADMIN,
+          TENDANGNHAP: data.account?.TENDANGNHAP,
+          SDT: data.account?.SDT,
+          HOTEN: data?.account?.admin?.HOTEN,
+          EMAIL: data.account?.admin?.EMAIL,
+          DIACHI: data.account?.admin?.DIACHI,
+        };
+      } else {
+        dataAccount = {
+          MAADMIN: data?.account?.MAADMIN,
+          TENDANGNHAP: data?.account?.TENDANGNHAP,
+          SDT: data?.account?.SDT,
+          HOTEN: data?.account?.usermanager?.HOTEN,
+          EMAIL: data?.account?.usermanager?.EMAIL,
+          DIACHI: data?.account?.usermanager?.DIACHI,
+        };
+      }
+
+      dispatch(doLoginAction(dataAccount));
+    },
+    onError(error, key, config) {
+      dispatch(doLogoutAction());
+    },
+  });
+
   async function login({ TENDANGNHAP, MATKHAU }) {
     try {
       const res = await AuthService.login({ TENDANGNHAP, MATKHAU });
-      console.log("res", res);
+
       if (res && res.statusCode == 200) {
+        // lưu accessToken vô local
+        localStorage.setItem("access_token", res.data.token);
         //lưu data vô redux
         let dataAccount = {};
         if (res.data.account?.MAADMIN) {
@@ -52,19 +86,17 @@ function useAuth() {
       }
     } catch (err) {
       console.log("err", err);
-      toast.error(err.message); 
+      toast.error(err?.message);
     }
   }
 
   async function logout() {
-    const res = await AuthService.logout();
-    await mutate(null, false);
-    distpatch(logoutStore());
-
-    return res;
+    dispatch(doLogoutAction());
+    toast.success("Đăng xuất thành công");
   }
 
   return {
+    profile: data,
     login,
     logout,
   };
