@@ -59,12 +59,10 @@ function ListData() {
 
     useEffect(() => {
         if (provinceSelected) {
-            console.log("Tinh", provinceSelected)
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
         }
     }, [provinceSelected])
     const { data: dataSchool } = useSWR(urlSchool)
-    console.log(dataSchool)
 
     useEffect(() => {
         if (schoolSelected) {
@@ -380,7 +378,7 @@ function ListData() {
                                 </AutocompleteItem>
                             ))}
                         </Autocomplete>
-                        <Select
+                        {/* <Autocomplete
                             label="Chọn nghành"
                             className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
                             variant="bordered"
@@ -389,12 +387,63 @@ function ListData() {
                             onSelectionChange={(value) => setJobSelected(value)}
                         >
                             {dataJob?.map((job) => (
-                                <SelectItem key={job.MANGANH} value={job.MANGANH}>
+                                <AutocompleteItem key={job.MANGANH} value={job.MANGANH}>
                                     {job.TENNGANH} <span className="text-tiny text-default-400">{job.count} dòng dữ liệu</span>
 
-                                </SelectItem>
-
+                                </AutocompleteItem>
                             ))}
+                        </Autocomplete> */}
+                        <Select
+                            items={dataJob || []}
+                            label="Chọn ngành"
+                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                            variant="bordered"
+                            isDisabled={schoolSelected != '' ? false : true}
+                            onSelectionChange={(value) => setJobSelected(value)}
+                            size="sm"
+                            listboxProps={{
+                                itemClasses: {
+                                    base: [
+                                        "rounded-md",
+                                        "text-default-500",
+                                        "transition-opacity",
+                                        "data-[hover=true]:text-foreground",
+                                        "data-[hover=true]:bg-default-100",
+                                        "dark:data-[hover=true]:bg-default-50",
+                                        "data-[selectable=true]:focus:bg-default-50",
+                                        "data-[pressed=true]:opacity-70",
+                                        "data-[focus-visible=true]:ring-default-500",
+                                    ],
+                                },
+                            }}
+                            popoverProps={{
+                                classNames: {
+                                    base: "before:bg-default-200",
+                                    content: "p-0 border-small border-divider bg-background",
+                                },
+                            }}
+                            renderValue={(items) => {
+                                return items.map((item) => (
+                                    <div key={item.data.MANGANH} className="flex items-center gap-2">
+                                        <div className="">
+                                            <span>{item.data.TENNGANH}</span>
+                                            <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
+                                        </div>
+                                    </div>
+                                ));
+                            }}
+                        >
+                            {(job) => (
+                                <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
+                                    <div className="flex gap-2 items-center">
+
+                                        <div className="">
+                                            <span className="text-small">{job.TENNGANH}</span>
+                                            <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
+                                        </div>
+                                    </div>
+                                </SelectItem>
+                            )}
                         </Select>
                     </div>
                 </div>
