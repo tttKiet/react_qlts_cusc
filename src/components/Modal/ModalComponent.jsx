@@ -1,10 +1,10 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 
-function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, size, children }) {
+function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, size, children, footer }) {
     // const { isOpen, onOpen, onOpenChange } = useDisclosure();
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={size}>
+        <Modal isOpen={isOpen} onClose={onClose} size={size} placement="center">
             <ModalContent>
                 {(onClose) => (
                     <>
@@ -12,14 +12,18 @@ function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, 
                         <ModalBody>
                             {children}
                         </ModalBody>
-                        <ModalFooter>
-                            <Button color="danger" variant="light" onPress={onClose}>
-                                {cancelModal}
-                            </Button>
-                            <Button color="primary" onPress={onClose}>
-                                {okModal}
-                            </Button>
-                        </ModalFooter>
+                        {footer &&
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    {cancelModal}
+                                </Button>
+                                <Button color="primary" onPress={onClose}>
+                                    {okModal}
+                                </Button>
+                            </ModalFooter>
+                        }
+
+
                     </>
                 )}
             </ModalContent>

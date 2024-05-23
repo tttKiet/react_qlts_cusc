@@ -20,7 +20,13 @@ import {
     Select, SelectItem,
     RadioGroup,
     Radio,
-    Tooltip
+    Tooltip,
+    CardHeader,
+    CardBody,
+    Card,
+    Image,
+    Autocomplete,
+    AutocompleteItem
 } from "@nextui-org/react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
@@ -37,92 +43,90 @@ const statusColorMap = {
     0: "danger",
 };
 import useSWR from 'swr'
-import { API_USER } from "../constants";
+import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["name", "phone", "email", "gender", "role",
-    "status", "actions"];
-function ManagerUser() {
-    const [filterSearchName, setFillterSearchName] = useState('')
-    const [pagination, setPanigation] = useState({ take: 5, skip: 0 })
-    const [total, setTotal] = useState(1);
-    const [nameSearch, setNameSearch] = useState('');
-    // Call API
-    const { data: dataPagination, error, isLoading, mutate } = useSWR(`${API_USER}?name=${filterSearchName}&take=${pagination.take}&skip=${pagination.skip}`)
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    // console.log(dataPagination)
+const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+function ListData() {
+    const [provinceSelected, setProvinceSelected] = useState('');
+    const [schoolSelected, setSchoolSelected] = useState('');
+    const [jobSelected, setJobSelected] = useState('');
 
-    const [record, setRecord] = useState({})
-    const [isEditUser, setIsEditUser] = useState(false)
+    const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
+    const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
+    const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
-    const closeModal = () => {
-        onClose();
-        setRecord({});
-        setIsEditUser(false);
-    };
-
-
-    const hanldeShowEdit = (data) => {
-        if (data) {
-            const dataSetModal = {
-                id: data.id,
-                fullName: data.name,
-                email: data.email,
-                gender: data.gender,
-                phone: data.phone,
-                address: data.address,
-                role: data.role,
-            }
-            setRecord(dataSetModal)
-            setIsEditUser(true)
-            onOpen();
-        } else {
-            setRecord({})
-            setIsEditUser(false)
+    useEffect(() => {
+        if (provinceSelected) {
+            console.log("Tinh", provinceSelected)
+            setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
         }
+    }, [provinceSelected])
+    const { data: dataSchool } = useSWR(urlSchool)
+    console.log(dataSchool)
 
+    useEffect(() => {
+        if (schoolSelected) {
+            setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
+        }
+    }, [schoolSelected])
+    const { data: dataJob } = useSWR(urlJob);
+
+    const [filterSearchName, setFillterSearchName] = useState('')
+    const data = [{
+        id: 1,
+        thoigianphan: "7:20",
+        tentruong: "Đại học Cần Thơ",
+        sodong: "10",
+        madoan: "MD1",
+        lienhe1: 1,
+        lienhe2: "1",
+        lienhe3: 0
+    },
+    {
+        id: 2,
+        thoigianphan: "8:30",
+        tentruong: "Trường Kinh Tế Quốc Dân",
+        sodong: "5",
+        madoan: "MD2",
+        lienhe1: 1,
+        lienhe2: 1,
+        lienhe3: 1
+    },
+    {
+        id: 3,
+        thoigianphan: "9:00",
+        tentruong: "Trường Cao Đăng Sư Phạm",
+        sodong: "7",
+        madoan: "MD3",
+        lienhe1: 0,
+        lienhe2: 0,
+        lienhe3: 0
     }
-
+    ]
 
     const columns = [
-        { name: "ID", uid: "id", sortable: true },
-        { name: "Họ và tên", uid: "name", sortable: true },
-        { name: "Số điện thoại", uid: "phone", },
-        { name: "Email", uid: "email" },
-        { name: "Giới tính", uid: "gender", sortable: true },
-        { name: "Địa chỉ", uid: "address", sortable: true },
-        { name: "Loại người dùng", uid: "role", sortable: true },
-        { name: "Trạng thái", uid: "status" },
-        { name: "ACTIONS", uid: "actions" },
+        { name: "STT", uid: "id", sortable: true },
+        { name: "Thời gian phân", uid: "thoigianphan" },
+        { name: "Tên trường", uid: "tentruong", },
+        { name: "Mã đoạn", uid: "madoan", sortable: true },
+        { name: "Số dòng", uid: "sodong", sortable: true },
+        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
+        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
+        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+
     ];
 
-    const users = useMemo(() => {
-        return dataPagination?.data?.map((user, index) => {
-            return {
-                id: user?.TENDANGNHAP,
-                role: user?.usermanager ? 'usermanager' : 'admin',
-                name: user?.usermanager?.HOTEN || user?.admin?.HOTEN || '',
-                phone: user?.usermanager?.SDT || user?.admin?.SDT || '',
-                email: user?.usermanager?.EMAIL || user?.admin?.EMAIL || '',
-                gender: user?.usermanager?.GIOITINH || user?.admin?.GIOITINH || '',
-                address: user?.usermanager?.DIACHI || user?.admin?.DIACHI || '',
-                status: user?.usermanager?.TRANGTHAIUM || user?.admin?.TRANGTHAIADMIN || 0,
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-            }
-        }) || []
-    }, [dataPagination])
-
-    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(4);
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "age",
         direction: "ascending",
     });
     const [page, setPage] = useState(1);
 
-
+    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
 
     const headerColumns = useMemo(() => {
@@ -132,12 +136,12 @@ function ManagerUser() {
     }, [visibleColumns]);
 
     const filteredItems = useMemo(() => {
-        let filteredUsers = [...users];
+        let filteredUsers = [...data];
         return filteredUsers;
-    }, [users, filterSearchName]);
+    }, [data, filterSearchName]);
 
     const items = useMemo(() => {
-        setPanigation({ skip: (page - 1) * rowsPerPage, take: rowsPerPage })
+
         return filteredItems;
     }, [page, filteredItems, rowsPerPage]);
 
@@ -155,71 +159,53 @@ function ManagerUser() {
         const cellValue = user[columnKey];
 
         switch (columnKey) {
-            case "name":
-                return (
-                    <User
-                        avatarProps={{ radius: "full", size: "sm", src: user.avatar }}
-                        classNames={{
-                            description: "text-default-500",
-                        }}
-
-                        name={cellValue}
-                    >
-                        {user.email}
-                    </User>
-                );
-            case "phone":
+            case "thoigianphan":
                 return (
                     <div className="flex flex-col justify-center">
                         <span className="text-bold text-small capitalize">{cellValue}</span>
 
                     </div>
                 );
-            case "email":
+            case "tentruong":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+
+                    </div>
+                );
+            case "madoan":
                 return (
                     <div className="flex flex-col justify-center">
                         <span className="text-bold text-small">{cellValue}</span>
 
                     </div>
                 );
-            case "role":
+            case "sodong":
                 return (
                     <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue === 'admin' ? <Chip color="primary" variant="flat">Admin</Chip> : (cellValue === 'usermanager' ? <Chip color="success" variant="flat">Usermanager</Chip> : <Chip color="danger" variant="flat">Khác</Chip>)}</span>
+                        <span className="text-bold text-small">{cellValue}</span>
 
                     </div>
                 );
-            case "status":
+            case "lienhe1":
                 return (
-                    <Chip
-                        className="capitalize border-none gap-1 text-default-600"
-                        color={statusColorMap[user.status]}
-                        size="sm"
-                        variant="dot"
-                    >
-                        {cellValue === 1 ? 'Online' : 'Offline'}
-                    </Chip>
-                );
-            case "actions":
-                return (
-                    <div className="relative flex items-center gap-2">
-                        <Tooltip content="Details">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <EyeIcon />
-                            </span>
-                        </Tooltip>
-                        <Tooltip content="Edit user">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => hanldeShowEdit(user)}>
-                                <EditIcon />
-                            </span>
-                        </Tooltip>
-                        <Tooltip color="danger" content="Delete user">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                <DeleteIcon />
-                            </span>
-                        </Tooltip>
+                    <div className="flex flex-col items-center">
+                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
                     </div>
                 );
+            case "lienhe2":
+                return (
+                    <div className="flex flex-col items-center">
+                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    </div>
+                );
+            case "lienhe3":
+                return (
+                    <div className="flex flex-col items-center">
+                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    </div>
+                );
+
             default:
                 return cellValue;
         }
@@ -240,11 +226,6 @@ function ManagerUser() {
             }
         }, []);
 
-    useEffect(() => {
-        if (dataPagination) {
-            setTotal(Math.ceil(dataPagination?.total / rowsPerPage))
-        }
-    }, [dataPagination])
 
     const topContent = useMemo(() => {
         return (
@@ -291,25 +272,17 @@ function ManagerUser() {
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
-                        <Button
-                            color="primary"
-                            endContent={<PlusIcon />}
-                            size="sm"
-                            onPress={onOpen}
-                        >
-                            Add New
-                        </Button>
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Total {users.length} users</span>
+                    <span className="text-default-400 text-small">Total {data.length} users</span>
                     <label className="flex items-center text-default-400 text-small">
                         Rows per page:
                         <select
                             className="bg-transparent outline-none text-default-400 text-small"
                             onChange={onRowsPerPageChange}
                         >
-                            <option value="5">5</option>
+                            <option value="4">4</option>
                             <option value="10">10</option>
                             <option value="15">15</option>
                         </select>
@@ -322,7 +295,7 @@ function ManagerUser() {
         visibleColumns,
         onSearchChange,
         onRowsPerPageChange,
-        users.length,
+        data.length,
         hasSearchFilter,
     ]);
 
@@ -338,21 +311,16 @@ function ManagerUser() {
                     // isDisabled={hasSearchFilter}
                     page={page}
 
-                    total={total}
+                    total={pages}
 
                     variant="light"
                     onChange={(e) => {
                         setPage(e)
                     }}
                 />
-                <span className="text-small text-default-400">
-                    {selectedKeys === "all"
-                        ? "All items selected"
-                        : `${selectedKeys.size} of ${items.length} selected`}
-                </span>
             </div>
         );
-    }, [selectedKeys, items.length, page, dataPagination, total, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter]);
 
     const classNames = useMemo(
         () => ({
@@ -372,62 +340,71 @@ function ManagerUser() {
         }),
         [],
     );
-    const onSubmit = async (data) => {
-        if (isEditUser) {
-            const dataSend = {
-                HOVATEN: data.fullName,
-                MATKHAU: data.password,
-                SDT: data.phone,
-                GIOITINH: data.gender,
-                EMAIL: data.email,
-                DIACHI: data.address,
-                ROLE: data.role,
-                TENDANGNHAP: data.id,
-            }
-
-            try {
-                const res = await UserService.updateUser(dataSend)
-                onClose()
-                mutate()
-                console.log("Data recieved from backend", res)
-            } catch (e) {
-                console.log(e)
-            }
-
-        } else {
-            const dataSend = {
-                HOVATEN: data.fullName,
-                MATKHAU: data.password,
-                SDT: data.phone,
-                GIOITINH: data.gender,
-                EMAIL: data.email,
-                DIACHI: data.address,
-                ROLE: data.role
-            };
-            try {
-                const res = await UserService.createUser(dataSend)
-                if (res.message) {
-                    mutate();
-                    console.log(res.message)
-                    onClose()
-                }
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    }
 
     return (
         <>
-            <div className="contentPage"
-                style={{
+            <div className="">
+                {/* <h1 className="titlePage">Danh sách dữ liệu</h1> */}
+                <div className="p-2" style={{
+                    padding: 24,
+                    background: "#fff",
+                    borderRadius: "10px"
+                }}>
+                    <h1 className="mb-2 text-lg font-medium">Lọc dữ liệu</h1>
+                    <div className="justify-items-center grid grid-cols-3">
+                        <Autocomplete
+                            label="Chọn tỉnh thành"
+                            className="max-w-xs col-span-3 md:col-span-1 "
+                            variant="bordered"
+                            size="sm"
+                            onSelectionChange={(value) => setProvinceSelected(value)}
+                        >
+                            {dataProvince?.map((province) => (
+                                <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                    {province.TENTINH}
+                                </AutocompleteItem>
+                            ))}
+
+                        </Autocomplete>
+                        <Autocomplete
+                            label="Chọn trường"
+                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                            variant="bordered"
+                            size="sm"
+                            isDisabled={provinceSelected != '' ? false : true}
+                            onSelectionChange={(value) => setSchoolSelected(value)}
+                        >
+                            {dataSchool?.map((school) => (
+                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                                    {school.TENTRUONG}
+                                </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
+                        <Select
+                            label="Chọn nghành"
+                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                            variant="bordered"
+                            size="sm"
+                            isDisabled={schoolSelected != '' ? false : true}
+                            onSelectionChange={(value) => setJobSelected(value)}
+                        >
+                            {dataJob?.map((job) => (
+                                <SelectItem key={job.MANGANH} value={job.MANGANH}>
+                                    {job.TENNGANH} <span className="text-tiny text-default-400">{job.count} dòng dữ liệu</span>
+
+                                </SelectItem>
+
+                            ))}
+                        </Select>
+                    </div>
+                </div>
+                <div className="mt-3" style={{
                     padding: 24,
                     minHeight: 360,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
-                <h1 className="titlePage">Danh sách người dùng</h1>
-                <div className="listUser mt-2">
+                    <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
                     <Table
                         isCompact
                         removeWrapper
@@ -439,13 +416,10 @@ function ManagerUser() {
                                 wrapper: "after:bg-foreground after:text-background text-background",
                             },
                         }}
-                        classNames={classNames}
-                        selectedKeys={selectedKeys}
-                        selectionMode="multiple"
+                        // classNames={classNames}
                         sortDescriptor={sortDescriptor}
                         topContent={topContent}
                         topContentPlacement="outside"
-                        onSelectionChange={setSelectedKeys}
                         onSortChange={setSortDescriptor}
                     >
                         <TableHeader columns={headerColumns}>
@@ -469,11 +443,8 @@ function ManagerUser() {
                     </Table>
                 </div>
             </div>
-            <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={closeModal} size="2xl" title={isEditUser ? 'Chỉnh sửa thông tin' : 'Thêm người dùng'} okModal="Thêm người dùng" cancelModal="Đóng"  >
-                <FormUser onClose={closeModal} onSubmit={onSubmit} record={record} isEditUser={isEditUser} />
-            </ModalComponent>
         </>
     );
 }
 
-export default ManagerUser;
+export default ListData;

@@ -10,6 +10,8 @@ import LayoutAdmin from "./Layouts/LayoutAdmin/LayoutAdmin";
 import AdminHomePage from "./pages/AdminHomePage";
 import Footer from "./Layouts/OnlyLayout/Footer";
 import ManagerUser from "./pages/ManagerUser";
+import ProfileUser from "./pages/ProfileUser";
+import ListData from "./pages/ListData";
 
 const LayoutOnly = () => {
   return (
@@ -56,6 +58,14 @@ function App() {
       {
         path: "manager/user",
         element: <ManagerUser />
+      },
+      {
+        path: "manager/detail",
+        element: <ProfileUser />
+      },
+      {
+        path: "manager/data",
+        element: <ListData />
       }
       ]
     }
