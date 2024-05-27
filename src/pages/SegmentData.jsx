@@ -26,7 +26,12 @@ import {
     Card,
     Image,
     Autocomplete,
-    AutocompleteItem
+    AutocompleteItem,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
 } from "@nextui-org/react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
@@ -48,7 +53,7 @@ import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
 const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
-function ListData() {
+function SegmentData() {
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
@@ -56,6 +61,21 @@ function ListData() {
     const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
     const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
+
+    // Modal
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    const segment = [
+        {
+            label: "5 dòng", value: "5"
+        },
+        {
+            label: "10 dòng", value: "10"
+        },
+        {
+            label: "15 dòng", value: "15"
+        },
+    ]
 
     useEffect(() => {
         if (provinceSelected) {
@@ -225,54 +245,25 @@ function ListData() {
         }, []);
 
 
-    const topContent = useMemo(() => {
+    const bottomContent = useMemo(() => {
         return (
-            <div className="flex flex-col gap-4">
-                <div className="flex justify-between gap-3 items-end">
-                    <Input
-                        isClearable
-                        classNames={{
-                            base: "w-full sm:max-w-[44%]",
-                            inputWrapper: "border-1",
-                        }}
-                        placeholder="Search by name..."
-                        size="sm"
-                        startContent={<SearchIcon className="text-default-300" />}
-                        // value={filterSearchName}
-                        variant="bordered"
-                        onClear={() => setFillterSearchName("")}
-                        onValueChange={debounce(onSearchChange, 300)}
-                    />
-                    <div className="flex gap-3">
-                        <Dropdown>
-                            <DropdownTrigger className="hidden sm:flex">
-                                <Button
-                                    endContent={<ChevronDownIcon className="text-small" />}
-                                    size="sm"
-                                    variant="flat"
-                                >
-                                    Columns
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                disallowEmptySelection
-                                aria-label="Table Columns"
-                                closeOnSelect={false}
-                                selectedKeys={visibleColumns}
-                                selectionMode="multiple"
-                                onSelectionChange={setVisibleColumns}
-                            >
-                                {columns.map((column) => (
-                                    <DropdownItem key={column.uid} className="capitalize">
-                                        {/* {capitalize(column.name)} */}
-                                        {column.name}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                    </div>
-                </div>
-                <div className="flex justify-between items-center">
+            <div className="py-2 px-2 flex justify-between items-center">
+                <Pagination
+                    showControls
+                    classNames={{
+                        cursor: "bg-foreground text-background",
+                    }}
+                    color="default"
+                    page={page}
+
+                    total={pages}
+
+                    variant="light"
+                    onChange={(e) => {
+                        setPage(e)
+                    }}
+                />
+                <div className="flex justify-between items-center mb-2 gap-5">
                     <span className="text-default-400 text-small">Total {data.length} users</span>
                     <label className="flex items-center text-default-400 text-small">
                         Rows per page:
@@ -288,157 +279,129 @@ function ListData() {
                 </div>
             </div>
         );
-    }, [
-        filterSearchName,
-        visibleColumns,
-        onSearchChange,
-        onRowsPerPageChange,
-        data.length,
-        hasSearchFilter,
-    ]);
-
-    const bottomContent = useMemo(() => {
-        return (
-            <div className="py-2 px-2 flex justify-between items-center">
-                <Pagination
-                    showControls
-                    classNames={{
-                        cursor: "bg-foreground text-background",
-                    }}
-                    color="default"
-                    // isDisabled={hasSearchFilter}
-                    page={page}
-
-                    total={pages}
-
-                    variant="light"
-                    onChange={(e) => {
-                        setPage(e)
-                    }}
-                />
-            </div>
-        );
     }, [items.length, page, hasSearchFilter]);
-
-    const classNames = useMemo(
-        () => ({
-            wrapper: ["max-h-[382px]", "max-w-3xl"],
-            th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
-            td: [
-                // changing the rows border radius
-                // first
-                "group-data-[first=true]:first:before:rounded-none",
-                "group-data-[first=true]:last:before:rounded-none",
-                // middle
-                "group-data-[middle=true]:before:rounded-none",
-                // last
-                "group-data-[last=true]:first:before:rounded-none",
-                "group-data-[last=true]:last:before:rounded-none",
-            ],
-        }),
-        [],
-    );
 
     return (
         <>
             <div className="">
-                {/* <h1 className="titlePage">Danh sách dữ liệu</h1> */}
-                <div className="p-2" style={{
-                    padding: 24,
-                    background: "#fff",
-                    borderRadius: "10px"
-                }}>
-                    <h1 className="mb-2 text-lg font-medium">Lọc dữ liệu</h1>
-                    <div className="justify-items-center grid grid-cols-3">
-                        <Autocomplete
-                            label="Chọn tỉnh thành"
-                            className="max-w-xs col-span-3 md:col-span-1 "
-                            variant="bordered"
-                            size="sm"
-                            onSelectionChange={(value) => setProvinceSelected(value)}
-                        >
-                            {dataProvince?.map((province) => (
-                                <AutocompleteItem key={province.MATINH} value={province.MATINH}>
-                                    {province.TENTINH}
-                                </AutocompleteItem>
-                            ))}
-
-                        </Autocomplete>
-                        <Autocomplete
-                            label="Chọn trường"
-                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
-                            variant="bordered"
-                            size="sm"
-                            isDisabled={provinceSelected != '' ? false : true}
-                            onSelectionChange={(value) => setSchoolSelected(value)}
-                        >
-                            {dataSchool?.map((school) => (
-                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                    {school.TENTRUONG}
-                                </AutocompleteItem>
-                            ))}
-                        </Autocomplete>
-                        <Select
-                            items={dataJob || []}
-                            label="Chọn ngành"
-                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
-                            variant="bordered"
-                            isDisabled={schoolSelected != '' ? false : true}
-                            onSelectionChange={(value) => setJobSelected(value)}
-                            size="sm"
-                            listboxProps={{
-                                itemClasses: {
-                                    base: [
-                                        "rounded-md",
-                                        "text-default-500",
-                                        "transition-opacity",
-                                        "data-[hover=true]:text-foreground",
-                                        "data-[hover=true]:bg-default-100",
-                                        "dark:data-[hover=true]:bg-default-50",
-                                        "data-[selectable=true]:focus:bg-default-50",
-                                        "data-[pressed=true]:opacity-70",
-                                        "data-[focus-visible=true]:ring-default-500",
-                                    ],
-                                },
-                            }}
-                            popoverProps={{
-                                classNames: {
-                                    base: "before:bg-default-200",
-                                    content: "p-0 border-small border-divider bg-background",
-                                },
-                            }}
-                            renderValue={(items) => {
-                                return items.map((item) => (
-                                    <div key={item.data.MANGANH} className="flex items-center gap-2">
-                                        <div className="">
-                                            <span>{item.data.TENNGANH}</span>
-                                            <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
-                                        </div>
-                                    </div>
-                                ));
-                            }}
-                        >
-                            {(job) => (
-                                <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
-                                    <div className="flex gap-2 items-center">
-
-                                        <div className="">
-                                            <span className="text-small">{job.TENNGANH}</span>
-                                            <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
-                                        </div>
-                                    </div>
-                                </SelectItem>
-                            )}
-                        </Select>
-                    </div>
-                </div>
                 <div className="mt-3" style={{
                     padding: 24,
                     minHeight: 360,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
-                    <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
+                    <h1 className="mb-2 text-lg font-medium">Phân đoạn dữ liệu</h1>
+                    <div className="flex flex-col gap-4 mb-3">
+                        <div className="grid grid-cols-4">
+                            <Input
+                                isClearable
+                                classNames={{
+                                    base: "w-full sm:max-w-[90%]",
+                                    inputWrapper: "border-1",
+                                }}
+                                className="col-span-4 md:col-span-1"
+                                placeholder="Search by name..."
+                                size="sm"
+                                startContent={<SearchIcon className="text-default-300" />}
+                                variant="bordered"
+                                onClear={() => setFillterSearchName("")}
+                                onValueChange={debounce(onSearchChange, 300)}
+                            />
+                            <div className="col-span-4 md:col-span-3">
+                                <div className="flex gap-3">
+
+                                    <Autocomplete
+                                        aria-labelledby="province-label"
+                                        placeholder="Chọn tỉnh"
+                                        className="max-w-xs"
+                                        variant="bordered"
+                                        size="sm"
+                                        onSelectionChange={(value) => setProvinceSelected(value)}
+                                    >
+                                        {dataProvince?.map((province) => (
+                                            <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                                {province.TENTINH}
+                                            </AutocompleteItem>
+                                        ))}
+
+                                    </Autocomplete>
+                                    <Autocomplete
+                                        aria-labelledby="province-label"
+                                        placeholder="Chọn trường"
+                                        className="max-w-xs"
+                                        variant="bordered"
+                                        size="sm"
+                                        isDisabled={provinceSelected != '' ? false : true}
+                                        onSelectionChange={(value) => setSchoolSelected(value)}
+                                    >
+                                        {dataSchool?.map((school) => (
+                                            <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                                                {school.TENTRUONG}
+                                            </AutocompleteItem>
+                                        ))}
+                                    </Autocomplete>
+                                    <Select
+                                        items={dataJob || []}
+                                        aria-labelledby="province-label"
+                                        placeholder="Chọn ngành"
+                                        className="max-w-xs"
+                                        variant="bordered"
+                                        isDisabled={schoolSelected != '' ? false : true}
+                                        onSelectionChange={(value) => setJobSelected(value)}
+                                        size="sm"
+                                        listboxProps={{
+                                            itemClasses: {
+                                                base: [
+                                                    "rounded-md",
+                                                    "text-default-500",
+                                                    "transition-opacity",
+                                                    "data-[hover=true]:text-foreground",
+                                                    "data-[hover=true]:bg-default-100",
+                                                    "dark:data-[hover=true]:bg-default-50",
+                                                    "data-[selectable=true]:focus:bg-default-50",
+                                                    "data-[pressed=true]:opacity-70",
+                                                    "data-[focus-visible=true]:ring-default-500",
+                                                ],
+                                            },
+                                        }}
+                                        popoverProps={{
+                                            classNames: {
+                                                base: "before:bg-default-200",
+                                                content: "p-0 border-small border-divider bg-background",
+                                            },
+                                        }}
+                                        renderValue={(items) => {
+                                            return items.map((item) => (
+                                                <div key={item.data.MANGANH} className="flex items-center gap-2">
+                                                    <div className="">
+                                                        <span>{item.data.TENNGANH}</span>
+                                                        <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
+                                                    </div>
+                                                </div>
+                                            ));
+                                        }}
+                                    >
+                                        {(job) => (
+                                            <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
+                                                <div className="flex gap-2 items-center">
+
+                                                    <div className="">
+                                                        <span className="text-small">{job.TENNGANH}</span>
+                                                        <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
+                                                    </div>
+                                                </div>
+                                            </SelectItem>
+                                        )}
+                                    </Select>
+                                    <Button color="primary" className="h-100" onPress={onOpen}>
+                                        Phân đoạn
+                                    </Button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div >
                     <Table
                         isCompact
                         removeWrapper
@@ -452,7 +415,7 @@ function ListData() {
                         }}
                         // classNames={classNames}
                         sortDescriptor={sortDescriptor}
-                        topContent={topContent}
+
                         topContentPlacement="outside"
                         onSortChange={setSortDescriptor}
                     >
@@ -476,9 +439,40 @@ function ListData() {
                         </TableBody>
                     </Table>
                 </div>
+                <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                    <ModalContent>
+                        {(onClose) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Phân đoạn dữ liệu</ModalHeader>
+                                <ModalBody>
+                                    <div className="">
+                                        <Select
+                                            label="Chọn loại phân đoạn"
+                                            className=""
+                                        >
+                                            {segment.map((seg) => (
+                                                <SelectItem key={seg.value} value={seg.value}>
+                                                    {seg.label}
+                                                </SelectItem>
+                                            ))}
+                                        </Select>
+                                    </div>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light" onPress={onClose}>
+                                        Đóng
+                                    </Button>
+                                    <Button color="primary" onPress={onClose}>
+                                        Phân đoạn
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
             </div>
         </>
     );
 }
 
-export default ListData;
+export default SegmentData;

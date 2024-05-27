@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
     UserOutlined,
     DashboardOutlined,
-    DatabaseOutlined
+    DatabaseOutlined,
+    ClockCircleOutlined
 
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
@@ -23,14 +24,16 @@ function getItem(label, key, icon, children) {
 const items = [
     getItem(<Link to={"/admin"}>Dashboard</Link>, '/admin', <DashboardOutlined />),
     getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
-        getItem(<Link to={"/admin/manager/user"}>Danh sách người dùng</Link>, '/admin/manager/user'),
+        getItem(<Link to={"/admin/user"}>Danh sách người dùng</Link>, '/admin/user'),
         getItem('Bill', '3'),
         getItem('Alex', '4'),
     ]),
-
     getItem('Quản lý dữ liệu', 'sub2', <DatabaseOutlined />, [
-        getItem(<Link to={"/admin/manager/data"}>Danh sách người dùng</Link>, '/admin/manager/data'),
+        getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, '/admin/data'),
+        getItem(<Link to={"/admin/segment"}>Phân đoạn dữ liệu</Link>, '/admin/segment'),
+        getItem(<Link to={"/admin/division"}>Phân chia dữ liệu</Link>, '/admin/division'),
     ]),
+    getItem(<Link to={"/admin/time"}>Thời gian đăng nhập</Link>, '/admin/time', <ClockCircleOutlined />),
 ];
 
 const LayoutAdmin = () => {
@@ -58,8 +61,9 @@ const LayoutAdmin = () => {
             }}
         >
             <Sider collapsible collapsed={collapsed} width={230} onCollapse={(value) => setCollapsed(value)}>
-                <div className="demo-logo-vertical ps-3 mb-1"  >
-                    <img src='/image/Logo.png' className='w-32 mt-auto' />
+                <div className="demo-logo-vertical mb-1 flex"  >
+                    <img src='/image/CUSC_No_Background.png' className='w-20 ms-5' />
+                    {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
                 </div>
                 <Menu theme="dark"
                     mode="inline" className='p-0' onClick={handleClick}
@@ -83,31 +87,8 @@ const LayoutAdmin = () => {
                         backgroundColor: "#F0F3F7"
                     }}
                 >
-                    {/* <Breadcrumb className='mt-4 mb-4'
-                        items={[
-                            {
-                                title: 'Home',
-                            },
-                            {
-                                title: <a href="">Application Center</a>,
-                            },
-                            {
-                                title: <a href="">Application List</a>,
-                            },
-                            {
-                                title: 'An Application',
-                            },
-                        ]}
-                    /> */}
                     <Breadcrumbs />
-                    <div
-                    // style={{
-                    //     padding: 24,
-                    //     minHeight: 360,
-                    //     background: colorBgContainer,
-                    //     borderRadius: borderRadiusLG,
-                    // }}
-                    >
+                    <div>
                         <Outlet />
                     </div>
                 </Content>

@@ -4,10 +4,10 @@ import { Link, useLocation } from 'react-router-dom';
 
 const breadcrumbNameMap = {
     '/admin': 'Trang chủ',
-    '/admin/manager': 'Quản lý',
-    '/admin/manager/data': 'Danh sách dữ liệu',
-    '/admin/manager/user': 'Danh sách người dùng',
-    // Thêm các đường dẫn và tên tương ứng ở đây
+    '/admin/user': 'Danh sách người dùng',
+    '/admin/data': 'Danh sách dữ liệu',
+    '/admin/segment': 'Phân đoạn dữ liệu',
+    '/admin/division': 'Phân chia dữ liệu',
 };
 
 const Breadcrumbs = () => {
@@ -24,10 +24,7 @@ const Breadcrumbs = () => {
     });
 
     return (
-        <Breadcrumb className='mt-4 mb-4'>
-            <Breadcrumb.Item key="home">
-                {/* <Link to="/">Home</Link> */}
-            </Breadcrumb.Item>
+        <Breadcrumb className='mt-4 mb-4' items={{ breadcrumbNameMap }}>
             {breadcrumbItems}
         </Breadcrumb>
     );

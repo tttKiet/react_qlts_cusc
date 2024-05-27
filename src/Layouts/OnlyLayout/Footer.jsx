@@ -9,7 +9,7 @@ function Footer() {
                     <div className="grid grid-cols-3">
                         <div>
                             <img
-                                src="/image/Logo.png"
+                                src="/image/CUSC_Logo_White.png"
                                 className="w-44 m-auto"
                                 alt="Flowbite Logo"
                             />

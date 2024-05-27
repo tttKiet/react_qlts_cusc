@@ -18,7 +18,7 @@
     "@hookform/resolvers": "^3.4.0",
     "@nextui-org/react": "^2.3.6",
     "@reduxjs/toolkit": "^2.2.5",
-    "antd": "^5.17.2",
+    "antd": "^5.17.3",
     "axios": "^1.7.0",
     "framer-motion": "^11.2.2",
     "lodash.debounce": "^4.0.8",

@@ -29,9 +29,9 @@ function Login() {
                                 <div className="g-0 lg:flex lg:flex-wrap">
                                     <div className="hidden items-center lg:flex rounded-l-lg lg:w-6/12 bg-[url('/image/background_form.jpg')] bg-cover bg-center">
                                         <div className="px-4 py-6 text-white md:mx-6 md:p-12">
-                                            <div className="flex">
+                                            <div className="flex mb-4">
                                                 <img
-                                                    src="/image/Logo.png"
+                                                    src="/image/CUSC_No_Background.png"
                                                     className="w-72 m-auto"
                                                     alt=""
                                                 />
