@@ -422,7 +422,7 @@ function ManagerUser() {
             <div className="contentPage"
                 style={{
                     padding: 24,
-                    minHeight: 360,
+                    minHeight: 500,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
@@ -440,8 +440,8 @@ function ManagerUser() {
                             },
                         }}
                         classNames={classNames}
-                        selectedKeys={selectedKeys}
-                        selectionMode="multiple"
+                        // selectedKeys={selectedKeys}
+                        // selectionMode="multiple"
                         sortDescriptor={sortDescriptor}
                         topContent={topContent}
                         topContentPlacement="outside"

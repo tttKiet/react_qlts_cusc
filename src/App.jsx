@@ -15,6 +15,9 @@ import ListData from "./pages/ListData";
 import SegmentData from "./pages/SegmentData";
 import DivisionData from "./pages/DivisionData";
 import TimeLogin from "./pages/TimeLogin";
+import SegmentDetail from "./pages/SegmentDetail";
+import ManagerThematic from "./pages/ManagerThematic";
+import DetailData from "./pages/DetailData";
 
 const LayoutOnly = () => {
   return (
@@ -72,8 +75,16 @@ function App() {
         element: <ListData />
       },
       {
+        path: "data/detail",
+        element: <DetailData />
+      },
+      {
         path: "segment",
         element: <SegmentData />
+      },
+      {
+        path: "segment/:id",
+        element: <SegmentDetail />
       },
       {
         path: "division",
@@ -82,6 +93,10 @@ function App() {
       {
         path: "time",
         element: <TimeLogin />
+      },
+      {
+        path: "thematic",
+        element: <ManagerThematic />
       },
 
       ]

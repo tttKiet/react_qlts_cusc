@@ -47,11 +47,13 @@ import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "actions"];
 function ListData() {
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
+
+    const [urlCustomer, setUrlCustomer] = useState('')
 
     const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
     const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
@@ -59,7 +61,10 @@ function ListData() {
 
     useEffect(() => {
         if (provinceSelected) {
+            setSchoolSelected('')
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
+            setUrlCustomer(`provinceCode=${provinceSelected}&schoolCode=`)
+
         }
     }, [provinceSelected])
     const { data: dataSchool } = useSWR(urlSchool)
@@ -67,64 +72,51 @@ function ListData() {
     useEffect(() => {
         if (schoolSelected) {
             setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
+            setUrlCustomer(`provinceCode=${provinceSelected}&schoolCode=${schoolSelected}`)
         }
     }, [schoolSelected])
+
     const { data: dataJob } = useSWR(urlJob);
 
-    const [filterSearchName, setFillterSearchName] = useState('')
-    const data = [{
-        id: 1,
-        thoigianphan: "7:20",
-        tentruong: "Đại học Cần Thơ",
-        sodong: "10",
-        madoan: "MD1",
-        lienhe1: 1,
-        lienhe2: "1",
-        lienhe3: 0
-    },
-    {
-        id: 2,
-        thoigianphan: "8:30",
-        tentruong: "Trường Kinh Tế Quốc Dân",
-        sodong: "5",
-        madoan: "MD2",
-        lienhe1: 1,
-        lienhe2: 1,
-        lienhe3: 1
-    },
-    {
-        id: 3,
-        thoigianphan: "9:00",
-        tentruong: "Trường Cao Đăng Sư Phạm",
-        sodong: "7",
-        madoan: "MD3",
-        lienhe1: 0,
-        lienhe2: 0,
-        lienhe3: 0
-    }
-    ]
+    const { data: dataCustomer } = useSWR(`${API_DATA}/customer?${urlCustomer}`)
 
+    const [filterSearchName, setFillterSearchName] = useState('')
     const columns = [
         { name: "STT", uid: "id", sortable: true },
-        { name: "Thời gian phân", uid: "thoigianphan" },
-        { name: "Tên trường", uid: "tentruong", },
-        { name: "Mã đoạn", uid: "madoan", sortable: true },
-        { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
-        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
-        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+        { name: "SĐT", uid: "sdt" },
+        { name: "Họ tên", uid: "hoten", sortable: true },
+        { name: "Email", uid: "email" },
+        { name: "SĐT Ba", uid: "sdtba" },
+        { name: "SĐT Mẹ", uid: "sdtme" },
+        { name: "Zalo", uid: "zalo" },
+        { name: "Tên trường", uid: "tentruong", sortable: true },
+        { name: "Actions", uid: "actions" },
 
     ];
 
+    const data = useMemo(() => {
+        return dataCustomer?.map((customer, index) => {
+            return {
+                id: index + 1,
+                sdt: customer?.dulieukhachhang?.SDT || '',
+                hoten: customer?.HOTEN || '',
+                email: customer?.EMAIL || '',
+                sdtba: customer?.dulieukhachhang?.SDTBA || '',
+                sdtme: customer?.dulieukhachhang?.SDTME || '',
+                zalo: customer?.dulieukhachhang?.SDTZALO || '',
+                tentruong: customer?.truong?.TENTRUONG || '',
+
+            }
+        }) || []
+    }, [dataCustomer])
+
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortDescriptor, setSortDescriptor] = useState({
-        column: "age",
-        direction: "ascending",
+
     });
     const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
 
     const headerColumns = useMemo(() => {
@@ -135,6 +127,16 @@ function ListData() {
 
     const filteredItems = useMemo(() => {
         let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.hoten.toLowerCase().includes(filterSearchName.toLowerCase()),
+            );
+            setRowsPerPage(100)
+        }
+        else {
+            setRowsPerPage(5)
+        }
+
         return filteredUsers;
     }, [data, filterSearchName]);
 
@@ -152,55 +154,80 @@ function ListData() {
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }, [sortDescriptor, items]);
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
 
     const renderCell = useCallback((user, columnKey) => {
         const cellValue = user[columnKey];
 
         switch (columnKey) {
-            case "thoigianphan":
+            case "sdt":
                 return (
                     <div className="flex flex-col justify-center">
                         <span className="text-bold text-small capitalize">{cellValue}</span>
 
+                    </div>
+                );
+            case "hoten":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+
+                    </div>
+                );
+            case "email":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+
+                    </div>
+                );
+            case "sdtba":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+
+                    </div>
+                );
+            case "sdtme":
+                return (
+                    <div className="flex flex-col items-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+                    </div>
+                );
+            case "zalo":
+                return (
+                    <div className="flex flex-col items-center">
+                        <span className="text-bold text-small">{cellValue}</span>
                     </div>
                 );
             case "tentruong":
                 return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue}</span>
-
-                    </div>
-                );
-            case "madoan":
-                return (
-                    <div className="flex flex-col justify-center">
+                    <div className="flex flex-col">
                         <span className="text-bold text-small">{cellValue}</span>
-
                     </div>
                 );
-            case "sodong":
+            case "actions":
                 return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small">{cellValue}</span>
-
-                    </div>
-                );
-            case "lienhe1":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe2":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe3":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    <div className="relative flex gap-2">
+                        <Tooltip content="Details">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                <EyeIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip content="Edit user">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                <EditIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Delete user">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
                     </div>
                 );
 
@@ -264,27 +291,12 @@ function ListData() {
                             >
                                 {columns.map((column) => (
                                     <DropdownItem key={column.uid} className="capitalize">
-                                        {/* {capitalize(column.name)} */}
                                         {column.name}
                                     </DropdownItem>
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
                     </div>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Total {data.length} users</span>
-                    <label className="flex items-center text-default-400 text-small">
-                        Rows per page:
-                        <select
-                            className="bg-transparent outline-none text-default-400 text-small"
-                            onChange={onRowsPerPageChange}
-                        >
-                            <option value="4">4</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                        </select>
-                    </label>
                 </div>
             </div>
         );
@@ -297,6 +309,16 @@ function ListData() {
         hasSearchFilter,
     ]);
 
+    const [total, setTotal] = useState(1)
+
+    useEffect(() => {
+        if (dataCustomer) {
+            const totalPages = Math.ceil(dataCustomer.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataCustomer, rowsPerPage]);
+
+
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -306,19 +328,36 @@ function ListData() {
                         cursor: "bg-foreground text-background",
                     }}
                     color="default"
-                    // isDisabled={hasSearchFilter}
+                    isDisabled={hasSearchFilter}
                     page={page}
 
-                    total={pages}
+                    total={total}
 
                     variant="light"
                     onChange={(e) => {
                         setPage(e)
                     }}
                 />
+                <div className="flex justify-between items-center gap-5">
+                    <span className="text-default-400 text-small">Total {data.length} users</span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
     const classNames = useMemo(
         () => ({
@@ -351,7 +390,9 @@ function ListData() {
                     <h1 className="mb-2 text-lg font-medium">Lọc dữ liệu</h1>
                     <div className="justify-items-center grid grid-cols-3">
                         <Autocomplete
-                            label="Chọn tỉnh thành"
+                            // label="Chọn tỉnh thành"
+                            aria-labelledby="province-label"
+                            placeholder="Chọn tỉnh"
                             className="max-w-xs col-span-3 md:col-span-1 "
                             variant="bordered"
                             size="sm"
@@ -365,10 +406,13 @@ function ListData() {
 
                         </Autocomplete>
                         <Autocomplete
-                            label="Chọn trường"
+                            // label="Chọn trường"
+                            aria-labelledby="province-label"
+                            placeholder="Chọn trường"
                             className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
                             variant="bordered"
                             size="sm"
+                            value={schoolSelected}
                             isDisabled={provinceSelected != '' ? false : true}
                             onSelectionChange={(value) => setSchoolSelected(value)}
                         >
@@ -380,7 +424,9 @@ function ListData() {
                         </Autocomplete>
                         <Select
                             items={dataJob || []}
-                            label="Chọn ngành"
+                            // label="Chọn ngành"
+                            aria-labelledby="province-label"
+                            placeholder="Chọn ngành"
                             className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
                             variant="bordered"
                             isDisabled={schoolSelected != '' ? false : true}
@@ -440,7 +486,6 @@ function ListData() {
                 }}>
                     <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
                     <Table
-                        isCompact
                         removeWrapper
                         aria-label="Example table with custom cells, pagination and sorting"
                         bottomContent={bottomContent}
@@ -467,7 +512,7 @@ function ListData() {
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
                             {(item) => (
                                 <TableRow key={item.id}>
                                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}

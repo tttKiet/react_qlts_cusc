@@ -4,13 +4,14 @@ import {
     UserOutlined,
     DashboardOutlined,
     DatabaseOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    LogoutOutlined
 
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Outlet } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboardList, faHeadset, faMessage } from '@fortawesome/free-solid-svg-icons';
+import { faClipboard } from '@fortawesome/free-regular-svg-icons'
 import Breadcrumbs from '../../components/Breadcrumb/Breadcrumb';
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
@@ -34,6 +35,8 @@ const items = [
         getItem(<Link to={"/admin/division"}>Phân chia dữ liệu</Link>, '/admin/division'),
     ]),
     getItem(<Link to={"/admin/time"}>Thời gian đăng nhập</Link>, '/admin/time', <ClockCircleOutlined />),
+    getItem(<Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>, '/admin/thematic', <FontAwesomeIcon icon={faClipboard} />),
+    getItem(<Link >Đăng xuất</Link>, '10', <LogoutOutlined />),
 ];
 
 const LayoutAdmin = () => {
@@ -76,6 +79,7 @@ const LayoutAdmin = () => {
 
             <Layout>
                 <Header
+                    className='border-2'
                     style={{
                         padding: 0,
                         background: colorBgContainer,

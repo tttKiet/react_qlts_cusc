@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom'
 import {
     Table,
     TableHeader,
@@ -51,9 +52,13 @@ import useSWR from 'swr'
 import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
-import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+import SegmentService from "../service/SegmentService";
+const INITIAL_VISIBLE_COLUMNS = ["id", "madoan", "tentruong", "sodong", "actions", "status"];
 function SegmentData() {
+
+    const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment`)
+    const [total, setTotal] = useState(1);
+
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
@@ -63,19 +68,9 @@ function SegmentData() {
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
     // Modal
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-    const segment = [
-        {
-            label: "5 dòng", value: "5"
-        },
-        {
-            label: "10 dòng", value: "10"
-        },
-        {
-            label: "15 dòng", value: "15"
-        },
-    ]
+
 
     useEffect(() => {
         if (provinceSelected) {
@@ -90,78 +85,59 @@ function SegmentData() {
         }
     }, [schoolSelected])
     const { data: dataJob } = useSWR(urlJob);
+    const [segment, setSegment] = useState(0)
 
     const [filterSearchName, setFillterSearchName] = useState('')
-    const data = [{
-        id: 1,
-        thoigianphan: "7:20",
-        tentruong: "Đại học Cần Thơ",
-        sodong: "10",
-        madoan: "MD1",
-        lienhe1: 1,
-        lienhe2: "1",
-        lienhe3: 0
-    },
-    {
-        id: 2,
-        thoigianphan: "8:30",
-        tentruong: "Trường Kinh Tế Quốc Dân",
-        sodong: "5",
-        madoan: "MD2",
-        lienhe1: 1,
-        lienhe2: 1,
-        lienhe3: 1
-    },
-    {
-        id: 3,
-        thoigianphan: "9:00",
-        tentruong: "Trường Cao Đăng Sư Phạm",
-        sodong: "7",
-        madoan: "MD3",
-        lienhe1: 0,
-        lienhe2: 0,
-        lienhe3: 0
-    }
-    ]
-
     const columns = [
-        { name: "STT", uid: "id", sortable: true },
-        { name: "Thời gian phân", uid: "thoigianphan" },
-        { name: "Tên trường", uid: "tentruong", },
+        { name: "STT", uid: "id" },
         { name: "Mã đoạn", uid: "madoan", sortable: true },
+        { name: "Tên trường", uid: "tentruong", sortable: true },
         { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
-        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
-        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+        { name: "Trạng thái", uid: "status" },
+        { name: "Action", uid: "actions" },
 
     ];
 
+    const data = useMemo(() => {
+        return dataSegment?.map((segment, index) => {
+            return {
+                id: index + 1,
+                madoan: segment?.MaPQ,
+                tentruong: segment?.truong?.TENTRUONG,
+                sodong: segment?.Sodong
+            }
+        }) || []
+    }, [dataSegment])
+
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortDescriptor, setSortDescriptor] = useState({
-        column: "age",
+        column: "STT",
         direction: "ascending",
     });
     const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
+
 
     const headerColumns = useMemo(() => {
         if (visibleColumns === "all") return columns;
 
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
-
     const filteredItems = useMemo(() => {
         let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.madoan.toLowerCase().includes(filterSearchName.toLowerCase()),
+            );
+        }
+
         return filteredUsers;
     }, [data, filterSearchName]);
-
     const items = useMemo(() => {
-
         return filteredItems;
-    }, [page, filteredItems, rowsPerPage]);
+    }, [filteredItems]);
 
     const sortedItems = useMemo(() => {
         return [...items].sort((a, b) => {
@@ -173,14 +149,20 @@ function SegmentData() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = useCallback((user, columnKey) => {
-        const cellValue = user[columnKey];
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
+    const renderCell = useCallback((segment, columnKey) => {
+        const cellValue = segment[columnKey];
 
         switch (columnKey) {
-            case "thoigianphan":
+            case "madoan":
                 return (
                     <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                        <span className="text-bold text-small">{cellValue}</span>
 
                     </div>
                 );
@@ -191,13 +173,7 @@ function SegmentData() {
 
                     </div>
                 );
-            case "madoan":
-                return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small">{cellValue}</span>
 
-                    </div>
-                );
             case "sodong":
                 return (
                     <div className="flex flex-col justify-center">
@@ -205,29 +181,53 @@ function SegmentData() {
 
                     </div>
                 );
-            case "lienhe1":
+            case "status":
                 return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    <div className="relative flex items-center gap-2">
+                        <Chip
+                            className="text-tiny"
+                            variant="flat"
+                            color="success"
+                        >
+                            Đã phân công
+                        </Chip>
+                        {/* <Chip
+                            className="text-tiny"
+                            variant="flat"
+                            color="warning"
+                        >
+                            Chưa phân công
+                        </Chip> */}
                     </div>
                 );
-            case "lienhe2":
+            case "actions":
                 return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    <div className="relative flex items-center gap-2">
+                        <Tooltip content="Details">
+                            <Link to={`/admin/segment/${segment.madoan}`} className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                <EyeIcon />
+                            </Link>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Delete user">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
                     </div>
                 );
-            case "lienhe3":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-
             default:
                 return cellValue;
         }
     }, []);
+
+    useEffect(() => {
+        if (dataSegment) {
+            const totalPages = Math.ceil(dataSegment.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataSegment, rowsPerPage]);
+
+
     const onRowsPerPageChange = useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
@@ -244,7 +244,6 @@ function SegmentData() {
             }
         }, []);
 
-
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -256,7 +255,7 @@ function SegmentData() {
                     color="default"
                     page={page}
 
-                    total={pages}
+                    total={total}
 
                     variant="light"
                     onChange={(e) => {
@@ -264,14 +263,15 @@ function SegmentData() {
                     }}
                 />
                 <div className="flex justify-between items-center mb-2 gap-5">
-                    <span className="text-default-400 text-small">Total {data.length} users</span>
+                    <span className="text-default-400 text-small">Total {data.length} data</span>
                     <label className="flex items-center text-default-400 text-small">
                         Rows per page:
                         <select
                             className="bg-transparent outline-none text-default-400 text-small"
                             onChange={onRowsPerPageChange}
+                            value={rowsPerPage}
                         >
-                            <option value="4">4</option>
+                            <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="15">15</option>
                         </select>
@@ -279,14 +279,42 @@ function SegmentData() {
                 </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+
+    const [errors, setErrors] = useState({})
+
+    const handleSegment = async () => {
+        const newErorrs = {};
+        if (segment <= 0) {
+            newErorrs.segment = 'Vui lòng nhập giá trị phân đoạn'
+        } if (Object.keys(newErorrs).length === 0) {
+            setErrors({})
+            console.log("Segment data", segment);
+            console.log("Truong", schoolSelected);
+            const dataSend = {
+                MATRUONG: schoolSelected,
+                SODONG: segment
+            }
+            try {
+                const res = await SegmentService.createSegment(dataSend)
+                onClose()
+                fetchSegment()
+                console.log("Data recieved from backend", res)
+            } catch (e) {
+                console.log(e)
+            }
+
+        } else {
+            setErrors(newErorrs)
+        }
+    }
 
     return (
         <>
             <div className="">
                 <div className="mt-3" style={{
                     padding: 24,
-                    minHeight: 360,
+                    minHeight: 390,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
@@ -382,7 +410,7 @@ function SegmentData() {
                                         }}
                                     >
                                         {(job) => (
-                                            <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
+                                            <SelectItem key={job.MANGANH} textValue={job.TENNGANH} value={jobSelected}>
                                                 <div className="flex gap-2 items-center">
 
                                                     <div className="">
@@ -393,7 +421,7 @@ function SegmentData() {
                                             </SelectItem>
                                         )}
                                     </Select>
-                                    <Button color="primary" className="h-100" onPress={onOpen}>
+                                    <Button color="primary" className="h-100" onPress={onOpen} isDisabled={schoolSelected == ''}>
                                         Phân đoạn
                                     </Button>
                                 </div>
@@ -413,7 +441,6 @@ function SegmentData() {
                                 wrapper: "after:bg-foreground after:text-background text-background",
                             },
                         }}
-                        // classNames={classNames}
                         sortDescriptor={sortDescriptor}
 
                         topContentPlacement="outside"
@@ -430,7 +457,7 @@ function SegmentData() {
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
                             {(item) => (
                                 <TableRow key={item.id}>
                                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
@@ -446,23 +473,29 @@ function SegmentData() {
                                 <ModalHeader className="flex flex-col gap-1">Phân đoạn dữ liệu</ModalHeader>
                                 <ModalBody>
                                     <div className="">
-                                        <Select
-                                            label="Chọn loại phân đoạn"
-                                            className=""
-                                        >
-                                            {segment.map((seg) => (
-                                                <SelectItem key={seg.value} value={seg.value}>
-                                                    {seg.label}
-                                                </SelectItem>
-                                            ))}
-                                        </Select>
+                                        <Input type="Number"
+                                            label="Nhập số lượng phân đoạn"
+                                            value={segment} onValueChange={setSegment}
+                                            isInvalid={errors && errors.segment ? true : false}
+                                            errorMessage={errors && errors.segment}
+                                        />
+                                    </div>
+                                    <div className="flex">
+                                        <p className="me-2">
+                                            Gợi ý:
+                                        </p>
+                                        <div className="flex gap-1">
+                                            <Chip className="cursor-pointer">1/2</Chip>
+                                            <Chip className="cursor-pointer">1/4</Chip>
+                                            <Chip className="cursor-pointer">1/6</Chip>
+                                        </div>
                                     </div>
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button color="danger" variant="light" onPress={onClose}>
                                         Đóng
                                     </Button>
-                                    <Button color="primary" onPress={onClose}>
+                                    <Button color="primary" isDisabled={segment > 0 ? false : true} onPress={handleSegment}>
                                         Phân đoạn
                                     </Button>
                                 </ModalFooter>

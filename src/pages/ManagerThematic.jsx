@@ -52,8 +52,9 @@ import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
+import FormThematic from "../components/body/FormThematic";
 const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
-function DivisionData() {
+function ManagerThematic() {
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
@@ -63,7 +64,7 @@ function DivisionData() {
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
     // Modal
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
     const segment = [
         {
@@ -90,7 +91,6 @@ function DivisionData() {
         }
     }, [schoolSelected])
     const { data: dataJob } = useSWR(urlJob);
-
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const data = [{
@@ -268,6 +268,10 @@ function DivisionData() {
         );
     }, [items.length, page, hasSearchFilter]);
 
+    const onSubmit = async (data) => {
+        console.log("Data ManagerThermatic", data)
+    }
+
     return (
         <>
             <div className="">
@@ -277,119 +281,10 @@ function DivisionData() {
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
-                    <h1 className="mb-2 text-lg font-medium">Phân chia dữ liệu</h1>
-                    <div className="flex flex-col gap-4">
 
+                    <h1 className="mb-2 text-lg font-medium">Quản lý chuyên đề</h1>
 
-                        <div className="col-span-4 md:col-span-3">
-                            <div className="flex gap-3">
-
-                                <Autocomplete
-                                    aria-labelledby="province-label"
-                                    placeholder="Chọn tỉnh"
-                                    className="max-w-xs"
-                                    variant="bordered"
-                                    size="sm"
-                                    onSelectionChange={(value) => setProvinceSelected(value)}
-                                >
-                                    {dataProvince?.map((province) => (
-                                        <AutocompleteItem key={province.MATINH} value={province.MATINH}>
-                                            {province.TENTINH}
-                                        </AutocompleteItem>
-                                    ))}
-
-                                </Autocomplete>
-                                <Autocomplete
-                                    aria-labelledby="province-label"
-                                    placeholder="Chọn trường"
-                                    className="max-w-xs"
-                                    variant="bordered"
-                                    size="sm"
-                                    isDisabled={provinceSelected != '' ? false : true}
-                                    onSelectionChange={(value) => setSchoolSelected(value)}
-                                >
-                                    {dataSchool?.map((school) => (
-                                        <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
-                                        </AutocompleteItem>
-                                    ))}
-                                </Autocomplete>
-                                <Select
-                                    items={dataJob || []}
-                                    aria-labelledby="province-label"
-                                    placeholder="Chọn phân đoạn dữ liệu"
-                                    className="max-w-xs"
-                                    variant="bordered"
-                                    isDisabled={schoolSelected != '' ? false : true}
-                                    onSelectionChange={(value) => setJobSelected(value)}
-                                    size="sm"
-                                    listboxProps={{
-                                        itemClasses: {
-                                            base: [
-                                                "rounded-md",
-                                                "text-default-500",
-                                                "transition-opacity",
-                                                "data-[hover=true]:text-foreground",
-                                                "data-[hover=true]:bg-default-100",
-                                                "dark:data-[hover=true]:bg-default-50",
-                                                "data-[selectable=true]:focus:bg-default-50",
-                                                "data-[pressed=true]:opacity-70",
-                                                "data-[focus-visible=true]:ring-default-500",
-                                            ],
-                                        },
-                                    }}
-                                    popoverProps={{
-                                        classNames: {
-                                            base: "before:bg-default-200",
-                                            content: "p-0 border-small border-divider bg-background",
-                                        },
-                                    }}
-                                    renderValue={(items) => {
-                                        return items.map((item) => (
-                                            <div key={item.data.MANGANH} className="flex items-center gap-2">
-                                                <div className="">
-                                                    <span>{item.data.TENNGANH}</span>
-                                                    <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
-                                                </div>
-                                            </div>
-                                        ));
-                                    }}
-                                >
-                                    {(job) => (
-                                        <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
-                                            <div className="flex gap-2 items-center">
-
-                                                <div className="">
-                                                    <span className="text-small">{job.TENNGANH}</span>
-                                                    <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
-                                                </div>
-                                            </div>
-                                        </SelectItem>
-                                    )}
-                                </Select>
-                                <Autocomplete
-                                    aria-labelledby="province-label"
-                                    placeholder="Chọn user manager"
-                                    className="max-w-xs"
-                                    variant="bordered"
-                                    size="sm"
-                                    isDisabled={provinceSelected != '' ? false : true}
-                                    onSelectionChange={(value) => setSchoolSelected(value)}
-                                >
-                                    {dataSchool?.map((school) => (
-                                        <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
-                                        </AutocompleteItem>
-                                    ))}
-                                </Autocomplete>
-
-                                <Button color="primary" className="h-100">
-                                    Xác nhận
-                                </Button>
-                            </div>
-
-
-                        </div>
+                    <div className="flex flex-col gap-4 mt-5">
                         <div className="flex flex-col gap-2">
                             <div className="flex justify-between gap-3 items-end">
                                 <Input
@@ -434,6 +329,10 @@ function DivisionData() {
                                         </DropdownMenu>
                                     </Dropdown>
 
+                                    <Button color="primary" className="h-100 ms-auto" onPress={onOpen}>
+                                        Thêm chuyên đề
+                                    </Button>
+
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">
@@ -464,7 +363,6 @@ function DivisionData() {
                                 wrapper: "after:bg-foreground after:text-background text-background",
                             },
                         }}
-                        // classNames={classNames}
                         sortDescriptor={sortDescriptor}
 
                         topContentPlacement="outside"
@@ -490,9 +388,12 @@ function DivisionData() {
                         </TableBody>
                     </Table>
                 </div>
+                <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={onClose} size="2xl" okModal="Thêm người dùng" cancelModal="Đóng"  >
+                    <FormThematic onClose={onClose} onSubmit={onSubmit} />
+                </ModalComponent>
             </div>
         </>
     );
 }
 
-export default DivisionData;
+export default ManagerThematic;

@@ -2,10 +2,9 @@ import { Button, Input, Radio, RadioGroup, Select, SelectItem, useDisclosure } f
 import { EyeSlashFilledIcon } from "../icons/EyeSlashFiledIcon";
 import { EyeFilledIcon } from "../icons/EyeFilledIcon ";
 import { yupResolver } from '@hookform/resolvers/yup';
-// import yup from "../Validation/Validate";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { validateFromUser } from "../yup";
+import yupService from "../yup/yupService";
 function FormUser({ onClose, onSubmit, record, isEditUser }) {
     const toggleVisibility = () => setIsVisible(!isVisible);
     const toggleVisibilityOther = () => setIsVisibleOther(!isVisibleOther);
@@ -25,7 +24,7 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
 
     const { register, handleSubmit, formState: { errors }, setValue, reset, unregister } = useForm({
 
-        resolver: yupResolver(validateFromUser(isEditUser))
+        resolver: yupResolver(yupService.validateFromUser(isEditUser))
     });
 
     useEffect(() => {
@@ -43,7 +42,7 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
             <form onSubmit={handleSubmit(handleSubmitForm)}>
                 <div className="grid grid-cols-2 ">
                     <div className="groupInput mx-1">
-                        <Input classNames={{ errorMessage: "text" }} {...register('fullName')} isInvalid={errors.fullName?.message ? true : false} errorMessage={errors?.fullName?.message} label="Họ và tên" isRequired={false} />
+                        <Input classNames={{ errorMessage: "text" }} {...register('thematicname')} isInvalid={errors.fullName?.message ? true : false} errorMessage={errors?.fullName?.message} label="Họ và tên" isRequired={false} />
                     </div>
                     <div className="groupInput mx-1">
                         <Input {...register('email')} label="Email" isInvalid={errors.email?.message ? true : false} errorMessage={errors?.email?.message} isRequired={false} />

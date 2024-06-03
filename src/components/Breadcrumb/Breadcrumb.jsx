@@ -7,7 +7,21 @@ const breadcrumbNameMap = {
     '/admin/user': 'Danh sách người dùng',
     '/admin/data': 'Danh sách dữ liệu',
     '/admin/segment': 'Phân đoạn dữ liệu',
+    '/admin/segment/:id': 'Chi tiết phân đoạn',
     '/admin/division': 'Phân chia dữ liệu',
+    '/admin/thematic': 'Quản lý chuyên đề',
+    '/admin/data/detail': 'Chi tiết dữ liệu',
+};
+
+const getBreadcrumbName = (pathname) => {
+    const pathKeys = Object.keys(breadcrumbNameMap);
+    for (let key of pathKeys) {
+        const pathRegex = new RegExp(`^${key.replace(/:\w+/, '[^/]+')}$`);
+        if (pathRegex.test(pathname)) {
+            return breadcrumbNameMap[key];
+        }
+    }
+    return null;
 };
 
 const Breadcrumbs = () => {
@@ -16,9 +30,11 @@ const Breadcrumbs = () => {
 
     const breadcrumbItems = pathSnippets.map((_, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+        const breadcrumbName = getBreadcrumbName(url) || url;
+
         return (
             <Breadcrumb.Item key={url}>
-                <Link to={url}>{breadcrumbNameMap[url]}</Link>
+                <Link to={url}>{breadcrumbName}</Link>
             </Breadcrumb.Item>
         );
     });

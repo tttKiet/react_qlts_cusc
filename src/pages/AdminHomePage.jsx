@@ -137,11 +137,11 @@ function AdminHomePage() {
                             </div>
                         </div>
                         <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-                            <div className="border-double border-5 border-gray-100 rounded-xl">
+                            <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
                                 <div className="title w-full bg-green-400 rounded-t-lg text-white">
                                     <h2 className="mb-2 text-medium font-medium text-center py-2">Gọi điện</h2>
                                 </div>
-                                <div className="content min-h-64">
+                                <div className="content min-h-64 max-h-64 overflow-y-auto">
 
                                     <div className="note my-2">
                                         <div className="grid grid-cols-12">
@@ -201,6 +201,8 @@ function AdminHomePage() {
                                             15-02-2023 7:59
                                         </div>
                                     </div>
+
+
                                 </div>
                                 <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
@@ -213,11 +215,11 @@ function AdminHomePage() {
 
                         </div>
                         <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-                            <div className="border-double border-5 border-gray-100 rounded-xl ">
+                            <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
                                 <div className="title w-full bg-yellow-400 rounded-t-lg text-white">
                                     <h2 className="mb-2 text-medium font-medium text-center py-2">Ghi chú</h2>
                                 </div>
-                                <div className="content min-h-64">
+                                <div className="content min-h-64 max-h-64 overflow-y-auto">
 
                                     <div className="note my-2">
                                         <div className="grid grid-cols-12">
@@ -277,6 +279,7 @@ function AdminHomePage() {
                                             15-02-2023 7:59
                                         </div>
                                     </div>
+
                                 </div>
                                 <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
