@@ -10,6 +10,14 @@ import LayoutAdmin from "./Layouts/LayoutAdmin/LayoutAdmin";
 import AdminHomePage from "./pages/AdminHomePage";
 import Footer from "./Layouts/OnlyLayout/Footer";
 import ManagerUser from "./pages/ManagerUser";
+import ProfileUser from "./pages/ProfileUser";
+import ListData from "./pages/ListData";
+import SegmentData from "./pages/SegmentData";
+import DivisionData from "./pages/DivisionData";
+import TimeLogin from "./pages/TimeLogin";
+import SegmentDetail from "./pages/SegmentDetail";
+import ManagerThematic from "./pages/ManagerThematic";
+import DetailData from "./pages/DetailData";
 
 const LayoutOnly = () => {
   return (
@@ -32,15 +40,16 @@ function App() {
         {
           index: true,
           element: <HomePage />
-        }
+        },
+        {
+          path: '/thongtinkhachang',
+          element: <DetailCustomer />,
+
+        },
       ]
 
     },
-    {
-      path: '/thongtinkhachang',
-      element: <DetailCustomer />,
 
-    },
     {
       path: '/admin/login',
       element: <Login />,
@@ -54,9 +63,42 @@ function App() {
         element: <AdminHomePage />
       },
       {
-        path: "manager/user",
+        path: "user",
         element: <ManagerUser />
-      }
+      },
+      {
+        path: "detail",
+        element: <ProfileUser />
+      },
+      {
+        path: "data",
+        element: <ListData />
+      },
+      {
+        path: "data/detail",
+        element: <DetailData />
+      },
+      {
+        path: "segment",
+        element: <SegmentData />
+      },
+      {
+        path: "segment/:id",
+        element: <SegmentDetail />
+      },
+      {
+        path: "division",
+        element: <DivisionData />
+      },
+      {
+        path: "time",
+        element: <TimeLogin />
+      },
+      {
+        path: "thematic",
+        element: <ManagerThematic />
+      },
+
       ]
     }
   ])

@@ -6,13 +6,24 @@ import "./index.css";
 
 import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
+import { SWRConfig } from "swr";
+import axios from "./axios/customize-axios.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <NextUIProvider>
-      <Provider store={store}>
+  // <React.StrictMode>
+
+  // </React.StrictMode>
+  <NextUIProvider>
+    <Provider store={store}>
+      <SWRConfig value={{
+        fetcher: (url) => axios.get(url).then((res) => { return res.data })
+          .catch((err) => {
+            return Promise.reject(err);
+          }),
+        // shouldRetryOnError: false,
+      }}>
         <App />
-      </Provider>
-    </NextUIProvider>
-  </React.StrictMode>
+      </SWRConfig>
+    </Provider>
+  </NextUIProvider>
 );
