@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from 'react-hook-form';
 import {
     Table,
@@ -19,7 +19,8 @@ import {
     useDisclosure,
     Select, SelectItem,
     RadioGroup,
-    Radio
+    Radio,
+    Tooltip
 } from "@nextui-org/react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
@@ -27,148 +28,120 @@ import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
 import ModalComponent from "../components/Modal/ModalComponent";
 import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
+import { EyeIcon } from "../components/icons/EyeIcon";
+import { EditIcon } from "../components/icons/EditIcon";
+import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
 const statusColorMap = {
-    active: "success",
-    paused: "danger",
-    vacation: "warning",
+    1: "success",
+    0: "danger",
 };
-import { yupResolver } from '@hookform/resolvers/yup';
-import yup from "../components/Validation/Validate";
-
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
-
+import useSWR from 'swr'
+import { API_USER } from "../constants";
+import debounce from "lodash.debounce";
+import FormUser from "../components/body/FormUser";
+import UserService from "../service/UserService";
+const INITIAL_VISIBLE_COLUMNS = ["name", "phone", "email", "gender", "role",
+    "status", "actions"];
 function ManagerUser() {
-
+    const [filterSearchName, setFillterSearchName] = useState('')
+    const [pagination, setPanigation] = useState({ take: 5, skip: 0 })
+    const [total, setTotal] = useState(1);
+    const [nameSearch, setNameSearch] = useState('');
+    // Call API
+    const { data: dataPagination, error, isLoading, mutate } = useSWR(`${API_USER}?name=${filterSearchName}&take=${pagination.take}&skip=${pagination.skip}`)
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [isVisible, setIsVisible] = React.useState(false);
-    const [isVisibleOther, setIsVisibleOther] = React.useState(false);
+    // console.log(dataPagination)
 
-    const toggleVisibility = () => setIsVisible(!isVisible);
-    const toggleVisibilityOther = () => setIsVisibleOther(!isVisibleOther);
+    const [record, setRecord] = useState({})
+    const [isEditUser, setIsEditUser] = useState(false)
 
-    const roleUser = [
-        { label: "Admin", value: "admin" },
-        { label: "User Manager", value: "usermanager" },
-    ]
+    const closeModal = () => {
+        onClose();
+        setRecord({});
+        setIsEditUser(false);
+    };
+
+
+    const hanldeShowEdit = (data) => {
+        if (data) {
+            const dataSetModal = {
+                id: data.id,
+                fullName: data.name,
+                email: data.email,
+                gender: data.gender,
+                phone: data.phone,
+                address: data.address,
+                role: data.role,
+            }
+            setRecord(dataSetModal)
+            setIsEditUser(true)
+            onOpen();
+        } else {
+            setRecord({})
+            setIsEditUser(false)
+        }
+
+    }
+
 
     const columns = [
         { name: "ID", uid: "id", sortable: true },
-        { name: "NAME", uid: "name", sortable: true },
-        { name: "AGE", uid: "age", sortable: true },
-        { name: "ROLE", uid: "role", sortable: true },
-        { name: "TEAM", uid: "team" },
-        { name: "EMAIL", uid: "email" },
-        { name: "STATUS", uid: "status", sortable: true },
+        { name: "Họ và tên", uid: "name", sortable: true },
+        { name: "Số điện thoại", uid: "phone", },
+        { name: "Email", uid: "email" },
+        { name: "Giới tính", uid: "gender", sortable: true },
+        { name: "Địa chỉ", uid: "address", sortable: true },
+        { name: "Loại người dùng", uid: "role", sortable: true },
+        { name: "Trạng thái", uid: "status" },
         { name: "ACTIONS", uid: "actions" },
     ];
 
-    const statusOptions = [
-        { name: "Active", uid: "active" },
-        { name: "Paused", uid: "paused" },
-        { name: "Vacation", uid: "vacation" },
-    ];
+    const users = useMemo(() => {
+        return dataPagination?.data?.map((user, index) => {
+            return {
+                id: user?.TENDANGNHAP,
+                role: user?.usermanager ? 'usermanager' : 'admin',
+                name: user?.usermanager?.HOTEN || user?.admin?.HOTEN || '',
+                phone: user?.usermanager?.SDT || user?.admin?.SDT || '',
+                email: user?.usermanager?.EMAIL || user?.admin?.EMAIL || '',
+                gender: user?.usermanager?.GIOITINH || user?.admin?.GIOITINH || '',
+                address: user?.usermanager?.DIACHI || user?.admin?.DIACHI || '',
+                status: user?.usermanager?.TRANGTHAIUM || user?.admin?.TRANGTHAIADMIN || 0,
+                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+            }
+        }) || []
+    }, [dataPagination])
 
-
-    const users = [
-        {
-            id: 1,
-            name: "Tony Reichert",
-            role: "CEO",
-            team: "Management",
-            status: "active",
-            age: "29",
-            avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-            email: "tony.reichert@example.com",
-        },
-        {
-            id: 2,
-            name: "Zoey Lang",
-            role: "Technical Lead",
-            team: "Development",
-            status: "paused",
-            age: "25",
-            avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-            email: "zoey.lang@example.com",
-        },
-        {
-            id: 3,
-            name: "Jane Fisher",
-            role: "Senior Developer",
-            team: "Development",
-            status: "active",
-            age: "22",
-            avatar: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-            email: "jane.fisher@example.com",
-        },
-        {
-            id: 4,
-            name: "William Howard",
-            role: "Community Manager",
-            team: "Marketing",
-            status: "vacation",
-            age: "28",
-            avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d",
-            email: "william.howard@example.com",
-        },
-        {
-            id: 5,
-            name: "Kristen Copper",
-            role: "Sales Manager",
-            team: "Sales",
-            status: "active",
-            age: "24",
-            avatar: "https://i.pravatar.cc/150?u=a092581d4ef9026700d",
-            email: "kristen.cooper@example.com",
-        },
-    ];
-
-    const [filterValue, setFilterValue] = React.useState("");
-    const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-    const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [statusFilter, setStatusFilter] = React.useState("all");
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [sortDescriptor, setSortDescriptor] = React.useState({
+    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+    const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [sortDescriptor, setSortDescriptor] = useState({
         column: "age",
         direction: "ascending",
     });
-    const [page, setPage] = React.useState(1);
+    const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(users.length / rowsPerPage);
 
-    const hasSearchFilter = Boolean(filterValue);
+    const hasSearchFilter = Boolean(filterSearchName);
 
-    const headerColumns = React.useMemo(() => {
+    const headerColumns = useMemo(() => {
         if (visibleColumns === "all") return columns;
 
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
-    const filteredItems = React.useMemo(() => {
+    const filteredItems = useMemo(() => {
         let filteredUsers = [...users];
-
-        if (hasSearchFilter) {
-            filteredUsers = filteredUsers.filter((user) =>
-                user.name.toLowerCase().includes(filterValue.toLowerCase()),
-            );
-        }
-        if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-            filteredUsers = filteredUsers.filter((user) =>
-                Array.from(statusFilter).includes(user.status),
-            );
-        }
-
         return filteredUsers;
-    }, [users, filterValue, statusFilter]);
+    }, [users, filterSearchName]);
 
-    const items = React.useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        return filteredItems.slice(start, end);
+    const items = useMemo(() => {
+        setPanigation({ skip: (page - 1) * rowsPerPage, take: rowsPerPage })
+        return filteredItems;
     }, [page, filteredItems, rowsPerPage]);
 
-    const sortedItems = React.useMemo(() => {
+    const sortedItems = useMemo(() => {
         return [...items].sort((a, b) => {
             const first = a[sortDescriptor.column];
             const second = b[sortDescriptor.column];
@@ -178,7 +151,7 @@ function ManagerUser() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((user, columnKey) => {
+    const renderCell = useCallback((user, columnKey) => {
         const cellValue = user[columnKey];
 
         switch (columnKey) {
@@ -189,17 +162,31 @@ function ManagerUser() {
                         classNames={{
                             description: "text-default-500",
                         }}
-                        description={user.email}
+
                         name={cellValue}
                     >
                         {user.email}
                     </User>
                 );
+            case "phone":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+
+                    </div>
+                );
+            case "email":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+
+                    </div>
+                );
             case "role":
                 return (
-                    <div className="flex flex-col">
-                        <p className="text-bold text-small capitalize">{cellValue}</p>
-                        <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue === 'admin' ? <Chip color="primary" variant="flat">Admin</Chip> : (cellValue === 'usermanager' ? <Chip color="success" variant="flat">Usermanager</Chip> : <Chip color="danger" variant="flat">Khác</Chip>)}</span>
+
                     </div>
                 );
             case "status":
@@ -210,48 +197,56 @@ function ManagerUser() {
                         size="sm"
                         variant="dot"
                     >
-                        {cellValue}
+                        {cellValue === 1 ? 'Online' : 'Offline'}
                     </Chip>
                 );
             case "actions":
                 return (
-                    <div className="relative flex justify-end items-center gap-2">
-                        <Dropdown className="bg-background border-1 border-default-200">
-                            <DropdownTrigger>
-                                <Button isIconOnly radius="full" size="sm" variant="light">
-                                    <VerticalDotsIcon className="text-default-400" />
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu>
-                                <DropdownItem>View</DropdownItem>
-                                <DropdownItem>Edit</DropdownItem>
-                                <DropdownItem>Delete</DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
+                    <div className="relative flex items-center gap-2">
+                        <Tooltip content="Details">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                <EyeIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip content="Edit user">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => hanldeShowEdit(user)}>
+                                <EditIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Delete user">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
                     </div>
                 );
             default:
                 return cellValue;
         }
     }, []);
-
-    const onRowsPerPageChange = React.useCallback((e) => {
+    const onRowsPerPageChange = useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
     }, []);
 
+    const onSearchChange = useCallback(
+        (value) => {
+            if (value) {
+                setFillterSearchName(value)
+                setPage(1);
+            } else {
+                setFillterSearchName("")
 
-    const onSearchChange = React.useCallback((value) => {
-        if (value) {
-            setFilterValue(value);
-            setPage(1);
-        } else {
-            setFilterValue("");
+            }
+        }, []);
+
+    useEffect(() => {
+        if (dataPagination) {
+            setTotal(Math.ceil(dataPagination?.total / rowsPerPage))
         }
-    }, []);
+    }, [dataPagination])
 
-
-    const topContent = React.useMemo(() => {
+    const topContent = useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-3 items-end">
@@ -264,38 +259,12 @@ function ManagerUser() {
                         placeholder="Search by name..."
                         size="sm"
                         startContent={<SearchIcon className="text-default-300" />}
-                        value={filterValue}
+                        // value={filterSearchName}
                         variant="bordered"
-                        onClear={() => setFilterValue("")}
-                        onValueChange={onSearchChange}
+                        onClear={() => setFillterSearchName("")}
+                        onValueChange={debounce(onSearchChange, 300)}
                     />
                     <div className="flex gap-3">
-                        <Dropdown>
-                            <DropdownTrigger className="hidden sm:flex">
-                                <Button
-                                    endContent={<ChevronDownIcon className="text-small" />}
-                                    size="sm"
-                                    variant="flat"
-                                >
-                                    Status
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                disallowEmptySelection
-                                aria-label="Table Columns"
-                                closeOnSelect={false}
-                                selectedKeys={statusFilter}
-                                selectionMode="multiple"
-                                onSelectionChange={setStatusFilter}
-                            >
-                                {statusOptions.map((status) => (
-                                    <DropdownItem key={status.uid} className="capitalize">
-                                        {/* {capitalize(status.name)} */}
-                                        {status.name}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
                         <Dropdown>
                             <DropdownTrigger className="hidden sm:flex">
                                 <Button
@@ -349,8 +318,7 @@ function ManagerUser() {
             </div>
         );
     }, [
-        filterValue,
-        statusFilter,
+        filterSearchName,
         visibleColumns,
         onSearchChange,
         onRowsPerPageChange,
@@ -358,7 +326,7 @@ function ManagerUser() {
         hasSearchFilter,
     ]);
 
-    const bottomContent = React.useMemo(() => {
+    const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
                 <Pagination
@@ -367,11 +335,15 @@ function ManagerUser() {
                         cursor: "bg-foreground text-background",
                     }}
                     color="default"
-                    isDisabled={hasSearchFilter}
+                    // isDisabled={hasSearchFilter}
                     page={page}
-                    total={pages}
+
+                    total={total}
+
                     variant="light"
-                    onChange={setPage}
+                    onChange={(e) => {
+                        setPage(e)
+                    }}
                 />
                 <span className="text-small text-default-400">
                     {selectedKeys === "all"
@@ -380,9 +352,9 @@ function ManagerUser() {
                 </span>
             </div>
         );
-    }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+    }, [selectedKeys, items.length, page, dataPagination, total, hasSearchFilter]);
 
-    const classNames = React.useMemo(
+    const classNames = useMemo(
         () => ({
             wrapper: ["max-h-[382px]", "max-w-3xl"],
             th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
@@ -400,32 +372,60 @@ function ManagerUser() {
         }),
         [],
     );
+    const onSubmit = async (data) => {
+        if (isEditUser) {
+            const dataSend = {
+                HOVATEN: data.fullName,
+                MATKHAU: data.password,
+                SDT: data.phone,
+                GIOITINH: data.gender,
+                EMAIL: data.email,
+                DIACHI: data.address,
+                ROLE: data.role,
+                TENDANGNHAP: data.id,
+            }
 
-    const schema = yup.object().shape({
-        username: yup
-            .string()
-            .required('Required')
-            .email('Email invalid'),
-        pass: yup
-            .string()
-            .required('Required')
-            .password('Password invalid'),
-    })
+            try {
+                const res = await UserService.updateUser(dataSend)
+                onClose()
+                mutate()
+                console.log("Data recieved from backend", res)
+            } catch (e) {
+                console.log(e)
+            }
 
-    const onSubmit = (data) => {
-        // Bạn có thể gọi API để cập nhật dữ liệu ở ngay đây
-        console.log(data);
+        } else {
+            const dataSend = {
+                HOVATEN: data.fullName,
+                MATKHAU: data.password,
+                SDT: data.phone,
+                GIOITINH: data.gender,
+                EMAIL: data.email,
+                DIACHI: data.address,
+                ROLE: data.role
+            };
+            try {
+                const res = await UserService.createUser(dataSend)
+                if (res.message) {
+                    mutate();
+                    console.log(res.message)
+                    onClose()
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
     }
-
-    const { register, handleSubmit, errors } = useForm({
-        mode: 'onChange',
-        resolver: yupResolver(schema)
-    });
-
 
     return (
         <>
-            <div className="contentPage">
+            <div className="contentPage"
+                style={{
+                    padding: 24,
+                    minHeight: 500,
+                    background: "#fff",
+                    borderRadius: "10px"
+                }}>
                 <h1 className="titlePage">Danh sách người dùng</h1>
                 <div className="listUser mt-2">
                     <Table
@@ -440,8 +440,8 @@ function ManagerUser() {
                             },
                         }}
                         classNames={classNames}
-                        selectedKeys={selectedKeys}
-                        selectionMode="multiple"
+                        // selectedKeys={selectedKeys}
+                        // selectionMode="multiple"
                         sortDescriptor={sortDescriptor}
                         topContent={topContent}
                         topContentPlacement="outside"
@@ -468,103 +468,9 @@ function ManagerUser() {
                         </TableBody>
                     </Table>
                 </div>
-
-                {/* <form onSubmit={handleSubmit(onSubmit)} className="box">
-                    <h1>login</h1>
-                    <div className="input-field">
-                        <input type="text" name="username" id="username" placeholder="Email" autoComplete="off" />
-                        {errors.username && <p className="error">{errors.username.message}</p>}
-                    </div>
-                    <div className="input-field">
-                        <input type="password" name="pass" id="pass" placeholder="Password" autoComplete="off" />
-                        {errors.pass && <p className="error">{errors.pass.message}</p>}
-                    </div>
-                    <button type="submit" id="submit">LOGIN</button>
-                </form> */}
             </div>
-            <ModalComponent isOpen={isOpen} onOpen={onOpen} onClose={onClose} size="2xl" title="Thêm người dùng" okModal="Thêm người dùng" cancelModal="Đóng"  >
-                <div>
-                    <form onSubmit={handleSubmit((data) => console.log(data))}>
-                        <div className="grid grid-cols-2 ">
-                            <div className="groupInput mx-1">
-                                <Input {...register('fullName')} type="text" label="Họ và tên" name="fullName" />
-                            </div>
-                            <div className="groupInput mx-1">
-                                <Input {...register('email')} type="email" label="Email" name="email" />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 my-2">
-                            <div className="groupInput mx-1">
-                                <Input
-                                    label="Mật khẩu"
-                                    endContent={
-                                        <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
-                                            {isVisible ? (
-                                                <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                            ) : (
-                                                <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                            )}
-                                        </button>
-                                    }
-                                    type={isVisible ? "text" : "password"}
-                                    className="max-w-xs"
-                                    name="password"
-                                    {...register('password')}
-                                />
-                            </div>
-                            <div className="groupInput mx-1">
-                                <Input
-                                    label="Nhập lại mật khẩu"
-                                    endContent={
-                                        <button className="focus:outline-none" type="button" onClick={toggleVisibilityOther}>
-                                            {isVisibleOther ? (
-                                                <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                            ) : (
-                                                <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                            )}
-                                        </button>
-                                    }
-                                    type={isVisibleOther ? "text" : "password"}
-                                    className="max-w-xs"
-                                    name="confirmPassword"
-                                    {...register('confirmPassword')}
-                                />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 my-2">
-                            <div className="groupInput mx-1">
-                                <Select
-                                    label="Nhóm người dùng"
-                                    className="max-w-xs"
-                                    name="role"
-                                    {...register('role')}
-                                >
-                                    {roleUser.map((role) => (
-                                        <SelectItem key={role.value} value={role.value}>
-                                            {role.label}
-                                        </SelectItem>
-                                    ))}
-                                </Select>
-                            </div>
-                            <div className="groupInput mx-1">
-                                <RadioGroup
-                                    label="Giới tính" orientation="horizontal" name="gender"  {...register('gender')}
-                                >
-                                    <Radio value="male">Nam</Radio>
-                                    <Radio value="feMale">Nữ</Radio>
-                                </RadioGroup>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 my-2">
-                            <div className="groupInput mx-1">
-                                <Input type="text" label="Số điện thoại" name="phone"  {...register('phone')} />
-                            </div>
-                            <div className="groupInput mx-1">
-                                <Input type="text" label="Địa chỉ" name="address"  {...register('address')} />
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={closeModal} size="2xl" title={isEditUser ? 'Chỉnh sửa thông tin' : 'Thêm người dùng'} okModal="Thêm người dùng" cancelModal="Đóng"  >
+                <FormUser onClose={closeModal} onSubmit={onSubmit} record={record} isEditUser={isEditUser} />
             </ModalComponent>
         </>
     );

@@ -21,7 +21,6 @@ function HomePage() {
 
                         </div>
                         <div className="rightContent h-full flex flex-col ">
-
                             <img src="/image/download.png" className="w-full max-w-md mt-auto ms-auto me-auto" alt="" />
                         </div>
                     </div>

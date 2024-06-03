@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 
-function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, size, children, footer }) {
+function ModalThematic({ isOpen, onOpen, onClose, title, okModal, cancelModal, size, children, footer }) {
     // const { isOpen, onOpen, onOpenChange } = useDisclosure();
     return (
         <Modal isOpen={isOpen} onClose={onClose} size={size} placement="center">
@@ -31,4 +31,4 @@ function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, 
     );
 }
 
-export default ModalComponent;
+export default ModalThematic;
