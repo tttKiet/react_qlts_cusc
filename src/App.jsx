@@ -2,6 +2,9 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { Button } from "@nextui-org/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import DetailCustomer from "./pages/DetailCustomer";
@@ -25,16 +28,13 @@ const LayoutOnly = () => {
       <Outlet />
       <Footer />
     </div>
-  )
-}
-
+  );
+};
 
 function App() {
-
-
   const router = createBrowserRouter([
     {
-      path: '/',
+      path: "/",
       element: <LayoutOnly />,
       children: [
         {
@@ -49,14 +49,12 @@ function App() {
       ]
 
     },
-
     {
-      path: '/admin/login',
+      path: "/admin/login",
       element: <Login />,
-
     },
     {
-      path: '/admin',
+      path: "/admin",
       element: <LayoutAdmin />,
       children: [{
         index: true,
@@ -106,6 +104,19 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }

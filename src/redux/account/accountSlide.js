@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isAuthenticated: false,
   isLoading: true,
+
   user: {
     MAADMIN: "",
     TENDANGNHAP: "",
@@ -11,6 +12,7 @@ const initialState = {
     GIOITINH: "",
     EMAIL: "",
     DIACHI: "",
+    ROLE: "",
   },
 };
 
@@ -22,16 +24,18 @@ export const accountSlice = createSlice({
       state.isAuthenticated = true;
       state.isLoading = false;
 
-      state.MAADMIN = action.payload.MAADMIN;
-      state.TENDANGNHAP = action.payload.TENDANGNHAP;
-      state.SDT = action.payload.SDT;
-      state.HOTEN = action.payload.HOTEN;
-      state.GIOITINH = action.payload.GIOITINH;
-      state.EMAIL = action.payload.EMAIL;
-      state.DIACHI = action.payload.DIACHI;
+      state.user.MAADMIN = action.payload.MAADMIN;
+      state.user.TENDANGNHAP = action.payload.TENDANGNHAP;
+      state.user.SDT = action.payload.SDT;
+      state.user.HOTEN = action.payload.HOTEN;
+      state.user.GIOITINH = action.payload.GIOITINH;
+      state.user.EMAIL = action.payload.EMAIL;
+      state.user.DIACHI = action.payload.DIACHI;
+      state.user.ROLE = action.payload.ROLE;
     },
 
     doLogoutAction: (state, action) => {
+      localStorage.removeItem("accessToken");
       state.isAuthenticated = false;
       state.user = {
         MAADMIN: "",
@@ -41,6 +45,7 @@ export const accountSlice = createSlice({
         GIOITINH: "",
         EMAIL: "",
         DIACHI: "",
+        ROLE: "",
       };
     },
   },
