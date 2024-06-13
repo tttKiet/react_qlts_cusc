@@ -2,9 +2,26 @@ import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquar
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Chip } from "@nextui-org/react";
 import { Tag } from "antd";
-
+import { useParams } from 'react-router-dom';
+import useSWR from "swr";
+import { API_CUSTOMER } from "../constants";
 
 function DetailData() {
+
+    const { id } = useParams();
+
+    const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
+    console.log(detailData)
+
+    const contactDetails = [1, 2, 3].map(lan => {
+        const contact = detailData?.lienhe.find(c => c.LAN == lan);
+        return {
+            LAN: lan,
+            THOIGIAN: contact ? contact.THOIGIAN : 'Trống',
+            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : 'Trống',
+            KETQUA: contact ? contact.KETQUA : 'Trống',
+        };
+    });
 
     return (
         <>
@@ -22,15 +39,15 @@ function DetailData() {
                             <CardBody className='px-6 gap-4'>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Họ và tên</p>
-                                    <p>Nguyễn Thị Kim Dung</p>
+                                    <p>{detailData?.HOTEN}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Tỉnh/Thành phố</p>
-                                    <p>Vĩnh Long</p>
+                                    <p>{detailData?.tinh?.TENTINH}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Trường</p>
-                                    <p>THPT Nguyễn Du</p>
+                                    <p>{detailData?.truong?.TENTRUONG}</p>
                                 </div>
                             </CardBody>
                             <Divider />
@@ -44,27 +61,27 @@ function DetailData() {
                             <CardBody className='px-6 gap-4'>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Điện thoại</p>
-                                    <p>0329876750</p>
+                                    <p>{detailData?.dulieukhachhang?.SDT}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Điện thoại ba</p>
-                                    <p>Trống</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTBA || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Điện thoại mẹ</p>
-                                    <p>Trống</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTME || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Zalo</p>
-                                    <p>Trống</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTZALO || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>FaceBook</p>
-                                    <p>Trống</p>
+                                    <p>{detailData?.dulieukhachhang?.FACEBOOK || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Email</p>
-                                    <p>kdung6843@gmail.com</p>
+                                    <p>{detailData?.EMAIL || 'Trống'}</p>
                                 </div>
                             </CardBody>
                         </Card>
@@ -81,30 +98,26 @@ function DetailData() {
                             <CardBody className='px-6 gap-4'>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Nghề nghiệp</p>
-                                    <p>Học sinh</p>
+                                    <p>{detailData?.nghenghiep?.TENNGHENGHIEP || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Hình thức thu thập</p>
-                                    <p>Thu thập thông tin - File mềm</p>
+                                    <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || 'Trống'}</p>
                                 </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
                                     <p className='font-bold'>Ngành yêu thích</p>
-                                    <div>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA + CAO ĐẲNG
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            APTECH + ĐH CẦN THƠ
-                                        </Tag>
+                                    <div className="text-right">
+                                        {detailData?.nganhyeuthich.length != 0 ? detailData?.nganhyeuthich.map((job, index) => (
+                                            <Tag key={index} bordered={false} color="processing">
+                                                {job?.nganh?.TENNGANH}
+                                            </Tag>
+                                        )) : 'Trống'}
 
                                     </div>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Ngành đăng ký</p>
-                                    <p>Trống</p>
+                                    <p>{detailData?.phieudkxettuyen?.nganh?.TENNGANH || "Trống"}</p>
                                 </div>
                             </CardBody>
                             <Divider />
@@ -127,22 +140,38 @@ function DetailData() {
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Hồ sơ</p>
                                     <div>
-                                        <Link
-                                            to="https://github.com/nextui-org/nextui"
-                                            className='cursor-pointer text-primary-500'
-                                        >
-                                            Vui lòng truy cập vào đây<FontAwesomeIcon className='ms-1 text-tiny' icon={faArrowUpRightFromSquare} />
-                                        </Link>
+                                        <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p>
                                     </div>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
-                                    <Chip
-                                        variant="flat"
-                                        color="warning"
-                                    >
-                                        Đang chờ
-                                    </Chip>
+
+                                    {detailData?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 1 ? (
+                                        <Chip
+                                            variant="flat"
+                                            color="success"
+                                        >
+                                            {detailData?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
+                                        </Chip>
+                                    ) : (
+                                        detailData?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 3 ? (
+                                            <Chip
+                                                variant="flat"
+                                                color="warning"
+                                            >
+                                                {detailData?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
+                                            </Chip>
+                                        ) : (
+                                            <Chip
+                                                variant="flat"
+                                                color="default"
+                                            >
+                                                Chưa có thông tin
+                                            </Chip>
+                                        )
+
+                                    )}
+
                                 </div>
                             </CardBody>
                         </Card>
@@ -150,190 +179,39 @@ function DetailData() {
                 </div>
 
                 <div className="grid grid-cols-3 mt-4 gap-4">
-                    <div className="col-span-3 md:col-span-1">
-                        <Card className="w-full">
-                            <CardHeader className="flex gap-3 px-6">
-                                <FontAwesomeIcon icon={faPhone} />
-                                <div className="">
-                                    <h1 className='font-bold'>Chi tiết liên hệ 1</h1>
-                                </div>
-                            </CardHeader>
-                            <Divider />
-                            <CardBody className='px-6 gap-4'>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Thời gian</p>
-                                    <p>5/6/2024</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Tỉnh/Thành phố</p>
-                                    <p>Vĩnh Long</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Trường</p>
-                                    <p>THPT Nguyễn Du</p>
-                                </div>
-                            </CardBody>
+                    {contactDetails.map((contact, index) => (
+                        <div key={index} className="col-span-3 md:col-span-1">
+                            <Card className="w-full mb-4">
+                                <CardHeader className="flex gap-3 px-6">
+                                    <FontAwesomeIcon icon={faPhone} />
+                                    <div className="">
+                                        <h1 className='font-bold'>Chi tiết liên hệ {contact.LAN}</h1>
+                                    </div>
+                                </CardHeader>
+                                <Divider />
+                                <CardBody className='px-6 gap-4'>
+                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                        <p className='font-bold'>Thời gian</p>
+                                        <p>{contact.THOIGIAN}</p>
+                                    </div>
+                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                        <p className='font-bold'>Chi tiết trạng thái</p>
+                                        <p>{contact.CHITIETTRANGTHAI}</p>
+                                    </div>
+                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                        <p className='font-bold'>Kết quả</p>
+                                        <p>{contact.KETQUA}</p>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </div>
 
-                        </Card>
-                    </div>
-                    <div className="col-span-3 md:col-span-1">
-                        <Card className="w-full h-full">
-                            <CardHeader className="flex gap-3 px-6">
-                                <FontAwesomeIcon icon={faBullseye} />
-                                <div className="">
-                                    <h1 className='font-bold'>Đối tượng</h1>
-                                </div>
-                            </CardHeader>
-                            <Divider />
-                            <CardBody className='px-6 gap-4'>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Nghề nghiệp</p>
-                                    <p>Học sinh</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hình thức thu thập</p>
-                                    <p>Thu thập thông tin - File mềm</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Ngành yêu thích</p>
-                                    <div>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA + CAO ĐẲNG
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            APTECH + ĐH CẦN THƠ
-                                        </Tag>
+                    ))}
 
-                                    </div>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Ngành đăng ký</p>
-                                    <p>Trống</p>
-                                </div>
-                            </CardBody>
-                            <Divider />
-                            <CardHeader className="flex gap-3 px-6">
-                                <FontAwesomeIcon icon={faClipboard} />
-                                <div className="">
-                                    <h1 className='font-bold'>Phiếu đăng ký</h1>
-                                </div>
-                            </CardHeader>
-                            <Divider />
-                            <CardBody className='px-6 gap-4'>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kênh nhận thông báo</p>
-                                    <p>Email</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Khóa học quan tâm</p>
-                                    <p>Dài hạn</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hồ sơ</p>
-                                    <div>
-                                        <Link
-                                            to="https://github.com/nextui-org/nextui"
-                                            className='cursor-pointer text-primary-500'
-                                        >
-                                            Vui lòng truy cập vào đây<FontAwesomeIcon className='ms-1 text-tiny' icon={faArrowUpRightFromSquare} />
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
-                                    <Chip
-                                        variant="flat"
-                                        color="warning"
-                                    >
-                                        Đang chờ
-                                    </Chip>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
-                    <div className="col-span-3 md:col-span-1">
-                        <Card className="w-full h-full">
-                            <CardHeader className="flex gap-3 px-6">
-                                <FontAwesomeIcon icon={faBullseye} />
-                                <div className="">
-                                    <h1 className='font-bold'>Đối tượng</h1>
-                                </div>
-                            </CardHeader>
-                            <Divider />
-                            <CardBody className='px-6 gap-4'>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Nghề nghiệp</p>
-                                    <p>Học sinh</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hình thức thu thập</p>
-                                    <p>Thu thập thông tin - File mềm</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Ngành yêu thích</p>
-                                    <div>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            ARENA + CAO ĐẲNG
-                                        </Tag>
-                                        <Tag bordered={false} color="processing">
-                                            APTECH + ĐH CẦN THƠ
-                                        </Tag>
-
-                                    </div>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Ngành đăng ký</p>
-                                    <p>Trống</p>
-                                </div>
-                            </CardBody>
-                            <Divider />
-                            <CardHeader className="flex gap-3 px-6">
-                                <FontAwesomeIcon icon={faClipboard} />
-                                <div className="">
-                                    <h1 className='font-bold'>Phiếu đăng ký</h1>
-                                </div>
-                            </CardHeader>
-                            <Divider />
-                            <CardBody className='px-6 gap-4'>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kênh nhận thông báo</p>
-                                    <p>Email</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Khóa học quan tâm</p>
-                                    <p>Dài hạn</p>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hồ sơ</p>
-                                    <div>
-                                        <Link
-                                            to="https://github.com/nextui-org/nextui"
-                                            className='cursor-pointer text-primary-500'
-                                        >
-                                            Vui lòng truy cập vào đây<FontAwesomeIcon className='ms-1 text-tiny' icon={faArrowUpRightFromSquare} />
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
-                                    <Chip
-                                        variant="flat"
-                                        color="warning"
-                                    >
-                                        Đang chờ
-                                    </Chip>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
                 </div>
-            </div>
+
+
+            </div >
 
 
         </>

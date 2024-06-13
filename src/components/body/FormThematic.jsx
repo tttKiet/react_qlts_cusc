@@ -58,6 +58,7 @@ function FormThematic({ onClose }) {
                         isInvalid={errors.dateSelect ? true : false}
                         errorMessage={errors.dateSelect?.message}
                         isRequired={false}
+                        minValue={today(getLocalTimeZone())}
                     />
 
 
@@ -80,9 +81,25 @@ function FormThematic({ onClose }) {
             </div>
             <div className="grid grid-cols-2">
                 <div className="col-span-2 md:col-span-1 mx-2">
+                    {/* <Autocomplete
+                        label="Chọn tỉnh"
+                        onSelectionChange={(value) => setProvinceSelected(value)}
+                        {...register('provice')}
+                        isInvalid={errors.provice ? true : false}
+                        errorMessage={errors.provice?.message}
+                    >
+                        {dataProvince?.map((province) => (
+                            <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                {province.TENTINH}
+                            </AutocompleteItem>
+                        ))}
+                    </Autocomplete> */}
                     <Autocomplete
                         label="Chọn tỉnh"
                         onSelectionChange={(value) => setProvinceSelected(value)}
+                        {...register('province')}
+                        isInvalid={errors.provice ? true : false}
+                        errorMessage={errors.provice?.message}
                     >
                         {dataProvince?.map((province) => (
                             <AutocompleteItem key={province.MATINH} value={province.MATINH}>
@@ -97,6 +114,9 @@ function FormThematic({ onClose }) {
                         placeholder="Chọn trường"
                         isDisabled={!provinceSelected}
                         onSelectionChange={(value) => setSchoolSelected(value)}
+                        {...register('school')}
+                        isInvalid={errors.school ? true : false}
+                        errorMessage={errors.school?.message}
                     >
                         {dataSchool?.map((school) => (
                             <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
@@ -110,6 +130,9 @@ function FormThematic({ onClose }) {
                 <Autocomplete
                     label="Chọn user manager"
                     onSelectionChange={(value) => setProvinceSelected(value)}
+                    {...register('usermanager')}
+                    isInvalid={errors.usermanager ? true : false}
+                    errorMessage={errors.usermanager?.message}
                 >
                     {dataProvince?.map((province) => (
                         <AutocompleteItem key={province.MATINH} value={province.MATINH}>

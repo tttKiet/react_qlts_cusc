@@ -4,11 +4,18 @@ import { faArrowUpRightFromSquare, faBullseye } from '@fortawesome/free-solid-sv
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Card, CardHeader, Divider, CardBody, CardFooter, Image, Chip } from "@nextui-org/react";
 import { Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import useSWR from 'swr';
+import { API_CUSTOMER } from '../constants';
+import { toast } from 'react-toastify';
+import { Tag } from 'antd';
 
 function DetailCustomer() {
 
+    const navigate = useNavigate();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+    const { id } = useParams();
+    const { data, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
     return (
         <>
             <div>
@@ -16,138 +23,157 @@ function DetailCustomer() {
                     <img className="w-10/12 m-auto" src="/image/logoHeader2.png" alt="" />
                 </div>
                 <div className="container mx-auto">
-                    <h1 className="text-2xl font-bold text-center mt-5 mb-5">THÔNG TIN HỌC SINH</h1>
-                    <div className="grid grid-cols-2 mt-4">
-                        <div className="col-span-2 md:col-span-1">
-                            <Card className="max-w-[500px] m-auto h-full">
-                                <CardHeader className="flex gap-3 px-6">
-                                    <FontAwesomeIcon icon={faUser} />
-                                    <div className="">
-                                        <h1 className='font-bold'>Thông tin cá nhân</h1>
-                                    </div>
-                                </CardHeader>
-                                <Divider />
-                                <CardBody className='px-6 gap-4'>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Họ và tên</p>
-                                        <p>Nguyễn Thị Kim Dung</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Tỉnh/Thành phố</p>
-                                        <p>Vĩnh Long</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Trường</p>
-                                        <p>THPT Nguyễn Du</p>
-                                    </div>
-                                </CardBody>
-                                <Divider />
-                                <CardHeader className="flex gap-3 px-6">
-                                    <FontAwesomeIcon icon={faAddressCard} />
-                                    <div className="">
-                                        <h1 className='font-bold'>Thông tin liên hệ</h1>
-                                    </div>
-                                </CardHeader>
-                                <Divider />
-                                <CardBody className='px-6 gap-4'>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Điện thoại</p>
-                                        <p>0329876750</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Điện thoại ba</p>
-                                        <p>Trống</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Điện thoại mẹ</p>
-                                        <p>Trống</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Zalo</p>
-                                        <p>Trống</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>FaceBook</p>
-                                        <p>Trống</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Email</p>
-                                        <p>kdung6843@gmail.com</p>
-                                    </div>
-                                </CardBody>
-                            </Card>
+                    {data === undefined ? (
+                        <div className='flex-col justify-center items-center' style={{ height: 500 }}>
+                            <img className="m-auto mt-16 w-80" src="/image/userNotFound.png" alt="" />
+                            <h1 className='text-center text-xl mt-4 font-bold'>Không tìm thấy khách hàng</h1>
+                            <Button className='m-auto flex mt-4' color='primary' onClick={() => navigate("/")}>Về trang chủ</Button>
                         </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Card className="max-w-[500px] m-auto h-full">
-                                <CardHeader className="flex gap-3 px-6">
-                                    <FontAwesomeIcon icon={faBullseye} />
-                                    <div className="">
-                                        <h1 className='font-bold'>Đối tượng</h1>
-                                    </div>
-                                </CardHeader>
-                                <Divider />
-                                <CardBody className='px-6 gap-4'>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Nghề nghiệp</p>
-                                        <p>Học sinh</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Hình thức thu thập</p>
-                                        <p>Thu thập thông tin - File mềm</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Ngành yêu thích</p>
-                                        <p>Trống</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Ngành đăng ký</p>
-                                        <p>Trống</p>
-                                    </div>
-                                </CardBody>
-                                <Divider />
-                                <CardHeader className="flex gap-3 px-6">
-                                    <FontAwesomeIcon icon={faClipboard} />
-                                    <div className="">
-                                        <h1 className='font-bold'>Phiếu đăng ký</h1>
-                                    </div>
-                                </CardHeader>
-                                <Divider />
-                                <CardBody className='px-6 gap-4'>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Kênh nhận thông báo</p>
-                                        <p>Email</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Khóa học quan tâm</p>
-                                        <p>Dài hạn</p>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Hồ sơ</p>
-                                        <div>
-                                            <Link
-                                                to="https://github.com/nextui-org/nextui"
-                                                className='cursor-pointer text-primary-500'
-                                            >
-                                                Vui lòng truy cập vào đây<FontAwesomeIcon className='ms-1 text-tiny' icon={faArrowUpRightFromSquare} />
-                                            </Link>
-                                        </div>
-                                    </div>
-                                    <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                        <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
-                                        <Chip
-                                            variant="flat"
-                                            color="warning"
-                                        >
-                                            Đang chờ
-                                        </Chip>
-                                    </div>
-                                </CardBody>
-                            </Card>
+                    ) : (
+                        <div>
+                            <h1 className="text-2xl font-bold text-center mt-5 mb-5">THÔNG TIN HỌC SINH</h1>
+                            <div className="grid grid-cols-2 mt-4">
+                                <div className="col-span-2 md:col-span-1">
+                                    <Card className="max-w-[500px] m-auto h-full">
+                                        <CardHeader className="flex gap-3 px-6 justify-center">
+                                            <FontAwesomeIcon icon={faUser} />
+                                            <div className="">
+                                                <h1 className='font-bold'>Thông tin cá nhân</h1>
+                                            </div>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody className='px-6 gap-4'>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Họ và tên</p>
+                                                <p>{data?.HOTEN}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Tỉnh/Thành phố</p>
+                                                <p>{data?.tinh?.TENTINH}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Trường</p>
+                                                <p>{data?.truong?.TENTRUONG}</p>
+                                            </div>
+                                        </CardBody>
+                                        <Divider />
+                                        <CardHeader className="flex gap-3 px-6 justify-center">
+                                            <FontAwesomeIcon icon={faAddressCard} />
+                                            <div className="">
+                                                <h1 className='font-bold'>Thông tin liên hệ</h1>
+                                            </div>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody className='px-6 gap-4'>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Điện thoại</p>
+                                                <p>{data?.dulieukhachhang?.SDT}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Điện thoại ba</p>
+                                                <p>{data?.dulieukhachhang?.SDTBA || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Điện thoại mẹ</p>
+                                                <p>{data?.dulieukhachhang?.SDTME || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Zalo</p>
+                                                <p>{data?.dulieukhachhang?.SDTZALO || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>FaceBook</p>
+                                                <p>{data?.dulieukhachhang?.FACEBOOK || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Email</p>
+                                                <p>{data?.EMAIL || "Trống"}</p>
+                                            </div>
+                                        </CardBody>
+                                    </Card>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <Card className="max-w-[500px] m-auto h-full">
+                                        <CardHeader className="flex gap-3 px-6 justify-center">
+                                            <FontAwesomeIcon icon={faBullseye} />
+                                            <div className="">
+                                                <h1 className='font-bold'>Đối tượng</h1>
+                                            </div>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody className='px-6 gap-4'>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Nghề nghiệp</p>
+                                                <p>{data?.nghenghiep?.TENNGHENGHIEP || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Hình thức thu thập</p>
+                                                <p>{data?.hinhthucthuthap?.TENHINHTHUC || "Trống"}</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Ngành yêu thích</p>
+                                                <div>
+                                                    {data?.nganhyeuthich.length != 0 ? data?.nganhyeuthich.map((job, index) => (
+                                                        <Tag key={index} bordered={false} color="processing">
+                                                            {job?.nganh?.TENNGANH}
+                                                        </Tag>
+                                                    )) : 'Trống'}
+
+                                                </div>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Ngành đăng ký</p>
+                                                <p>{data?.phieudkxettuyen?.nganh?.TENNGANH || "Trống"}</p>
+                                            </div>
+                                        </CardBody>
+                                        <Divider />
+                                        <CardHeader className="flex gap-3 px-6 justify-center">
+                                            <FontAwesomeIcon icon={faClipboard} />
+                                            <div className="">
+                                                <h1 className='font-bold'>Phiếu đăng ký</h1>
+                                            </div>
+                                        </CardHeader>
+                                        <Divider />
+                                        <CardBody className='px-6 gap-4'>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Kênh nhận thông báo</p>
+                                                <p>Email</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Khóa học quan tâm</p>
+                                                <p>Dài hạn</p>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Hồ sơ</p>
+                                                <div>
+                                                    <Link
+                                                        to="https://github.com/nextui-org/nextui"
+                                                        className='cursor-pointer text-primary-500'
+                                                    >
+                                                        Vui lòng truy cập vào đây<FontAwesomeIcon className='ms-1 text-tiny' icon={faArrowUpRightFromSquare} />
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                            <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                                <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
+                                                <Chip
+                                                    variant="flat"
+                                                    color="warning"
+                                                >
+                                                    Đang chờ
+                                                </Chip>
+                                            </div>
+                                        </CardBody>
+                                    </Card>
+                                </div>
+                            </div>
+                            <div className="btnRegisterAdmission mt-5 flex">
+                                <Button color="primary" onPress={onOpen} className="ms-auto">Phiếu đăng ký xét tuyển</Button>
+                            </div>
                         </div>
-                    </div>
-                    <div className="btnRegisterAdmission mt-5 flex">
-                        <Button color="primary" onPress={onOpen} className="ms-auto">Phiếu đăng ký xét tuyển</Button>
-                    </div>
+                    )}
+
+
                 </div>
             </div>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

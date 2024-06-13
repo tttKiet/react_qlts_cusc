@@ -6,11 +6,13 @@ const breadcrumbNameMap = {
     '/admin': 'Trang chủ',
     '/admin/user': 'Danh sách người dùng',
     '/admin/data': 'Danh sách dữ liệu',
+    '/admin/data/:id': 'Thông tin khách hàng',
+    '/admin/data/edit/:id': 'Chỉnh sửa thông tin',
     '/admin/segment': 'Phân đoạn dữ liệu',
     '/admin/segment/:id': 'Chi tiết phân đoạn',
     '/admin/division': 'Phân chia dữ liệu',
     '/admin/thematic': 'Quản lý chuyên đề',
-    '/admin/data/detail': 'Chi tiết dữ liệu',
+    '/admin/profile': 'Thông tin cá nhân',
 };
 
 const getBreadcrumbName = (pathname) => {

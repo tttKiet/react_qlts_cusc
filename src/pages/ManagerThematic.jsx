@@ -48,13 +48,16 @@ const statusColorMap = {
     0: "danger",
 };
 import useSWR from 'swr'
-import { API_DATA, API_USER } from "../constants";
+import { API_THEMATIC, API_DATA } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
 import FormThematic from "../components/body/FormThematic";
-const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
 function ManagerThematic() {
+
+    const { data: dataThematic } = useSWR(`${API_THEMATIC}/readAll`)
+
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
@@ -93,52 +96,35 @@ function ManagerThematic() {
     const { data: dataJob } = useSWR(urlJob);
 
     const [filterSearchName, setFillterSearchName] = useState('')
-    const data = [{
-        id: 1,
-        thoigianphan: "7:20",
-        tentruong: "Đại học Cần Thơ",
-        sodong: "10",
-        madoan: "MD1",
-        lienhe1: 1,
-        lienhe2: "1",
-        lienhe3: 0
-    },
-    {
-        id: 2,
-        thoigianphan: "8:30",
-        tentruong: "Trường Kinh Tế Quốc Dân",
-        sodong: "5",
-        madoan: "MD2",
-        lienhe1: 1,
-        lienhe2: 1,
-        lienhe3: 1
-    },
-    {
-        id: 3,
-        thoigianphan: "9:00",
-        tentruong: "Trường Cao Đăng Sư Phạm",
-        sodong: "7",
-        madoan: "MD3",
-        lienhe1: 0,
-        lienhe2: 0,
-        lienhe3: 0
-    }
-    ]
+    const data = useMemo(() => {
+        return dataThematic?.map((thematic, index) => {
+            return {
+                id: index + 1,
+                tenchuyende: thematic?.TENCHUYENDE,
+                tentruong: thematic?.MATRUONG,
+                ngaythongbao: thematic?.THOIGIANTHONGBAO,
+                ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
+                noidung: thematic?.NOIDUNG
+
+            }
+        }) || []
+    }, [dataThematic])
 
     const columns = [
         { name: "STT", uid: "id", sortable: true },
-        { name: "Thời gian phân", uid: "thoigianphan" },
+        { name: "Tên chuyên đề", uid: "tenchuyende" },
         { name: "Tên trường", uid: "tentruong", },
-        { name: "Mã đoạn", uid: "madoan", sortable: true },
-        { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
-        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
-        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+        { name: "User manager", uid: "usermanager" },
+        { name: "Ngày thông báo", uid: "ngaythongbao", sortable: true },
+        { name: "Ngày tổ chức", uid: "ngaytochuc", sortable: true },
+        { name: "Nội dung", uid: "noidung" },
+        { name: "Tùy chọn", uid: "actions" },
 
     ];
 
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
     const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [total, setTotal] = useState(1);
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "age",
         direction: "ascending",
@@ -156,6 +142,12 @@ function ManagerThematic() {
 
     const filteredItems = useMemo(() => {
         let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.tenchuyende.toLowerCase().includes(filterSearchName.toLowerCase()),
+            );
+        }
+
         return filteredUsers;
     }, [data, filterSearchName]);
 
@@ -174,6 +166,12 @@ function ManagerThematic() {
         });
     }, [sortDescriptor, items]);
 
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
     const renderCell = useCallback((user, columnKey) => {
         const cellValue = user[columnKey];
 
@@ -189,39 +187,21 @@ function ManagerThematic() {
                 return (
                     <div className="flex flex-col justify-center">
                         <span className="text-bold text-small capitalize">{cellValue}</span>
-
                     </div>
                 );
-            case "madoan":
+            case "actions":
                 return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small">{cellValue}</span>
-
-                    </div>
-                );
-            case "sodong":
-                return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small">{cellValue}</span>
-
-                    </div>
-                );
-            case "lienhe1":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe2":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe3":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    <div className="relative flex items-center gap-2">
+                        <Tooltip content="edit">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" >
+                                <EditIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Delete">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50" >
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
                     </div>
                 );
 
@@ -229,6 +209,14 @@ function ManagerThematic() {
                 return cellValue;
         }
     }, []);
+
+    useEffect(() => {
+        if (dataThematic) {
+            const totalPages = Math.ceil(dataThematic.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataThematic, rowsPerPage]);
+
     const onRowsPerPageChange = useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
@@ -245,7 +233,6 @@ function ManagerThematic() {
             }
         }, []);
 
-
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -257,16 +244,31 @@ function ManagerThematic() {
                     color="default"
                     page={page}
 
-                    total={pages}
+                    total={total}
 
                     variant="light"
                     onChange={(e) => {
                         setPage(e)
                     }}
                 />
+                <div className="flex justify-between items-center mb-2 gap-5">
+                    <span className="text-default-400 text-small">Total {data.length} data</span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                            value={rowsPerPage}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
     const onSubmit = async (data) => {
         console.log("Data ManagerThermatic", data)
@@ -277,7 +279,7 @@ function ManagerThematic() {
             <div className="">
                 <div className="mt-3" style={{
                     padding: 24,
-                    minHeight: 360,
+                    minHeight: 385,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
@@ -293,7 +295,7 @@ function ManagerThematic() {
                                         base: "w-full sm:max-w-[24%]",
                                         inputWrapper: "border-1",
                                     }}
-                                    placeholder="Search by name..."
+                                    placeholder="Tìm kiếm theo tên chuyên đề"
                                     size="sm"
                                     startContent={<SearchIcon className="text-default-300" />}
                                     // value={filterSearchName}
@@ -379,9 +381,9 @@ function ManagerThematic() {
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
                             {(item) => (
-                                <TableRow key={item.id}>
+                                <TableRow key={item.madoan}>
                                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                                 </TableRow>
                             )}

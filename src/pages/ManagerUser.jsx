@@ -101,7 +101,7 @@ function ManagerUser() {
         return dataPagination?.data?.map((user, index) => {
             return {
                 id: user?.TENDANGNHAP,
-                role: user?.usermanager ? 'usermanager' : 'admin',
+                role: user?.usermanager ? 'usermanager' : (user?.admin ? 'admin' : 'other'),
                 name: user?.usermanager?.HOTEN || user?.admin?.HOTEN || '',
                 phone: user?.usermanager?.SDT || user?.admin?.SDT || '',
                 email: user?.usermanager?.EMAIL || user?.admin?.EMAIL || '',
@@ -256,7 +256,7 @@ function ManagerUser() {
                             base: "w-full sm:max-w-[44%]",
                             inputWrapper: "border-1",
                         }}
-                        placeholder="Search by name..."
+                        placeholder="Tìm kiếm theo tên"
                         size="sm"
                         startContent={<SearchIcon className="text-default-300" />}
                         // value={filterSearchName}
@@ -409,6 +409,7 @@ function ManagerUser() {
                 if (res.message) {
                     mutate();
                     console.log(res.message)
+                    toast.success(res.message)
                     onClose()
                 }
             } catch (e) {
@@ -440,8 +441,8 @@ function ManagerUser() {
                             },
                         }}
                         classNames={classNames}
-                        // selectedKeys={selectedKeys}
-                        // selectionMode="multiple"
+                        selectedKeys={selectedKeys}
+                        selectionMode="multiple"
                         sortDescriptor={sortDescriptor}
                         topContent={topContent}
                         topContentPlacement="outside"

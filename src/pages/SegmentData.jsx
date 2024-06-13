@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom'
 import {
     Table,
@@ -10,22 +9,11 @@ import {
     TableCell,
     Input,
     Button,
-    DropdownTrigger,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
     Chip,
-    User,
     Pagination,
     useDisclosure,
     Select, SelectItem,
-    RadioGroup,
-    Radio,
     Tooltip,
-    CardHeader,
-    CardBody,
-    Card,
-    Image,
     Autocomplete,
     AutocompleteItem,
     Modal,
@@ -34,29 +22,20 @@ import {
     ModalBody,
     ModalFooter
 } from "@nextui-org/react";
-import { PlusIcon } from "../components/icons/PlusIcon";
-import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
 import { SearchIcon } from "../components/icons/SearchIcon";
-import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
-import ModalComponent from "../components/Modal/ModalComponent";
-import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
 import { EyeIcon } from "../components/icons/EyeIcon";
-import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
-import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
-const statusColorMap = {
-    1: "success",
-    0: "danger",
-};
 import useSWR from 'swr'
 import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
-import FormUser from "../components/body/FormUser";
 import SegmentService from "../service/SegmentService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "madoan", "tentruong", "sodong", "actions", "status"];
+import { Popconfirm } from 'antd';
+const INITIAL_VISIBLE_COLUMNS = ["id", "madoan", "tentruong", "sodong", "actions", "sdt"];
+import { toast } from 'react-toastify';
 function SegmentData() {
 
-    const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment`)
+    // const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment`)
+    const [urlSegment, setUrlSegment] = useState(`${API_DATA}/segment`)
     const [total, setTotal] = useState(1);
 
     const [provinceSelected, setProvinceSelected] = useState('');
@@ -70,21 +49,32 @@ function SegmentData() {
     // Modal
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-
-
     useEffect(() => {
         if (provinceSelected) {
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
+            fetchSchool();
+            fetchJob();
+            setSchoolSelected('')
+            setJobSelected('')
         }
     }, [provinceSelected])
-    const { data: dataSchool } = useSWR(urlSchool)
+    const { data: dataSchool, mutate: fetchSchool } = useSWR(urlSchool)
 
     useEffect(() => {
         if (schoolSelected) {
-            setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
+            setUrlSegment(`${API_DATA}/segment?schoolCode=${schoolSelected}`)
+            fetchJob();
+            setJobSelected('')
         }
     }, [schoolSelected])
-    const { data: dataJob } = useSWR(urlJob);
+
+    const { data: dataSegment, mutate: fetchSegment } = useSWR(urlSegment)
+
+    const { data: dataJob, mutate: fetchJob } = useSWR(`${API_DATA}/job-like?schoolCode=${schoolSelected}&isAvalable=true`);
+    const extendedDataJob = useMemo(() => {
+        return dataJob?.allCount ? [{ MANGANH: "0", TENNGANH: "Tất cả", count: dataJob?.allCount }, ...dataJob.data] : [{ MANGANH: "-1", TENNGANH: "Trống", count: 0 }];
+
+    }, [dataJob])
     const [segment, setSegment] = useState(0)
 
     const [filterSearchName, setFillterSearchName] = useState('')
@@ -93,7 +83,7 @@ function SegmentData() {
         { name: "Mã đoạn", uid: "madoan", sortable: true },
         { name: "Tên trường", uid: "tentruong", sortable: true },
         { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Trạng thái", uid: "status" },
+        { name: "Trạng thái", uid: "sdt" },
         { name: "Action", uid: "actions" },
 
     ];
@@ -104,10 +94,52 @@ function SegmentData() {
                 id: index + 1,
                 madoan: segment?.MaPQ,
                 tentruong: segment?.truong?.TENTRUONG,
-                sodong: segment?.Sodong
+                sodong: segment?.Sodong,
+                sdt: segment?.SDT
             }
         }) || []
     }, [dataSegment])
+
+    const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+
+    const handleDeleteSegment = async () => {
+        try {
+            const selectedArray = Array.from(selectedKeys);
+            const res = await SegmentService.deleteSegment(selectedArray)
+            console.log(res)
+            toast.success(res.message)
+            fetchSegment();
+            fetchJob();
+            setJobSelected('')
+        }
+        catch (e) {
+            toast.error(e.message)
+        }
+
+
+    }
+
+    const confirm = async (madoan) => {
+        try {
+            const madoanArray = madoan.split(',').map(item => item.trim());
+            const res = await SegmentService.deleteSegment(madoanArray)
+            console.log(res)
+            toast.success(res.message)
+            fetchSegment();
+            fetchJob();
+            setJobSelected('')
+            setSelectedKeys([])
+        } catch (e) {
+            console.log(e)
+
+            toast.error(e.message)
+        }
+
+    };
+    const cancel = (e) => {
+        console.log(e);
+        // message.error('Click on No');
+    };
 
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -181,23 +213,24 @@ function SegmentData() {
 
                     </div>
                 );
-            case "status":
+            case "sdt":
                 return (
                     <div className="relative flex items-center gap-2">
-                        <Chip
+                        {cellValue != null ? (<Chip
                             className="text-tiny"
                             variant="flat"
                             color="success"
                         >
-                            Đã phân công
-                        </Chip>
-                        {/* <Chip
+                            Success
+                        </Chip>) : (<Chip
                             className="text-tiny"
                             variant="flat"
                             color="warning"
                         >
-                            Chưa phân công
-                        </Chip> */}
+                            Watting
+                        </Chip>)}
+
+
                     </div>
                 );
             case "actions":
@@ -208,10 +241,21 @@ function SegmentData() {
                                 <EyeIcon />
                             </Link>
                         </Tooltip>
-                        <Tooltip color="danger" content="Delete user">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                <DeleteIcon />
-                            </span>
+                        <Tooltip color="danger" content="Delete">
+                            <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this task?"
+                                onConfirm={() => confirm(segment.madoan)}
+                                // onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <span className="text-lg text-danger cursor-pointer active:opacity-50" >
+                                    <DeleteIcon />
+                                </span>
+
+                            </Popconfirm>
+
                         </Tooltip>
                     </div>
                 );
@@ -247,21 +291,28 @@ function SegmentData() {
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
-                <Pagination
-                    showControls
-                    classNames={{
-                        cursor: "bg-foreground text-background",
-                    }}
-                    color="default"
-                    page={page}
+                <div className="flex gap-2 items-center">
+                    <Pagination
+                        showControls
+                        classNames={{
+                            cursor: "bg-foreground text-background",
+                        }}
+                        color="default"
+                        page={page}
 
-                    total={total}
+                        total={total}
 
-                    variant="light"
-                    onChange={(e) => {
-                        setPage(e)
-                    }}
-                />
+                        variant="light"
+                        onChange={(e) => {
+                            setPage(e)
+                        }}
+                    />
+                    {selectedKeys.size > 0 ? (
+                        <Button color="danger" size="sm" startContent={<DeleteIcon />} onClick={handleDeleteSegment}>
+                            Delete
+                        </Button>
+                    ) : ''}
+                </div>
                 <div className="flex justify-between items-center mb-2 gap-5">
                     <span className="text-default-400 text-small">Total {data.length} data</span>
                     <label className="flex items-center text-default-400 text-small">
@@ -279,29 +330,37 @@ function SegmentData() {
                 </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total, selectedKeys.size]);
 
     const [errors, setErrors] = useState({})
-
+    useEffect(() => {
+        if (dataJob?.allCount == 0) {
+            toast.success("Trường đã phân đoạn hết dữ liệu")
+        }
+    }, [dataJob?.allCount])
     const handleSegment = async () => {
         const newErorrs = {};
         if (segment <= 0) {
             newErorrs.segment = 'Vui lòng nhập giá trị phân đoạn'
         } if (Object.keys(newErorrs).length === 0) {
             setErrors({})
-            console.log("Segment data", segment);
-            console.log("Truong", schoolSelected);
             const dataSend = {
+                ...(jobSelected != 0 ? { MANGANH: jobSelected } : {}),
                 MATRUONG: schoolSelected,
                 SODONG: segment
             }
             try {
                 const res = await SegmentService.createSegment(dataSend)
+                console.log(res)
+                toast.success(res.message)
                 onClose()
                 fetchSegment()
-                console.log("Data recieved from backend", res)
+                fetchJob();
+                setJobSelected('')
             } catch (e) {
                 console.log(e)
+
+                toast.error(e.message)
             }
 
         } else {
@@ -309,12 +368,15 @@ function SegmentData() {
         }
     }
 
+    const [numberSegment, setNumberSegment] = useState('');
+
+
     return (
         <>
             <div className="">
                 <div className="mt-3" style={{
                     padding: 24,
-                    minHeight: 390,
+                    minHeight: 425,
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
@@ -328,7 +390,7 @@ function SegmentData() {
                                     inputWrapper: "border-1",
                                 }}
                                 className="col-span-4 md:col-span-1"
-                                placeholder="Search by name..."
+                                placeholder="Tìm kiếm theo tên"
                                 size="sm"
                                 startContent={<SearchIcon className="text-default-300" />}
                                 variant="bordered"
@@ -369,13 +431,14 @@ function SegmentData() {
                                         ))}
                                     </Autocomplete>
                                     <Select
-                                        items={dataJob || []}
+                                        items={extendedDataJob || []}
                                         aria-labelledby="province-label"
                                         placeholder="Chọn ngành"
                                         className="max-w-xs"
                                         variant="bordered"
-                                        isDisabled={schoolSelected != '' ? false : true}
-                                        onSelectionChange={(value) => setJobSelected(value)}
+                                        isDisabled={schoolSelected != '' && dataJob?.allCount > 0 ? false : true}
+                                        // onSelectionChange={(value) => setJobSelected(value)}
+                                        onChange={(e) => setJobSelected(e.target.value)}
                                         size="sm"
                                         listboxProps={{
                                             itemClasses: {
@@ -415,7 +478,7 @@ function SegmentData() {
 
                                                     <div className="">
                                                         <span className="text-small">{job.TENNGANH}</span>
-                                                        <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
+                                                        <span className="text-tiny text-default-400 ms-1">{job.count} dòng khả dụng</span>
                                                     </div>
                                                 </div>
                                             </SelectItem>
@@ -445,6 +508,9 @@ function SegmentData() {
 
                         topContentPlacement="outside"
                         onSortChange={setSortDescriptor}
+                        selectedKeys={selectedKeys}
+                        selectionMode="multiple"
+                        onSelectionChange={setSelectedKeys}
                     >
                         <TableHeader columns={headerColumns}>
                             {(column) => (
@@ -459,7 +525,7 @@ function SegmentData() {
                         </TableHeader>
                         <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
                             {(item) => (
-                                <TableRow key={item.id}>
+                                <TableRow key={item.madoan}>
                                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                                 </TableRow>
                             )}
@@ -485,6 +551,9 @@ function SegmentData() {
                                             Gợi ý:
                                         </p>
                                         <div className="flex gap-1">
+
+                                            {console.log(dataJob?.data.filter((item) => item.MANGANH === jobSelected))}
+
                                             <Chip className="cursor-pointer">1/2</Chip>
                                             <Chip className="cursor-pointer">1/4</Chip>
                                             <Chip className="cursor-pointer">1/6</Chip>
