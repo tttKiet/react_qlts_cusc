@@ -6,9 +6,19 @@ const createSegment = async (data) => {
     // console.log("Data send from frontend", data)
 }
 
+const deleteSegment = async (data) => {
+    return axios.delete(`${API_DATA}/segment`, {
+        data: {
+            MaPQArray: data
+        }
+    });
+
+}
+
 
 export default {
     createSegment,
+    deleteSegment
 };
 
 

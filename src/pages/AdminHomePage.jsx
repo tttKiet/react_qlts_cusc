@@ -4,7 +4,7 @@ import { Chip, Progress, User } from "@nextui-org/react";
 import { Button, Dropdown, message, Popconfirm, Space } from 'antd';
 
 function AdminHomePage() {
- 
+
 
     const confirm = (e) => {
         console.log(e);
@@ -20,7 +20,7 @@ function AdminHomePage() {
             key: '0',
         },
     ];
- 
+
     return (
         <>
             <div>
@@ -152,7 +152,7 @@ function AdminHomePage() {
                                                     src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                                                 }}
                                             />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
+                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
                                                 <p className="font-medium">Nguyễn Thị Lan</p>
                                                 <p>0971144587 (Nguyễn Minh Tùng)</p>
 
@@ -181,7 +181,7 @@ function AdminHomePage() {
                                                     src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                                                 }}
                                             />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
+                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
                                                 <p className="font-medium">Nguyễn Thị Lan</p>
                                                 <p>0971144587 (Nguyễn Minh Tùng)</p>
 
@@ -230,7 +230,7 @@ function AdminHomePage() {
                                                     src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                                                 }}
                                             />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
+                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
                                                 <p className="font-medium">Nguyễn Thị Lan</p>
                                                 <p>Lorem ipsum dolor sit amet.</p>
 
@@ -259,7 +259,7 @@ function AdminHomePage() {
                                                     src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                                                 }}
                                             />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
+                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
                                                 <p className="font-medium">Nguyễn Thị Lan</p>
                                                 <p>Lorem ipsum dolor sit amet.</p>
 

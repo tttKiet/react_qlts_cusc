@@ -18,7 +18,7 @@ function useAuth() {
     revalidateOnFocus: false,
     fallbackData: profileSelector,
     onSuccess(data, key, config) {
-      console.log("profile", data);
+      // console.log("profile", data);
       let dataAccount = {};
       if (data?.MAADMIN) {
         dataAccount = {
