@@ -1,27 +1,24 @@
 import { Input } from "@nextui-org/react";
 import { useState } from "react";
 
-import AuthService from "../service/AuthService";
+// import AuthService from "../services/AuthService";
+import { useAuth } from "../hooks";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
 
   const haneleLogin = async () => {
-    const res = await AuthService.login({
+    const res = await login({
       TENDANGNHAP: username,
       MATKHAU: password,
     });
-    if (res && res.data.statusCode == 200) {
-      console.log("susscess");
-    }
-
-    console.log("res", res);
   };
 
   return (
     <div className="container">
-      <section className="gradient-form h-full dark:bg-neutral-700 mt-5">
+      <section className="gradient-form h-full dark:bg-neutral-700 mt-10">
         <div className="container h-full p-10">
           <div className="flex h-full rounded-lg flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200 shadow-2xl">
             <div className="w-full">
@@ -31,17 +28,14 @@ function Login() {
                     <div className="px-4 py-6 text-white md:mx-6 md:p-12">
                       <div className="flex">
                         <img
-                          src="/image/Logo.png"
+                          src="/image/CUSC_No_Background.png"
                           className="w-72 m-auto"
                           alt=""
                         />
                       </div>
-                      <p className="text-sm text-center">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit, sed do eiusmod tempor incididunt ut labore et
-                        dolore magna aliqua. Ut enim ad minim veniam, quis
-                        nostrud exercitation ullamco laboris nisi ut aliquip ex
-                        ea commodo consequat.
+                      <p className="text-center">
+                        Hệ thống quản lý tuyển sinh giúp bạn dễ dàng quản lý và truy xuất thông tin học sinh, đảm bảo hiệu quả và an toàn, mang đến trải nghiệm tối ưu cho người dùng.
+
                       </p>
                     </div>
                   </div>
@@ -55,6 +49,7 @@ function Login() {
                           Hệ thống quản lý tuyển sinh
                         </h4>
                       </div>
+
                       <form>
                         <p className="mb-4">Vùi lòng nhập tài khoản</p>
                         {/*Username input*/}
@@ -67,7 +62,6 @@ function Login() {
                             label="Tên đăng nhập"
                             onChange={(e) => setUsername(e.target.value)}
                           />
-
                         </div>
                         {/*Password input*/}
                         <div
@@ -83,9 +77,9 @@ function Login() {
                         {/*Submit button*/}
                         <div className="mb-12 pb-1 pt-1 text-center">
                           <button
+                            type="button"
                             onClick={haneleLogin}
                             className="mb-3 inline-block w-full rounded-lg text-white p-3 text-lg bg-gradient-to-r from-slate-500 to-slate-800"
-                            type="button"
                           >
                             Đăng nhập
                           </button>

@@ -9,11 +9,11 @@ function Footer() {
                     <div className="grid grid-cols-3">
                         <div>
                             <img
-                                src="/image/Logo.png"
+                                src="/image/CUSC_Logo_White.png"
                                 className="w-44 m-auto"
                                 alt="Flowbite Logo"
                             />
-                            <p className="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil amet molestias voluptas expedita, tempore placeat consequuntur at temporibus quam illo.</p>
+                            <p className="text-center">Hệ thống quản lý tuyển sinh cung cấp giải pháp quản lý và truy xuất thông tin học sinh vô cùng hiệu quả, tối ưu hóa thời gian tra cứu thông tin.</p>
                         </div>
 
 

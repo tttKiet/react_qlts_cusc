@@ -1,0 +1,401 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useForm } from 'react-hook-form';
+import {
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Input,
+    Button,
+    DropdownTrigger,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
+    Chip,
+    User,
+    Pagination,
+    useDisclosure,
+    Select, SelectItem,
+    RadioGroup,
+    Radio,
+    Tooltip,
+    CardHeader,
+    CardBody,
+    Card,
+    Image,
+    Autocomplete,
+    AutocompleteItem,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
+} from "@nextui-org/react";
+import { PlusIcon } from "../components/icons/PlusIcon";
+import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
+import { SearchIcon } from "../components/icons/SearchIcon";
+import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
+import ModalComponent from "../components/Modal/ModalComponent";
+import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
+import { EyeIcon } from "../components/icons/EyeIcon";
+import { EditIcon } from "../components/icons/EditIcon";
+import { DeleteIcon } from "../components/icons/DeleteIcon";
+import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
+const statusColorMap = {
+    1: "success",
+    0: "danger",
+};
+import useSWR from 'swr'
+import { API_THEMATIC, API_DATA } from "../constants";
+import debounce from "lodash.debounce";
+import FormUser from "../components/body/FormUser";
+import UserService from "../service/UserService";
+import FormThematic from "../components/body/FormThematic";
+const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
+function ManagerThematic() {
+
+    const { data: dataThematic } = useSWR(`${API_THEMATIC}/readAll`)
+
+    const [provinceSelected, setProvinceSelected] = useState('');
+    const [schoolSelected, setSchoolSelected] = useState('');
+    const [jobSelected, setJobSelected] = useState('');
+
+    const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
+    const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
+    const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
+
+    // Modal
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+    const segment = [
+        {
+            label: "5 dòng", value: "5"
+        },
+        {
+            label: "10 dòng", value: "10"
+        },
+        {
+            label: "15 dòng", value: "15"
+        },
+    ]
+
+    useEffect(() => {
+        if (provinceSelected) {
+            setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
+        }
+    }, [provinceSelected])
+    const { data: dataSchool } = useSWR(urlSchool)
+
+    useEffect(() => {
+        if (schoolSelected) {
+            setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
+        }
+    }, [schoolSelected])
+    const { data: dataJob } = useSWR(urlJob);
+
+    const [filterSearchName, setFillterSearchName] = useState('')
+    const data = useMemo(() => {
+        return dataThematic?.map((thematic, index) => {
+            return {
+                id: index + 1,
+                tenchuyende: thematic?.TENCHUYENDE,
+                tentruong: thematic?.MATRUONG,
+                ngaythongbao: thematic?.THOIGIANTHONGBAO,
+                ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
+                noidung: thematic?.NOIDUNG
+
+            }
+        }) || []
+    }, [dataThematic])
+
+    const columns = [
+        { name: "STT", uid: "id", sortable: true },
+        { name: "Tên chuyên đề", uid: "tenchuyende" },
+        { name: "Tên trường", uid: "tentruong", },
+        { name: "User manager", uid: "usermanager" },
+        { name: "Ngày thông báo", uid: "ngaythongbao", sortable: true },
+        { name: "Ngày tổ chức", uid: "ngaytochuc", sortable: true },
+        { name: "Nội dung", uid: "noidung" },
+        { name: "Tùy chọn", uid: "actions" },
+
+    ];
+
+    const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
+    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [total, setTotal] = useState(1);
+    const [sortDescriptor, setSortDescriptor] = useState({
+        column: "age",
+        direction: "ascending",
+    });
+    const [page, setPage] = useState(1);
+
+    const pages = Math.ceil(data.length / rowsPerPage);
+    const hasSearchFilter = Boolean(filterSearchName);
+
+    const headerColumns = useMemo(() => {
+        if (visibleColumns === "all") return columns;
+
+        return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    }, [visibleColumns]);
+
+    const filteredItems = useMemo(() => {
+        let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.tenchuyende.toLowerCase().includes(filterSearchName.toLowerCase()),
+            );
+        }
+
+        return filteredUsers;
+    }, [data, filterSearchName]);
+
+    const items = useMemo(() => {
+
+        return filteredItems;
+    }, [page, filteredItems, rowsPerPage]);
+
+    const sortedItems = useMemo(() => {
+        return [...items].sort((a, b) => {
+            const first = a[sortDescriptor.column];
+            const second = b[sortDescriptor.column];
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+    }, [sortDescriptor, items]);
+
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
+    const renderCell = useCallback((user, columnKey) => {
+        const cellValue = user[columnKey];
+
+        switch (columnKey) {
+            case "thoigianphan":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+
+                    </div>
+                );
+            case "tentruong":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "actions":
+                return (
+                    <div className="relative flex items-center gap-2">
+                        <Tooltip content="edit">
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" >
+                                <EditIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Delete">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50" >
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
+                    </div>
+                );
+
+            default:
+                return cellValue;
+        }
+    }, []);
+
+    useEffect(() => {
+        if (dataThematic) {
+            const totalPages = Math.ceil(dataThematic.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataThematic, rowsPerPage]);
+
+    const onRowsPerPageChange = useCallback((e) => {
+        setRowsPerPage(Number(e.target.value));
+        setPage(1);
+    }, []);
+
+    const onSearchChange = useCallback(
+        (value) => {
+            if (value) {
+                setFillterSearchName(value)
+                setPage(1);
+            } else {
+                setFillterSearchName("")
+
+            }
+        }, []);
+
+    const bottomContent = useMemo(() => {
+        return (
+            <div className="py-2 px-2 flex justify-between items-center">
+                <Pagination
+                    showControls
+                    classNames={{
+                        cursor: "bg-foreground text-background",
+                    }}
+                    color="default"
+                    page={page}
+
+                    total={total}
+
+                    variant="light"
+                    onChange={(e) => {
+                        setPage(e)
+                    }}
+                />
+                <div className="flex justify-between items-center mb-2 gap-5">
+                    <span className="text-default-400 text-small">Total {data.length} data</span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                            value={rowsPerPage}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        );
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+
+    const onSubmit = async (data) => {
+        console.log("Data ManagerThermatic", data)
+    }
+
+    return (
+        <>
+            <div className="">
+                <div className="mt-3" style={{
+                    padding: 24,
+                    minHeight: 385,
+                    background: "#fff",
+                    borderRadius: "10px"
+                }}>
+
+                    <h1 className="mb-2 text-lg font-medium">Quản lý chuyên đề</h1>
+
+                    <div className="flex flex-col gap-4 mt-5">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex justify-between gap-3 items-end">
+                                <Input
+                                    isClearable
+                                    classNames={{
+                                        base: "w-full sm:max-w-[24%]",
+                                        inputWrapper: "border-1",
+                                    }}
+                                    placeholder="Tìm kiếm theo tên chuyên đề"
+                                    size="sm"
+                                    startContent={<SearchIcon className="text-default-300" />}
+                                    // value={filterSearchName}
+                                    variant="bordered"
+                                    onClear={() => setFillterSearchName("")}
+                                    onValueChange={debounce(onSearchChange, 300)}
+                                />
+                                <div className="flex gap-3">
+                                    <Dropdown>
+                                        <DropdownTrigger className="hidden sm:flex">
+                                            <Button
+                                                endContent={<ChevronDownIcon className="text-small" />}
+                                                size="sm"
+                                                variant="flat"
+                                            >
+                                                Columns
+                                            </Button>
+                                        </DropdownTrigger>
+                                        <DropdownMenu
+                                            disallowEmptySelection
+                                            aria-label="Table Columns"
+                                            closeOnSelect={false}
+                                            selectedKeys={visibleColumns}
+                                            selectionMode="multiple"
+                                            onSelectionChange={setVisibleColumns}
+                                        >
+                                            {columns.map((column) => (
+                                                <DropdownItem key={column.uid} className="capitalize">
+                                                    {/* {capitalize(column.name)} */}
+                                                    {column.name}
+                                                </DropdownItem>
+                                            ))}
+                                        </DropdownMenu>
+                                    </Dropdown>
+
+                                    <Button color="primary" className="h-100 ms-auto" onPress={onOpen}>
+                                        Thêm chuyên đề
+                                    </Button>
+
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-default-400 text-small">Total {data.length} users</span>
+                                <label className="flex items-center text-default-400 text-small">
+                                    Rows per page:
+                                    <select
+                                        className="bg-transparent outline-none text-default-400 text-small"
+                                        onChange={onRowsPerPageChange}
+                                    >
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div >
+
+                    <Table
+                        isCompact
+                        removeWrapper
+                        aria-label="Example table with custom cells, pagination and sorting"
+                        bottomContent={bottomContent}
+                        bottomContentPlacement="outside"
+                        checkboxesProps={{
+                            classNames: {
+                                wrapper: "after:bg-foreground after:text-background text-background",
+                            },
+                        }}
+                        sortDescriptor={sortDescriptor}
+
+                        topContentPlacement="outside"
+                        onSortChange={setSortDescriptor}
+                    >
+                        <TableHeader columns={headerColumns}>
+                            {(column) => (
+                                <TableColumn
+                                    key={column.uid}
+                                    align={column.uid === "actions" ? "center" : "start"}
+                                    allowsSorting={column.sortable}
+                                >
+                                    {column.name}
+                                </TableColumn>
+                            )}
+                        </TableHeader>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
+                            {(item) => (
+                                <TableRow key={item.madoan}>
+                                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={onClose} size="2xl" okModal="Thêm người dùng" cancelModal="Đóng"  >
+                    <FormThematic onClose={onClose} onSubmit={onSubmit} />
+                </ModalComponent>
+            </div>
+        </>
+    );
+}
+
+export default ManagerThematic;
