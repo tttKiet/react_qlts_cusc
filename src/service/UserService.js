@@ -10,10 +10,15 @@ const updateUser = async (data) => {
     return axios.patch(`${API_USER}`, data)
 }
 
+const deleteUser = async (data) => {
+    // console.log(data)
+    return axios.delete(`${API_USER}/account`, { data })
+}
 
 export default {
     createUser,
-    updateUser
+    updateUser,
+    deleteUser
 };
 
 

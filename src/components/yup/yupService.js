@@ -41,7 +41,7 @@ const validateFormThematic = yup.object().shape({
     thematicContent: yup
         .string()
         .required('Vui lòng nhập nội dung'),
-    provice: yup
+    province: yup
         .string()
         .required('Vui lòng chọn tỉnh'),
     school: yup

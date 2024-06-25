@@ -3,13 +3,20 @@ import { useState } from "react";
 
 // import AuthService from "../services/AuthService";
 import { useAuth } from "../hooks";
+import { toast } from "react-toastify";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
-  const haneleLogin = async () => {
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin()
+    }
+  }
+
+  const handleLogin = async () => {
     const res = await login({
       TENDANGNHAP: username,
       MATKHAU: password,
@@ -71,14 +78,14 @@ function Login() {
                           <Input
                             type="password"
                             label="Mật khẩu"
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)} onKeyDown={handleEnter}
                           />
                         </div>
                         {/*Submit button*/}
                         <div className="mb-12 pb-1 pt-1 text-center">
                           <button
                             type="button"
-                            onClick={haneleLogin}
+                            onClick={handleLogin}
                             className="mb-3 inline-block w-full rounded-lg text-white p-3 text-lg bg-gradient-to-r from-slate-500 to-slate-800"
                           >
                             Đăng nhập

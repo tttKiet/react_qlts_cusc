@@ -29,21 +29,21 @@ function getItem(label, key, icon, children) {
 
 
 const items = [
-    getItem(<Link to={"/admin"}>Dashboard</Link>, '/admin', <DashboardOutlined />),
-    getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
-        getItem(<Link to={"/admin/user"}>Danh sách người dùng</Link>, '/admin/user'),
-    ]),
-    getItem('Quản lý dữ liệu', 'sub2', <DatabaseOutlined />, [
-        getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, '/admin/data'),
-        getItem(<Link to={"/admin/add"}>Thêm dữ liệu</Link>, '/admin/add'),
-        getItem(<Link to={"/admin/segment"}>Phân đoạn dữ liệu</Link>, '/admin/segment'),
-        getItem(<Link to={"/admin/division"}>Phân chia dữ liệu</Link>, '/admin/division'),
-    ]),
-    getItem(<Link to={"/admin/time"}>Thời gian đăng nhập</Link>, '/admin/time', <ClockCircleOutlined />),
-    getItem(<Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>, '/admin/thematic', <FontAwesomeIcon icon={faClipboard} />),
+    getItem(<Link to={"/usermanager"}>Dashboard</Link>, '/usermanager', <DashboardOutlined />),
+    // getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
+    //     getItem(<Link to={"/admin/user"}>Danh sách người dùng</Link>, '/admin/user'),
+    // ]),
+    // getItem('Quản lý dữ liệu', 'sub2', <DatabaseOutlined />, [
+    //     getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, '/admin/data'),
+    //     getItem(<Link to={"/admin/add"}>Thêm dữ liệu</Link>, '/admin/add'),
+    //     getItem(<Link to={"/admin/segment"}>Phân đoạn dữ liệu</Link>, '/admin/segment'),
+    //     getItem(<Link to={"/admin/division"}>Phân chia dữ liệu</Link>, '/admin/division'),
+    // ]),
+    // getItem(<Link to={"/admin/time"}>Thời gian đăng nhập</Link>, '/admin/time', <ClockCircleOutlined />),
+    // getItem(<Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>, '/admin/thematic', <FontAwesomeIcon icon={faClipboard} />),
 ];
 
-const LayoutAdmin = () => {
+const LayoutUserManager = () => {
 
     const { logout } = useAuth();
 
@@ -68,18 +68,18 @@ const LayoutAdmin = () => {
     } = theme.useToken();
 
     // KIỂM TRA QUYỀN ĐĂNG NHẬP
-    if (!isAuthenticated) {
-        return (
-            <div>
-                <Result
-                    status="403"
-                    title="403"
-                    subTitle="Sorry, you are not authorized to access this page."
-                    extra={<Link to={"/"} type="primary"><Button type='primary'>Back Home</Button></Link>}
-                />
-            </div>
-        );
-    }
+    // if (!isAuthenticated) {
+    //     return (
+    //         <div>
+    //             <Result
+    //                 status="403"
+    //                 title="403"
+    //                 subTitle="Sorry, you are not authorized to access this page."
+    //                 extra={<Button type="primary">Back Home</Button>}
+    //             />
+    //         </div>
+    //     );
+    // }
     return (
         <Layout
             style={{
@@ -147,4 +147,4 @@ const LayoutAdmin = () => {
         </Layout>
     );
 };
-export default LayoutAdmin;
+export default LayoutUserManager;

@@ -20,7 +20,8 @@ import {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalFooter
+    ModalFooter,
+    Badge
 } from "@nextui-org/react";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
@@ -32,6 +33,8 @@ import SegmentService from "../service/SegmentService";
 import { Popconfirm } from 'antd';
 const INITIAL_VISIBLE_COLUMNS = ["id", "madoan", "tentruong", "sodong", "actions", "sdt"];
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 function SegmentData() {
 
     // const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment`)
@@ -48,6 +51,13 @@ function SegmentData() {
 
     // Modal
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+    // Chip
+    const [notification, setNotification] = useState(["Notification"]);
+    const handleClose = (fruitToRemove) => {
+        setNotification(notification.filter(fruit => fruit !== fruitToRemove));
+    };
+
 
     useEffect(() => {
         if (provinceSelected) {
@@ -118,7 +128,6 @@ function SegmentData() {
 
 
     }
-
     const confirm = async (madoan) => {
         try {
             const madoanArray = madoan.split(',').map(item => item.trim());
@@ -308,9 +317,21 @@ function SegmentData() {
                         }}
                     />
                     {selectedKeys.size > 0 ? (
-                        <Button color="danger" size="sm" startContent={<DeleteIcon />} onClick={handleDeleteSegment}>
-                            Delete
-                        </Button>
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={handleDeleteSegment}
+                            // onCancel={cancel}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button color="danger" size="sm" startContent={<DeleteIcon />}
+                            //    onClick={handleDeleteSegment}
+                            >
+                                Delete
+                            </Button>
+                        </Popconfirm>
+
                     ) : ''}
                 </div>
                 <div className="flex justify-between items-center mb-2 gap-5">
@@ -370,6 +391,14 @@ function SegmentData() {
 
     const [numberSegment, setNumberSegment] = useState('');
 
+    useEffect(() => {
+        if (jobSelected != '') {
+            setNumberSegment(dataJob?.data.filter((item) => item.MANGANH === jobSelected))
+        }
+    }, [jobSelected])
+
+
+
 
     return (
         <>
@@ -380,7 +409,14 @@ function SegmentData() {
                     background: "#fff",
                     borderRadius: "10px"
                 }}>
-                    <h1 className="mb-2 text-lg font-medium">Phân đoạn dữ liệu</h1>
+                    <div className="flex gap-2">
+                        <h1 className="mb-2 text-lg font-medium">Phân đoạn dữ liệu</h1>
+                        {notification?.map((notification, index) => (
+                            <Chip key={index} onClose={() => handleClose(notification)} variant="flat" color="primary">
+                                Một học sinh có thể có nhiều ngành yêu thích
+                            </Chip>
+                        ))}
+                    </div>
                     <div className="flex flex-col gap-4 mb-3">
                         <div className="grid grid-cols-4">
                             <Input
@@ -406,6 +442,7 @@ function SegmentData() {
                                         className="max-w-xs"
                                         variant="bordered"
                                         size="sm"
+                                        selectedKey={provinceSelected}
                                         onSelectionChange={(value) => setProvinceSelected(value)}
                                     >
                                         {dataProvince?.map((province) => (
@@ -422,6 +459,7 @@ function SegmentData() {
                                         variant="bordered"
                                         size="sm"
                                         isDisabled={provinceSelected != '' ? false : true}
+                                        selectedKey={schoolSelected}
                                         onSelectionChange={(value) => setSchoolSelected(value)}
                                     >
                                         {dataSchool?.map((school) => (
@@ -438,6 +476,7 @@ function SegmentData() {
                                         variant="bordered"
                                         isDisabled={schoolSelected != '' && dataJob?.allCount > 0 ? false : true}
                                         // onSelectionChange={(value) => setJobSelected(value)}
+                                        selectedKeys={[jobSelected]}
                                         onChange={(e) => setJobSelected(e.target.value)}
                                         size="sm"
                                         listboxProps={{
@@ -494,7 +533,7 @@ function SegmentData() {
 
                     </div >
                     <Table
-                        isCompact
+                        // isCompact
                         removeWrapper
                         aria-label="Example table with custom cells, pagination and sorting"
                         bottomContent={bottomContent}
@@ -547,16 +586,14 @@ function SegmentData() {
                                         />
                                     </div>
                                     <div className="flex">
-                                        <p className="me-2">
+                                        {/* <p className="me-2">
                                             Gợi ý:
-                                        </p>
+                                        </p> */}
                                         <div className="flex gap-1">
-
-                                            {console.log(dataJob?.data.filter((item) => item.MANGANH === jobSelected))}
-
-                                            <Chip className="cursor-pointer">1/2</Chip>
+                                            Dữ liệu khả dụng: {numberSegment[0].count}
+                                            {/* <Chip className="cursor-pointer">1/2</Chip>
                                             <Chip className="cursor-pointer">1/4</Chip>
-                                            <Chip className="cursor-pointer">1/6</Chip>
+                                            <Chip className="cursor-pointer">1/6</Chip> */}
                                         </div>
                                     </div>
                                 </ModalBody>
