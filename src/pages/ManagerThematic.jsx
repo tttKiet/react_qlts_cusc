@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from 'react-hook-form';
 import {
     Table,
     TableHeader,
@@ -13,51 +12,26 @@ import {
     Dropdown,
     DropdownMenu,
     DropdownItem,
-    Chip,
-    User,
     Pagination,
     useDisclosure,
-    Select, SelectItem,
-    RadioGroup,
-    Radio,
     Tooltip,
-    CardHeader,
-    CardBody,
-    Card,
-    Image,
-    Autocomplete,
-    AutocompleteItem,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter
 } from "@nextui-org/react";
-import { PlusIcon } from "../components/icons/PlusIcon";
-import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
 import ModalComponent from "../components/Modal/ModalComponent";
-import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
-import { EyeIcon } from "../components/icons/EyeIcon";
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
-import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
-const statusColorMap = {
-    1: "success",
-    0: "danger",
-};
 import useSWR from 'swr'
-import { API_THEMATIC, API_DATA } from "../constants";
+import { API_THEMATIC, API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
-import FormUser from "../components/body/FormUser";
-import UserService from "../service/UserService";
+import moment from "moment";
 import FormThematic from "../components/body/FormThematic";
+import ThematicService from "../service/ThematicService";
+import { toast } from "react-toastify";
 const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
 function ManagerThematic() {
 
-    const { data: dataThematic } = useSWR(`${API_THEMATIC}/readAll`)
-
+    const { data: dataThematic, mutate: fetchDataThematic } = useSWR(`${API_THEMATIC}/readAll`)
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
     const [jobSelected, setJobSelected] = useState('');
@@ -66,21 +40,10 @@ function ManagerThematic() {
     const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
+    const [record, setRecord] = useState()
+
     // Modal
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
-    const segment = [
-        {
-            label: "5 dòng", value: "5"
-        },
-        {
-            label: "10 dòng", value: "10"
-        },
-        {
-            label: "15 dòng", value: "15"
-        },
-    ]
-
     useEffect(() => {
         if (provinceSelected) {
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
@@ -93,7 +56,6 @@ function ManagerThematic() {
             setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
         }
     }, [schoolSelected])
-    const { data: dataJob } = useSWR(urlJob);
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const data = useMemo(() => {
@@ -102,6 +64,7 @@ function ManagerThematic() {
                 id: index + 1,
                 tenchuyende: thematic?.TENCHUYENDE,
                 tentruong: thematic?.MATRUONG,
+                usermanager: thematic?.usermanager?.HOTEN || 'Trống',
                 ngaythongbao: thematic?.THOIGIANTHONGBAO,
                 ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
                 noidung: thematic?.NOIDUNG
@@ -123,7 +86,7 @@ function ManagerThematic() {
     ];
 
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [total, setTotal] = useState(1);
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "age",
@@ -131,7 +94,6 @@ function ManagerThematic() {
     });
     const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
 
     const headerColumns = useMemo(() => {
@@ -172,8 +134,8 @@ function ManagerThematic() {
         return sortedItems.slice(startIdx, endIdx);
     }, [sortedItems, page, rowsPerPage]);
 
-    const renderCell = useCallback((user, columnKey) => {
-        const cellValue = user[columnKey];
+    const renderCell = useCallback((thematic, columnKey) => {
+        const cellValue = thematic[columnKey];
 
         switch (columnKey) {
             case "thoigianphan":
@@ -193,7 +155,7 @@ function ManagerThematic() {
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="edit">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" >
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => setRecord(thematic)} >
                                 <EditIcon />
                             </span>
                         </Tooltip>
@@ -271,7 +233,22 @@ function ManagerThematic() {
     }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
     const onSubmit = async (data) => {
-        console.log("Data ManagerThermatic", data)
+        try {
+            const currentDay = moment().format('YYYY-MM-DD');
+            const dataThematic = {
+                TENCHUYENDE: data.thematicName,
+                THOIGIANTHONGBAO: currentDay,
+                THOIGIANTOCHUCCHUYENDE: data.dateSelect,
+                NOIDUNG: data.thematicContent,
+                MATRUONG: data.school,
+                SDT: data.usermanager
+            }
+            const res = await ThematicService.createThematic(dataThematic)
+            fetchDataThematic()
+            toast.success(res.message)
+        } catch (e) {
+            toast.error(e.message)
+        }
     }
 
     return (
@@ -292,7 +269,7 @@ function ManagerThematic() {
                                 <Input
                                     isClearable
                                     classNames={{
-                                        base: "w-full sm:max-w-[24%]",
+                                        base: "w-full sm:max-w-[30%]",
                                         inputWrapper: "border-1",
                                     }}
                                     placeholder="Tìm kiếm theo tên chuyên đề"
@@ -338,24 +315,13 @@ function ManagerThematic() {
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-default-400 text-small">Total {data.length} users</span>
-                                <label className="flex items-center text-default-400 text-small">
-                                    Rows per page:
-                                    <select
-                                        className="bg-transparent outline-none text-default-400 text-small"
-                                        onChange={onRowsPerPageChange}
-                                    >
-                                        <option value="5">5</option>
-                                        <option value="10">10</option>
-                                        <option value="15">15</option>
-                                    </select>
-                                </label>
+
                             </div>
                         </div>
                     </div >
 
                     <Table
-                        isCompact
+                        // isCompact
                         removeWrapper
                         aria-label="Example table with custom cells, pagination and sorting"
                         bottomContent={bottomContent}

@@ -6,14 +6,15 @@ import { useParams } from 'react-router-dom';
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
 import { useEffect, useState } from "react";
+import CustomerService from "../service/CustomerService";
+import { toast } from "react-toastify";
 
 function EditData() {
 
     const { id } = useParams();
 
     const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
-    console.log(detailData)
-
+    // console.log(detailData)
     const [fullName, setFullName] = useState("")
     const [province, setProvince] = useState("")
     const [school, setSchool] = useState("")
@@ -32,8 +33,8 @@ function EditData() {
             setPhone(detailData?.SDT)
             setPhoneFather(detailData?.dulieukhachhang?.SDTBA)
             setPhoneMother(detailData?.dulieukhachhang?.SDTME)
-            setFaceBook(detailData?.dulieukhachhang?.facebook)
-            setZalo(detailData?.dulieukhachhang?.zalo)
+            setFaceBook(detailData?.dulieukhachhang?.FACEBOOK)
+            setZalo(detailData?.dulieukhachhang?.SDTZALO)
             setEmail(detailData?.EMAIL)
         }
     }, [detailData])
@@ -64,7 +65,32 @@ function EditData() {
         content: "text-small px-2",
     };
 
-    console.log(contactDetails[0])
+
+    const handleUpdateInfo = async () => {
+        try {
+            const data = {
+                customer: {
+                    SDT: phone,
+                    HOTEN: fullName,
+                    EMAIL: email
+                },
+                data: {
+                    SDTBA: phoneFather,
+                    SDTME: phoneMother,
+                    SDTZALO: zalo,
+                    FACEBOOK: faceBook
+                }
+            }
+
+            const res = await CustomerService.updateCustomer(data);
+            mutate();
+            toast.success(res.message)
+        } catch (e) {
+            toast.error(e.message)
+        }
+
+
+    }
 
     let tabs = [
         {
@@ -118,7 +144,7 @@ function EditData() {
                                 onValueChange={setEmail} />
                         </div>
                         <div className="col-span-2 md:col-span-1 flex items-end">
-                            <Button color="primary">Xác nhận</Button>
+                            <Button color="primary" onClick={handleUpdateInfo}>Xác nhận</Button>
                         </div>
                     </div>
                 </div>
@@ -174,30 +200,16 @@ function EditData() {
                             <Input type="text" label="Hình thức thu thập" />
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Ngành đăng ký"
-                                className="max-w-xs"
-                            >
-                                {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <p>
-                                Ngành yêu thích
-                            </p>
-                            <div className="mt-2">
-                                {detailData?.nganhyeuthich.length != 0 ? detailData?.nganhyeuthich.map((job, index) => (
-                                    <Tag key={index} bordered={false} color="processing">
-                                        {job?.nganh?.TENNGANH}
-                                    </Tag>
-                                )) : 'Trống'}
-                            </div>
+                    <div className=" mb-3">
+                        <p>
+                            Ngành yêu thích
+                        </p>
+                        <div className="mt-2">
+                            {detailData?.nganhyeuthich.length != 0 ? detailData?.nganhyeuthich.map((job, index) => (
+                                <Tag key={index} bordered={false} color="processing">
+                                    {job?.nganh?.TENNGANH}
+                                </Tag>
+                            )) : 'Trống'}
                         </div>
 
                     </div>
@@ -267,9 +279,27 @@ function EditData() {
 
                             </Accordion>
                         </div>
+
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="col-span-2 md:col-span-1">
+                            <Autocomplete
+                                label="Ngành đăng ký"
+                                className="max-w-xs"
+                            >
+                                {animals.map((animal) => (
+                                    <AutocompleteItem key={animal.value} value={animal.value}>
+                                        {animal.label}
+                                    </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                        </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <Button color="primary">Xác nhận</Button>
+                        </div>
                     </div>
 
-                    <Button color="primary">Xác nhận</Button>
+
                 </div>
             )
         }
@@ -405,6 +435,7 @@ function EditData() {
             )
         }
     ];
+
 
 
     return (

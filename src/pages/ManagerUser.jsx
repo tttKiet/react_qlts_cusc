@@ -41,6 +41,7 @@ import { API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
+import { toast } from "react-toastify";
 const INITIAL_VISIBLE_COLUMNS = ["name", "phone", "email", "gender", "role",
     "status", "actions"];
 function ManagerUser() {
@@ -388,10 +389,11 @@ function ManagerUser() {
             try {
                 const res = await UserService.updateUser(dataSend)
                 onClose()
+                toast.success(res.message)
                 mutate()
                 console.log("Data recieved from backend", res)
             } catch (e) {
-                console.log(e)
+                toast.error(e.message)
             }
 
         } else {
@@ -430,7 +432,7 @@ function ManagerUser() {
                 <h1 className="titlePage">Danh sách người dùng</h1>
                 <div className="listUser mt-2">
                     <Table
-                        isCompact
+                        // isCompact
                         removeWrapper
                         aria-label="Example table with custom cells, pagination and sorting"
                         bottomContent={bottomContent}

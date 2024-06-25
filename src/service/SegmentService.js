@@ -15,10 +15,27 @@ const deleteSegment = async (data) => {
 
 }
 
+const divisionSegment = async (data) => {
+    return axios.patch(`${API_DATA}/segment`, data);
+
+}
+
+const updateSegment = async (data) => {
+    // console.log(data)
+    return axios.patch(`${API_DATA}/segment/open-contact`, data);
+}
+
+const refundSegment = async (data) => {
+    return axios.patch(`${API_DATA}/segment/refund-permision`, data);
+}
+
 
 export default {
     createSegment,
-    deleteSegment
+    deleteSegment,
+    divisionSegment,
+    updateSegment,
+    refundSegment
 };
 
 
