@@ -3,17 +3,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"
-
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
+import { useAuth } from "../hooks";
 function HomePage() {
+    const { login } = useAuth();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const navigate = useNavigate();
     const [phone, setPhone] = useState("");
+    const [idCard, setIdCard] = useState("");
     const handleSearch = () => {
-        const phoneRegex = /^0\d{9}$/;
-        if (phone && phoneRegex.test(phone)) {
-            navigate(`/thongtinkhachhang/${phone}`);
-        } else {
-            toast.warning("Số điện thoại sai định dạng");
-        }
+        // const phoneRegex = /^0\d{9}$/;
+        // if (phone && phoneRegex.test(phone)) {
+        //     // navigate(`/thongtinkhachhang/${phone}`);
+        //     onOpen();
+        // } else {
+        //     toast.warning("Số điện thoại sai định dạng");
+        // }
+        onOpen();
+
     };
 
     const handleEnter = (e) => {
@@ -21,6 +28,16 @@ function HomePage() {
             handleSearch();
         }
     };
+
+    const handleLogin = async () => {
+        const res = await login({
+            TENDANGNHAP: idCard,
+            MATKHAU: phone
+        })
+        if (res.statusCode === 200) {
+            navigate(`/thongtinkhachhang`);
+        }
+    }
 
 
     return (
@@ -50,6 +67,29 @@ function HomePage() {
 
 
             </div >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1 pb-1">Căn cước công dân</ModalHeader>
+                            <ModalBody>
+                                <p>
+                                    Vui lòng nhập căn cước công dân để tiến hành tra cứu
+                                </p>
+                                <Input type="text" label="Số căn cước công dân" value={idCard} onValueChange={setIdCard} />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Đóng
+                                </Button>
+                                <Button color="primary" onPress={handleLogin}>
+                                    Tra cứu
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }

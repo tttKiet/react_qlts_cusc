@@ -48,7 +48,8 @@ import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
 import { Link } from "react-router-dom";
-import { Tag } from "antd";
+import { Popconfirm, Tag } from "antd";
+import { toast } from "react-toastify";
 const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "nganh", "actions"];
 function ListData() {
     const [provinceSelected, setProvinceSelected] = useState('');
@@ -87,7 +88,8 @@ function ListData() {
         }
     }, [jobSelected])
 
-    const { data: dataCustomer } = useSWR(`${API_DATA}/customer?${urlCustomer}`)
+    const { data: dataCustomer, mutate: fetchDataCusomter } = useSWR(`${API_DATA}/customer?${urlCustomer}`);
+    // console.log("dataCustomer", dataCustomer)
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const columns = [
@@ -254,9 +256,19 @@ function ListData() {
                             </span>
                         </Tooltip>
                         <Tooltip color="danger" content="Delete user">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                <DeleteIcon />
-                            </span>
+                            <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this task?"
+                                onConfirm={() => confirm(user)}
+                                onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                    <DeleteIcon />
+                                </span>
+                            </Popconfirm>
+
                         </Tooltip>
                     </div>
                 );
@@ -408,6 +420,27 @@ function ListData() {
         [],
     );
 
+
+    const confirm = async (e) => {
+        try {
+            console.log(e);
+            const data = {
+                TENDANGNHAP: e.sdt
+            }
+            const res = await UserService.deleteUser(data);
+            fetchDataCusomter();
+            toast.success(res.message);
+        } catch (e) {
+            console.log(e)
+            toast.error(e)
+        }
+
+    };
+    const cancel = (e) => {
+        console.log(e);
+        message.error('Click on No');
+    };
+
     return (
         <>
             <div className="">
@@ -429,7 +462,7 @@ function ListData() {
                             onSelectionChange={(value) => setProvinceSelected(value)}
                         >
                             {dataProvince?.map((province) => (
-                                <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                <AutocompleteItem key={province.MATINH} value={province.MATINH} >
                                     {province.TENTINH}
                                 </AutocompleteItem>
                             ))}
@@ -447,7 +480,7 @@ function ListData() {
                             onSelectionChange={(value) => setSchoolSelected(value)}
                         >
                             {dataSchool?.map((school) => (
-                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG} >
                                     {school.TENTRUONG}
                                 </AutocompleteItem>
                             ))}

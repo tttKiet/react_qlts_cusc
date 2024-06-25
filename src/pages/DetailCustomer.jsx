@@ -9,13 +9,33 @@ import useSWR from 'swr';
 import { API_CUSTOMER } from '../constants';
 import { toast } from 'react-toastify';
 import { Tag } from 'antd';
+import { useAuth } from '../hooks';
+import { useSelector } from 'react-redux';
 
 function DetailCustomer() {
 
     const navigate = useNavigate();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const { id } = useParams();
-    const { data, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
+    // const { id } = useParams();
+
+    const isAuthenticated = useSelector((state) => state.account.isAuthenticated);
+    const user = useSelector((state) => state.account.user);
+    const { logout } = useAuth();
+
+    if (!isAuthenticated) {
+        return (
+            <div>
+                <Result
+                    status="403"
+                    title="403"
+                    subTitle="Sorry, you are not authorized to access this page."
+                    extra={<Link to={"/"} type="primary"><Button type='primary'>Back Home</Button></Link>}
+                />
+            </div>
+        );
+    }
+
+    const { data, mutate } = useSWR(`${API_CUSTOMER}/${user.SDT_KH}`);
     return (
         <>
             <div>
@@ -168,6 +188,7 @@ function DetailCustomer() {
                                 </div>
                             </div>
                             <div className="btnRegisterAdmission mt-5 flex">
+                                <Button color="danger" onPress={logout} className="me-auto">Đăng xuất</Button>
                                 <Button color="primary" onPress={onOpen} className="ms-auto">Phiếu đăng ký xét tuyển</Button>
                             </div>
                         </div>

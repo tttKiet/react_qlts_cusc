@@ -23,16 +23,17 @@ import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
 import useSWR from 'swr'
 import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
-const INITIAL_VISIBLE_COLUMNS = ["id", "tgphan", "tentruong", "sodong", "madoan", "contacts", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["id", "tgphan", "usermanager", "tentruong", "sodong", "madoan", "contacts", "actions"];
 import moment from 'moment';
-import { Segmented } from 'antd';
+import { Popconfirm, Segmented } from 'antd';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { toast } from "react-toastify";
+import SegmentService from "../service/SegmentService";
 
 function DivisionData() {
 
-    const [value, setValue] = useState('1');
+    const [statusContact, setStatusContact] = useState('');
 
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
@@ -46,10 +47,13 @@ function DivisionData() {
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
     const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment?type=done`)
+    // console.log("dataSegment", dataSegment)
 
     useEffect(() => {
         if (provinceSelected) {
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
+            setSchoolSelected('')
+            setSegmentSelected('')
         }
     }, [provinceSelected])
     const { data: dataSchool } = useSWR(urlSchool)
@@ -57,15 +61,18 @@ function DivisionData() {
     useEffect(() => {
         if (schoolSelected) {
             setUrlJob(`${API_DATA}/segment?schoolCode=${schoolSelected}&type=doing`)
+            setSegmentSelected('')
         }
     }, [schoolSelected])
-    const { data: listSegment } = useSWR(urlJob);
-    console.log(listSegment)
+    const { data: listSegment, mutate: fetchListSegment } = useSWR(urlJob);
+
+    const { data: listUserManager, mutate: fetchUserManager } = useSWR(`${API_USER}/user-manager`)
+
     useEffect(() => {
-        if (!listSegment?.length > 0) {
+        if (listSegment && !listSegment?.length > 0) {
             toast.success("Trường đã phân đoạn hết dữ liệu")
         }
-    }, [listSegment?.length])
+    }, [listSegment, listSegment?.length])
 
     const [filterSearchName, setFillterSearchName] = useState('')
 
@@ -73,6 +80,7 @@ function DivisionData() {
         { name: "STT", uid: "id" },
         { name: "Mã đoạn", uid: "madoan", sortable: true },
         { name: "Thời gian phân", uid: "tgphan", sortable: true },
+        { name: "User manager", uid: "usermanager", sortable: true },
         { name: "Tên trường", uid: "tentruong", sortable: true },
         { name: "Số dòng", uid: "sodong", sortable: true },
         { name: "Mở liên hệ", uid: "contacts" },
@@ -86,9 +94,11 @@ function DivisionData() {
                 id: index + 1,
                 madoan: segment?.MaPQ,
                 tgphan: segment?.THOIGIANPQ,
+                usermanager: segment?.usermanager?.HOTEN,
                 tentruong: segment?.truong?.TENTRUONG,
                 sodong: segment?.Sodong,
-                sdt: segment?.SDT
+                sdt: segment?.SDT,
+                contacts: segment?.TRANGTHAILIENHE
             }
         }) || []
     }, [dataSegment])
@@ -172,6 +182,13 @@ function DivisionData() {
 
                     </div>
                 );
+            case "usermanager":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+
+                    </div>
+                );
             case "tentruong":
                 return (
                     <div className="flex flex-col justify-center">
@@ -190,16 +207,32 @@ function DivisionData() {
             case "contacts":
                 return (
                     <div className="relative flex items-center gap-2">
-                        <Segmented options={options} value={options.value} onChange={setValue} />
+                        <Segmented options={options} value={`${cellValue}`}
+                            onChange={(value) => {
+                                setStatusContact(value);
+                                handleUpdateSegment(segment, value);
+                            }}
+                        />
+
                     </div>
                 );
             case "actions":
                 return (
                     <div className="relative flex items-center gap-2">
-                        <button className="bg-red-500 hover:bg-red-600 text-white font-bold  px-2 py-1 rounded inline-flex items-center ">
-                            <FontAwesomeIcon className="mr-1" icon={faRotateLeft} />
-                            <span>Thu hồi</span>
-                        </button>
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() => confirm(segment)}
+                            onCancel={cancel}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <button className="bg-red-500 hover:bg-red-600 text-white font-bold  px-2 py-1 rounded inline-flex items-center ">
+                                <FontAwesomeIcon className="mr-1" icon={faRotateLeft} />
+                                <span>Thu hồi</span>
+                            </button>
+                        </Popconfirm>
+
                     </div>
                 );
             default:
@@ -267,6 +300,65 @@ function DivisionData() {
             </div>
         );
     }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+
+    const divisionSegment = async () => {
+        try {
+            const dataDivisionSegment = {
+                SDT_USERMANAGER: usermanangerSelected,
+                MAPQ: segmentSelected,
+                TRANGTHAILIENHE: 1
+            }
+            const res = await SegmentService.divisionSegment(dataDivisionSegment)
+            console.log(res)
+            fetchListSegment()
+            setSegmentSelected('')
+            setSchoolSelected('')
+            setUserManagerSelected('')
+            toast.success(res.message)
+            fetchSegment()
+        } catch (e) {
+            console.log(e.message)
+            toast.error(e.message)
+        }
+
+    }
+
+    const handleUpdateSegment = async (segment, contact) => {
+        try {
+            const dataUpdateSegment = {
+                MAPQ: segment.madoan,
+                TRANGTHAILIENHE: contact
+            }
+            const res = await SegmentService.updateSegment(dataUpdateSegment)
+            console.log(res)
+            toast.success(res.message)
+            fetchSegment()
+
+        } catch (e) {
+            console.log(e.message)
+            toast.error(e.message)
+        }
+    };
+
+    const confirm = async (segment) => {
+        try {
+            const dataRefundSegment = {
+                MAPQ: segment.madoan
+            }
+            const res = await SegmentService.refundSegment(dataRefundSegment)
+            console.log(res)
+            toast.success(res.message)
+            fetchSegment()
+        }
+        catch (e) {
+            console.log(e)
+            toast.error(e.message)
+        }
+    };
+    const cancel = (e) => {
+        console.log(e);
+    };
+
     return (
         <>
             <div className="">
@@ -289,6 +381,7 @@ function DivisionData() {
                                     className="max-w-xs"
                                     variant="bordered"
                                     size="sm"
+                                    selectedKey={provinceSelected}
                                     onSelectionChange={(value) => setProvinceSelected(value)}
                                 >
                                     {dataProvince?.map((province) => (
@@ -305,6 +398,7 @@ function DivisionData() {
                                     variant="bordered"
                                     size="sm"
                                     isDisabled={provinceSelected != '' ? false : true}
+                                    selectedKey={schoolSelected}
                                     onSelectionChange={(value) => setSchoolSelected(value)}
                                 >
                                     {dataSchool?.map((school) => (
@@ -320,7 +414,7 @@ function DivisionData() {
                                     className="max-w-xs"
                                     variant="bordered"
                                     isDisabled={schoolSelected != '' ? false : true}
-                                    // onSelectionChange={(value) => setSegmentSelected(value)}
+                                    selectedKeys={[segmentSelected]}
                                     onChange={(e) => setSegmentSelected(e.target.value)}
                                     size="sm"
                                     listboxProps={{
@@ -373,16 +467,17 @@ function DivisionData() {
                                     className="max-w-xs"
                                     variant="bordered"
                                     size="sm"
+                                    selectedKey={usermanangerSelected}
                                     onSelectionChange={(value) => setUserManagerSelected(value)}
                                 >
-                                    {dataSchool?.map((school) => (
-                                        <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
+                                    {listUserManager?.map((usermanager) => (
+                                        <AutocompleteItem key={usermanager.SDT} value={usermanager.SDT}>
+                                            {usermanager.usermanager.HOTEN}
                                         </AutocompleteItem>
                                     ))}
                                 </Autocomplete>
 
-                                <Button color="primary" className="h-100">
+                                <Button color="primary" className="h-100" onClick={divisionSegment}>
                                     Xác nhận
                                 </Button>
                             </div>
