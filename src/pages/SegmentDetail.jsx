@@ -82,10 +82,10 @@ function SegmentDetail() {
                 sdt: user?.SDT,
                 hoten: user?.HOTEN,
                 tentruong: user?.TENTRUONG,
-                email: user?.EMAIL || 'Trống',
-                sdtba: user?.SDTBA || 'Trống',
-                sdtme: user?.SDTME || 'Trống',
-                zalo: user?.SDTZALO || 'Trống',
+                email: (user?.EMAIL === 'Không có' ? 'Trống' : user?.EMAIL) || 'Trống',
+                sdtba: (user?.SDTBA === 'Không có' ? 'Trống' : user?.SDTBA) || 'Trống',
+                sdtme: (user?.SDTME === 'Không có' ? 'Trống' : user?.SDTME) || 'Trống',
+                zalo: (user?.ZALO === 'Không có' ? 'Trống' : user?.ZALO) || 'Trống',
             }
         }) || []
     }, [dataSegmentDetail])

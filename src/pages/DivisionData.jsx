@@ -8,161 +8,133 @@ import {
     TableRow,
     TableCell,
     Input,
-    Button,
     DropdownTrigger,
     Dropdown,
     DropdownMenu,
     DropdownItem,
-    Chip,
-    User,
     Pagination,
-    useDisclosure,
     Select, SelectItem,
-    RadioGroup,
-    Radio,
-    Tooltip,
-    CardHeader,
-    CardBody,
-    Card,
-    Image,
     Autocomplete,
     AutocompleteItem,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter
+    Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
+    Chip
 } from "@nextui-org/react";
-import { PlusIcon } from "../components/icons/PlusIcon";
-import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
-import ModalComponent from "../components/Modal/ModalComponent";
-import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
-import { EyeIcon } from "../components/icons/EyeIcon";
-import { EditIcon } from "../components/icons/EditIcon";
-import { DeleteIcon } from "../components/icons/DeleteIcon";
-import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
-const statusColorMap = {
-    1: "success",
-    0: "danger",
-};
 import useSWR from 'swr'
 import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
-import FormUser from "../components/body/FormUser";
-import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+const INITIAL_VISIBLE_COLUMNS = ["id", "tgphan", "usermanager", "tentruong", "sodong", "madoan", "contacts", "actions"];
+import moment from 'moment';
+import { Popconfirm, Segmented } from 'antd';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons'
+import { toast } from "react-toastify";
+import SegmentService from "../service/SegmentService";
+
 function DivisionData() {
+
+    const [statusContact, setStatusContact] = useState('');
+
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
-    const [jobSelected, setJobSelected] = useState('');
+    const [segmentSelected, setSegmentSelected] = useState('');
+    const [usermanangerSelected, setUserManagerSelected] = useState('');
+
+    const [total, setTotal] = useState(1);
 
     const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
-    const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
+    const [urlJob, setUrlJob] = useState("");
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
-    // Modal
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-    const segment = [
-        {
-            label: "5 dòng", value: "5"
-        },
-        {
-            label: "10 dòng", value: "10"
-        },
-        {
-            label: "15 dòng", value: "15"
-        },
-    ]
+    const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment?type=done`)
+    // console.log("dataSegment", dataSegment)
 
     useEffect(() => {
         if (provinceSelected) {
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
+            setSchoolSelected('')
+            setSegmentSelected('')
         }
     }, [provinceSelected])
     const { data: dataSchool } = useSWR(urlSchool)
 
     useEffect(() => {
         if (schoolSelected) {
-            setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
+            setUrlJob(`${API_DATA}/segment?schoolCode=${schoolSelected}&type=doing`)
+            setSegmentSelected('')
         }
     }, [schoolSelected])
-    const { data: dataJob } = useSWR(urlJob);
+    const { data: listSegment, mutate: fetchListSegment } = useSWR(urlJob);
 
+    const { data: listUserManager, mutate: fetchUserManager } = useSWR(`${API_USER}/user-manager`)
+
+    useEffect(() => {
+        if (listSegment && !listSegment?.length > 0) {
+            toast.success("Trường đã phân đoạn hết dữ liệu")
+        }
+    }, [listSegment, listSegment?.length])
 
     const [filterSearchName, setFillterSearchName] = useState('')
-    const data = [{
-        id: 1,
-        thoigianphan: "7:20",
-        tentruong: "Đại học Cần Thơ",
-        sodong: "10",
-        madoan: "MD1",
-        lienhe1: 1,
-        lienhe2: "1",
-        lienhe3: 0
-    },
-    {
-        id: 2,
-        thoigianphan: "8:30",
-        tentruong: "Trường Kinh Tế Quốc Dân",
-        sodong: "5",
-        madoan: "MD2",
-        lienhe1: 1,
-        lienhe2: 1,
-        lienhe3: 1
-    },
-    {
-        id: 3,
-        thoigianphan: "9:00",
-        tentruong: "Trường Cao Đăng Sư Phạm",
-        sodong: "7",
-        madoan: "MD3",
-        lienhe1: 0,
-        lienhe2: 0,
-        lienhe3: 0
-    }
-    ]
 
     const columns = [
-        { name: "STT", uid: "id", sortable: true },
-        { name: "Thời gian phân", uid: "thoigianphan" },
-        { name: "Tên trường", uid: "tentruong", },
+        { name: "STT", uid: "id" },
         { name: "Mã đoạn", uid: "madoan", sortable: true },
+        { name: "Thời gian phân", uid: "tgphan", sortable: true },
+        { name: "User manager", uid: "usermanager", sortable: true },
+        { name: "Tên trường", uid: "tentruong", sortable: true },
         { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
-        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
-        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+        { name: "Lần liên hệ", uid: "contacts" },
+        { name: "Action", uid: "actions" },
 
     ];
 
+    const data = useMemo(() => {
+        return dataSegment?.map((segment, index) => {
+            return {
+                id: index + 1,
+                madoan: segment?.MaPQ,
+                tgphan: segment?.THOIGIANPQ,
+                usermanager: segment?.usermanager?.HOTEN,
+                tentruong: segment?.truong?.TENTRUONG,
+                sodong: segment?.Sodong,
+                sdt: segment?.SDT,
+                contacts: segment?.TRANGTHAILIENHE
+            }
+        }) || []
+    }, [dataSegment])
+
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortDescriptor, setSortDescriptor] = useState({
-        column: "age",
+        column: "STT",
         direction: "ascending",
     });
     const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
+
 
     const headerColumns = useMemo(() => {
         if (visibleColumns === "all") return columns;
 
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
-
     const filteredItems = useMemo(() => {
         let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.madoan.toLowerCase().includes(filterSearchName.toLowerCase()),
+            );
+        }
+
         return filteredUsers;
     }, [data, filterSearchName]);
-
     const items = useMemo(() => {
-
         return filteredItems;
-    }, [page, filteredItems, rowsPerPage]);
+    }, [filteredItems]);
 
     const sortedItems = useMemo(() => {
         return [...items].sort((a, b) => {
@@ -174,21 +146,51 @@ function DivisionData() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = useCallback((user, columnKey) => {
-        const cellValue = user[columnKey];
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
+    const [record, setRecord] = useState();
+    const [contactTimes, setContactTimes] = useState();
+
+    const options = [
+        {
+            label: "Lần 1", value: "1"
+        },
+        {
+            label: "Lần 2", value: "2"
+        },
+        {
+            label: "Lần 3", value: "3"
+        },
+        {
+            label: "Lần 4", value: "4"
+        },
+        {
+            label: "Lần 5", value: "5"
+        },
+        {
+            label: "Lần 6", value: "6"
+        },
+        {
+            label: "Lần 7", value: "7"
+        },
+        {
+            label: "Đóng", value: "0"
+        },
+    ]
+
+
+    const renderCell = useCallback((segment, columnKey) => {
+        const cellValue = segment[columnKey];
 
         switch (columnKey) {
-            case "thoigianphan":
+            case "tgphan":
                 return (
                     <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue}</span>
-
-                    </div>
-                );
-            case "tentruong":
-                return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                        <span className="text-bold text-small">{moment(cellValue).format('DD-MM-YYYY')}</span>
 
                     </div>
                 );
@@ -199,6 +201,21 @@ function DivisionData() {
 
                     </div>
                 );
+            case "usermanager":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue}</span>
+
+                    </div>
+                );
+            case "tentruong":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+
+                    </div>
+                );
+
             case "sodong":
                 return (
                     <div className="flex flex-col justify-center">
@@ -206,29 +223,35 @@ function DivisionData() {
 
                     </div>
                 );
-            case "lienhe1":
+            case "contacts":
                 return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe2":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe3":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
+                    <div className="relative flex items-center gap-2">
 
+                        <Chip variant="bordered" radius="sm" className="text-black"> {cellValue == 0 ? 'Đóng' : `Lần ${cellValue}`}</Chip>
+                    </div>
+                );
+            case "actions":
+                return (
+                    <div className="relative flex items-center gap-2">
+                        <Chip color="primary" className="text-white cursor-pointer" radius="sm" onClick={() => hanldeOpen(segment)}>
+                            Mở liên hệ
+                        </Chip>
+
+                    </div>
+                );
             default:
                 return cellValue;
         }
     }, []);
+
+    useEffect(() => {
+        if (dataSegment) {
+            const totalPages = Math.ceil(dataSegment.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataSegment, rowsPerPage]);
+
+
     const onRowsPerPageChange = useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
@@ -245,7 +268,6 @@ function DivisionData() {
             }
         }, []);
 
-
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -257,16 +279,102 @@ function DivisionData() {
                     color="default"
                     page={page}
 
-                    total={pages}
+                    total={total}
 
                     variant="light"
                     onChange={(e) => {
                         setPage(e)
                     }}
                 />
+                <div className="flex justify-between items-center mb-2 gap-5">
+                    <span className="text-default-400 text-small">Total {data.length} data</span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                            value={rowsPerPage}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+
+    const divisionSegment = async () => {
+        try {
+            const dataDivisionSegment = {
+                SDT_USERMANAGER: usermanangerSelected,
+                MAPQ: segmentSelected,
+                TRANGTHAILIENHE: 1
+            }
+            const res = await SegmentService.divisionSegment(dataDivisionSegment)
+            console.log(res)
+            fetchListSegment()
+            setSegmentSelected('')
+            setSchoolSelected('')
+            setUserManagerSelected('')
+            toast.success(res.message)
+            fetchSegment()
+        } catch (e) {
+            console.log(e.message)
+            toast.error(e.message)
+        }
+
+    }
+
+    const hanldeOpen = (data) => {
+        console.log("record", data);
+        setRecord(data)
+        setContactTimes(data.contacts);
+        onOpen();
+    }
+
+    // useEffect(() => {
+    //     setRecord();
+    // }, [record])
+
+    const handleUpdateSegment = async (segment, contact) => {
+        try {
+            const dataUpdateSegment = {
+                MAPQ: segment.madoan,
+                TRANGTHAILIENHE: contact
+            }
+            const res = await SegmentService.updateSegment(dataUpdateSegment)
+            // console.log(res)
+            toast.success(res.message)
+            fetchSegment()
+            setContactTimes(contact)
+
+        } catch (e) {
+            console.log(e.message)
+            toast.error(e.message)
+        }
+    };
+
+    const confirm = async (segment) => {
+        try {
+            const dataRefundSegment = {
+                MAPQ: segment.madoan
+            }
+            const res = await SegmentService.refundSegment(dataRefundSegment)
+            console.log(res)
+            toast.success(res.message)
+            fetchSegment()
+            onClose();
+        }
+        catch (e) {
+            console.log(e)
+            toast.error(e.message)
+        }
+    };
+    const cancel = (e) => {
+        console.log(e);
+    };
 
     return (
         <>
@@ -290,6 +398,7 @@ function DivisionData() {
                                     className="max-w-xs"
                                     variant="bordered"
                                     size="sm"
+                                    selectedKey={provinceSelected}
                                     onSelectionChange={(value) => setProvinceSelected(value)}
                                 >
                                     {dataProvince?.map((province) => (
@@ -306,22 +415,24 @@ function DivisionData() {
                                     variant="bordered"
                                     size="sm"
                                     isDisabled={provinceSelected != '' ? false : true}
+                                    selectedKey={schoolSelected}
                                     onSelectionChange={(value) => setSchoolSelected(value)}
                                 >
                                     {dataSchool?.map((school) => (
                                         <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
+                                            {school.TENTRUONG || 'Trống'}
                                         </AutocompleteItem>
                                     ))}
                                 </Autocomplete>
                                 <Select
-                                    items={dataJob || []}
+                                    items={listSegment || []}
                                     aria-labelledby="province-label"
-                                    placeholder="Chọn phân đoạn dữ liệu"
+                                    placeholder="Chọn phân đoạn"
                                     className="max-w-xs"
                                     variant="bordered"
                                     isDisabled={schoolSelected != '' ? false : true}
-                                    onSelectionChange={(value) => setJobSelected(value)}
+                                    selectedKeys={[segmentSelected]}
+                                    onChange={(e) => setSegmentSelected(e.target.value)}
                                     size="sm"
                                     listboxProps={{
                                         itemClasses: {
@@ -346,26 +457,26 @@ function DivisionData() {
                                     }}
                                     renderValue={(items) => {
                                         return items.map((item) => (
-                                            <div key={item.data.MANGANH} className="flex items-center gap-2">
+                                            < div key={item.data.MaPQ} className="flex items-center gap-2" >
                                                 <div className="">
-                                                    <span>{item.data.TENNGANH}</span>
-                                                    <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
+                                                    <span>{item.data.MaPQ}({item.data.Sodong} dòng dữ liệu)</span>
+
                                                 </div>
                                             </div>
                                         ));
                                     }}
                                 >
-                                    {(job) => (
-                                        <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
+                                    {(segment) => (
+                                        <SelectItem key={segment?.MaPQ} textValue={segment.MaPQ} value={segment.MaPQ}>
                                             <div className="flex gap-2 items-center">
-
                                                 <div className="">
-                                                    <span className="text-small">{job.TENNGANH}</span>
-                                                    <span className="text-tiny text-default-400 ms-1">{job.count} dòng dữ liệu</span>
+                                                    <span className="text-small">{segment?.MaPQ}</span>
+                                                    <span className="text-tiny text-default-400 ms-1">{segment?.Sodong} dòng dữ liệu</span>
                                                 </div>
                                             </div>
                                         </SelectItem>
                                     )}
+
                                 </Select>
                                 <Autocomplete
                                     aria-labelledby="province-label"
@@ -373,17 +484,17 @@ function DivisionData() {
                                     className="max-w-xs"
                                     variant="bordered"
                                     size="sm"
-                                    isDisabled={provinceSelected != '' ? false : true}
-                                    onSelectionChange={(value) => setSchoolSelected(value)}
+                                    selectedKey={usermanangerSelected}
+                                    onSelectionChange={(value) => setUserManagerSelected(value)}
                                 >
-                                    {dataSchool?.map((school) => (
-                                        <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
+                                    {listUserManager?.map((usermanager) => (
+                                        <AutocompleteItem key={usermanager.SDT} value={usermanager.SDT}>
+                                            {usermanager.usermanager.HOTEN}
                                         </AutocompleteItem>
                                     ))}
                                 </Autocomplete>
 
-                                <Button color="primary" className="h-100">
+                                <Button color="primary" className="h-100" onClick={divisionSegment}>
                                     Xác nhận
                                 </Button>
                             </div>
@@ -391,7 +502,7 @@ function DivisionData() {
 
                         </div>
                         <div className="flex flex-col gap-2">
-                            <div className="flex justify-between gap-3 items-end">
+                            <div className="flex justify-between gap-3 items-end mb-2">
                                 <Input
                                     isClearable
                                     classNames={{
@@ -436,20 +547,6 @@ function DivisionData() {
 
                                 </div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-default-400 text-small">Total {data.length} users</span>
-                                <label className="flex items-center text-default-400 text-small">
-                                    Rows per page:
-                                    <select
-                                        className="bg-transparent outline-none text-default-400 text-small"
-                                        onChange={onRowsPerPageChange}
-                                    >
-                                        <option value="5">5</option>
-                                        <option value="10">10</option>
-                                        <option value="15">15</option>
-                                    </select>
-                                </label>
-                            </div>
                         </div>
                     </div >
 
@@ -464,7 +561,6 @@ function DivisionData() {
                                 wrapper: "after:bg-foreground after:text-background text-background",
                             },
                         }}
-                        // classNames={classNames}
                         sortDescriptor={sortDescriptor}
 
                         topContentPlacement="outside"
@@ -481,16 +577,56 @@ function DivisionData() {
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
                             {(item) => (
-                                <TableRow key={item.id}>
+                                <TableRow key={item.madoan}>
                                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
-                </div>
-            </div>
+                </div >
+            </div >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" className="w-50">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Thao tác liên hệ</ModalHeader>
+                            <ModalBody>
+                                <div>
+                                    <p className="pb-2">Mở liên hệ</p>
+                                    <div className="flex">
+                                        <Segmented options={options} value={`${contactTimes}`}
+                                            onChange={(value) => {
+                                                setStatusContact(value);
+                                                handleUpdateSegment(record, value);
+                                            }}
+                                        />
+                                        <Popconfirm
+                                            title="Delete the task"
+                                            description="Are you sure to delete this task?"
+                                            onConfirm={() => confirm(record)}
+                                            onCancel={cancel}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <button className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded inline-flex items-center ">
+                                                <FontAwesomeIcon className="mr-1" icon={faRotateLeft} />
+                                                <span>Thu hồi</span>
+                                            </button>
+                                        </Popconfirm>
+                                    </div>
+                                </div>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Đóng
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }

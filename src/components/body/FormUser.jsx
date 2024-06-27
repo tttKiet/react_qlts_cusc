@@ -12,6 +12,8 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
     const [isVisible, setIsVisible] = useState(false);
     const [isVisibleOther, setIsVisibleOther] = useState(false);
 
+    console.log(record)
+
 
     const roleUser = [
         { label: "Admin", value: "admin" },
@@ -28,6 +30,10 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
     });
 
     useEffect(() => {
+
+    })
+
+    useEffect(() => {
         if (Object.keys(record).length !== 0) {
             reset(record)
         }
@@ -42,10 +48,13 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
             <form onSubmit={handleSubmit(handleSubmitForm)}>
                 <div className="grid grid-cols-2 ">
                     <div className="groupInput mx-1">
-                        <Input classNames={{ errorMessage: "text" }} {...register('thematicname')} isInvalid={errors.fullName?.message ? true : false} errorMessage={errors?.fullName?.message} label="Họ và tên" isRequired={false} />
+                        <Input classNames={{ errorMessage: "text" }} {...register('fullName')}
+                            isInvalid={errors.fullName?.message ? true : false} errorMessage={errors?.fullName?.message}
+                            label="Họ và tên" isRequired={false} />
                     </div>
                     <div className="groupInput mx-1">
-                        <Input {...register('email')} label="Email" isInvalid={errors.email?.message ? true : false} errorMessage={errors?.email?.message} isRequired={false} />
+                        <Input {...register('email')} label="Email" isInvalid={errors.email?.message ? true : false}
+                            errorMessage={errors?.email?.message} isRequired={false} />
                     </div>
                 </div>
                 <div className="grid grid-cols-2 my-2">

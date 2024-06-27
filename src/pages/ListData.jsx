@@ -47,7 +47,10 @@ import { API_DATA, API_USER } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "actions"];
+import { Link } from "react-router-dom";
+import { Popconfirm, Tag } from "antd";
+import { toast } from "react-toastify";
+const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "nganh", "actions"];
 function ListData() {
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
@@ -63,7 +66,7 @@ function ListData() {
         if (provinceSelected) {
             setSchoolSelected('')
             setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
-            setUrlCustomer(`provinceCode=${provinceSelected}&schoolCode=`)
+            setUrlCustomer(`provinceCode=${provinceSelected}`)
 
         }
     }, [provinceSelected])
@@ -73,12 +76,20 @@ function ListData() {
         if (schoolSelected) {
             setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
             setUrlCustomer(`provinceCode=${provinceSelected}&schoolCode=${schoolSelected}`)
+
         }
     }, [schoolSelected])
 
     const { data: dataJob } = useSWR(urlJob);
 
-    const { data: dataCustomer } = useSWR(`${API_DATA}/customer?${urlCustomer}`)
+    useEffect(() => {
+        if (jobSelected) {
+            setUrlCustomer(`provinceCode=${provinceSelected}&schoolCode=${schoolSelected}&jobCode=${jobSelected}`)
+        }
+    }, [jobSelected])
+
+    const { data: dataCustomer, mutate: fetchDataCusomter } = useSWR(`${API_DATA}/customer?${urlCustomer}`);
+    // console.log("dataCustomer", dataCustomer)
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const columns = [
@@ -90,6 +101,7 @@ function ListData() {
         { name: "SĐT Mẹ", uid: "sdtme" },
         { name: "Zalo", uid: "zalo" },
         { name: "Tên trường", uid: "tentruong", sortable: true },
+        { name: "Ngành yêu thích", uid: "nganh", sortable: true },
         { name: "Actions", uid: "actions" },
 
     ];
@@ -100,11 +112,12 @@ function ListData() {
                 id: index + 1,
                 sdt: customer?.dulieukhachhang?.SDT || '',
                 hoten: customer?.HOTEN || '',
-                email: customer?.EMAIL || '',
-                sdtba: customer?.dulieukhachhang?.SDTBA || '',
-                sdtme: customer?.dulieukhachhang?.SDTME || '',
-                zalo: customer?.dulieukhachhang?.SDTZALO || '',
+                email: (customer?.EMAIL === 'Không có' ? 'Trống' : customer?.EMAIL) || 'Trống',
+                sdtba: (customer?.SDTBA === 'Không có' ? 'Trống' : customer?.SDTBA) || 'Trống',
+                sdtme: (customer?.SDTME === 'Không có' ? 'Trống' : customer?.SDTME) || 'Trống',
+                zalo: (customer?.ZALO === 'Không có' ? 'Trống' : customer?.ZALO) || 'Trống',
                 tentruong: customer?.truong?.TENTRUONG || '',
+                nganh: customer?.nganhyeuthich,
 
             }
         }) || []
@@ -129,7 +142,7 @@ function ListData() {
         let filteredUsers = [...data];
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((data) =>
-                data.hoten.toLowerCase().includes(filterSearchName.toLowerCase()),
+                data.sdt.toLowerCase().includes(filterSearchName.toLowerCase()),
             );
             setRowsPerPage(100)
         }
@@ -210,23 +223,52 @@ function ListData() {
                         <span className="text-bold text-small">{cellValue}</span>
                     </div>
                 );
+            case "nganh":
+                return (
+                    <div className="flex">
+                        {cellValue?.length > 0 ? (
+                            <>
+                                {cellValue.slice(0, 2).map((job, index) => (
+                                    <Tag key={index} bordered={false} color="processing">
+                                        {job?.MANGANH}
+                                    </Tag>
+                                ))}
+                                {cellValue.length > 2 && <span>...</span>}
+                            </>
+                        ) : (
+                            'Trống'
+                        )}
+                    </div>
+                );
             case "actions":
                 return (
                     <div className="relative flex gap-2">
                         <Tooltip content="Details">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                            <Link to={`/admin/data/${user?.sdt}`} className="text-lg text-default-400 cursor-pointer active:opacity-50" >
                                 <EyeIcon />
-                            </span>
+                            </Link>
                         </Tooltip>
                         <Tooltip content="Edit user">
                             <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <EditIcon />
+                                <Link to={`/admin/data/edit/${user?.sdt}`} className="text-lg text-default-400 cursor-pointer active:opacity-50" >
+                                    <EditIcon />
+                                </Link>
                             </span>
                         </Tooltip>
                         <Tooltip color="danger" content="Delete user">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                <DeleteIcon />
-                            </span>
+                            <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this task?"
+                                onConfirm={() => confirm(user)}
+                                onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                    <DeleteIcon />
+                                </span>
+                            </Popconfirm>
+
                         </Tooltip>
                     </div>
                 );
@@ -262,7 +304,7 @@ function ListData() {
                             base: "w-full sm:max-w-[44%]",
                             inputWrapper: "border-1",
                         }}
-                        placeholder="Search by name..."
+                        placeholder="Tìm kiếm bằng số điện thoại"
                         size="sm"
                         startContent={<SearchIcon className="text-default-300" />}
                         // value={filterSearchName}
@@ -359,24 +401,25 @@ function ListData() {
         );
     }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
-    const classNames = useMemo(
-        () => ({
-            wrapper: ["max-h-[382px]", "max-w-3xl"],
-            th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
-            td: [
-                // changing the rows border radius
-                // first
-                "group-data-[first=true]:first:before:rounded-none",
-                "group-data-[first=true]:last:before:rounded-none",
-                // middle
-                "group-data-[middle=true]:before:rounded-none",
-                // last
-                "group-data-[last=true]:first:before:rounded-none",
-                "group-data-[last=true]:last:before:rounded-none",
-            ],
-        }),
-        [],
-    );
+    const confirm = async (e) => {
+        try {
+            console.log(e);
+            const data = {
+                TENDANGNHAP: e.sdt
+            }
+            const res = await UserService.deleteUser(data);
+            fetchDataCusomter();
+            toast.success(res.message);
+        } catch (e) {
+            console.log(e)
+            toast.error(e)
+        }
+
+    };
+    const cancel = (e) => {
+        console.log(e);
+        message.error('Click on No');
+    };
 
     return (
         <>
@@ -399,7 +442,7 @@ function ListData() {
                             onSelectionChange={(value) => setProvinceSelected(value)}
                         >
                             {dataProvince?.map((province) => (
-                                <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                <AutocompleteItem key={province.MATINH} value={province.MATINH} >
                                     {province.TENTINH}
                                 </AutocompleteItem>
                             ))}
@@ -417,8 +460,8 @@ function ListData() {
                             onSelectionChange={(value) => setSchoolSelected(value)}
                         >
                             {dataSchool?.map((school) => (
-                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                    {school.TENTRUONG}
+                                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG} >
+                                    {school.TENTRUONG || 'Trống'}
                                 </AutocompleteItem>
                             ))}
                         </Autocomplete>
@@ -429,8 +472,9 @@ function ListData() {
                             placeholder="Chọn ngành"
                             className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
                             variant="bordered"
-                            isDisabled={schoolSelected != '' ? false : true}
-                            onSelectionChange={(value) => setJobSelected(value)}
+                            // selectedKeys={jobSelected}
+                            // onSelectionChange={setJobSelected}
+                            onChange={(e) => setJobSelected(e.target.value)}
                             size="sm"
                             listboxProps={{
                                 itemClasses: {

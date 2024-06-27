@@ -38,10 +38,18 @@ const validateFormThematic = yup.object().shape({
     dateSelect: yup
         .string()
         .required('Vui lòng chọn ngày tổ chức'),
-
     thematicContent: yup
         .string()
-        .required('Vui lòng chọn ngày tổ chức'),
+        .required('Vui lòng nhập nội dung'),
+    province: yup
+        .string()
+        .required('Vui lòng chọn tỉnh'),
+    school: yup
+        .string()
+        .required('Vui lòng chọn trường'),
+    usermanager: yup
+        .string()
+        .required('Vui lòng chọn usermanager'),
 });
 
 export default {

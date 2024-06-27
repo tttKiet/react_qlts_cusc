@@ -21,6 +21,11 @@ import TimeLogin from "./pages/TimeLogin";
 import SegmentDetail from "./pages/SegmentDetail";
 import ManagerThematic from "./pages/ManagerThematic";
 import DetailData from "./pages/DetailData";
+import ProfileAdmin from "./pages/ProfileAdmin";
+import EditData from "./pages/EditData";
+import CreateData from "./pages/CreateData";
+import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
+import UserManagerHomePage from "./pages/UserManagerHomePage";
 
 const LayoutOnly = () => {
   return (
@@ -42,7 +47,7 @@ function App() {
           element: <HomePage />
         },
         {
-          path: '/thongtinkhachang',
+          path: '/thongtinkhachhang',
           element: <DetailCustomer />,
 
         },
@@ -50,7 +55,7 @@ function App() {
 
     },
     {
-      path: "/admin/login",
+      path: "/login",
       element: <Login />,
     },
     {
@@ -69,12 +74,20 @@ function App() {
         element: <ProfileUser />
       },
       {
+        path: "add",
+        element: <CreateData />
+      },
+      {
         path: "data",
         element: <ListData />
       },
       {
-        path: "data/detail",
+        path: "data/:id",
         element: <DetailData />
+      },
+      {
+        path: "data/edit/:id",
+        element: <EditData />
       },
       {
         path: "segment",
@@ -96,7 +109,20 @@ function App() {
         path: "thematic",
         element: <ManagerThematic />
       },
+      {
+        path: "profile",
+        element: <ProfileAdmin />
+      },
 
+      ]
+    },
+    {
+      path: "/usermanager",
+      element: <LayoutUserManager />,
+      children: [{
+        index: true,
+        element: <UserManagerHomePage />
+      },
       ]
     }
   ])

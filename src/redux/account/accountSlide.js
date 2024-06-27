@@ -6,8 +6,10 @@ const initialState = {
 
   user: {
     MAADMIN: "",
+    CCCD: "",
     TENDANGNHAP: "",
     SDT: "",
+    SDT_KH: "",
     HOTEN: "",
     GIOITINH: "",
     EMAIL: "",
@@ -24,23 +26,27 @@ export const accountSlice = createSlice({
       state.isAuthenticated = true;
       state.isLoading = false;
 
-      state.user.MAADMIN = action.payload.MAADMIN;
-      state.user.TENDANGNHAP = action.payload.TENDANGNHAP;
-      state.user.SDT = action.payload.SDT;
-      state.user.HOTEN = action.payload.HOTEN;
-      state.user.GIOITINH = action.payload.GIOITINH;
-      state.user.EMAIL = action.payload.EMAIL;
-      state.user.DIACHI = action.payload.DIACHI;
-      state.user.ROLE = action.payload.ROLE;
+      state.user.MAADMIN = action.payload?.MAADMIN;
+      state.user.TENDANGNHAP = action.payload?.TENDANGNHAP;
+      state.user.SDT = action.payload?.SDT;
+      state.user.SDT_KH = action.payload?.SDT_KH;
+      state.user.HOTEN = action.payload?.HOTEN;
+      state.user.GIOITINH = action.payload?.GIOITINH;
+      state.user.EMAIL = action.payload?.EMAIL;
+      state.user.DIACHI = action.payload?.DIACHI;
+      state.user.ROLE = action.payload?.ROLE;
+      state.user.CCCD = action.payload?.CCCD;
     },
 
     doLogoutAction: (state, action) => {
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem("access_token");
       state.isAuthenticated = false;
       state.user = {
         MAADMIN: "",
+        CCCD: "",
         TENDANGNHAP: "",
         SDT: "",
+        SDT_KH: "",
         HOTEN: "",
         GIOITINH: "",
         EMAIL: "",
