@@ -60,7 +60,7 @@ function useAuth() {
     try {
       const res = await AuthService.login({ TENDANGNHAP, MATKHAU });
 
-      console.log('res >>>> ', res);
+      // console.log('res >>>> ', res);
 
       if (res && res.statusCode == 200) {
         // lưu accessToken vô local
