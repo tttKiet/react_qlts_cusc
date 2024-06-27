@@ -35,8 +35,14 @@ const addFileExcelDataCustomerOld = (formData, config) => {
   return axios.post(`${API_FILE}/upload/dataCustomerOld`, formData, config);
 };
 
+const dataFileCustomer = (formData, config) => {
+  return axios.post(`${API_FILE}/upload/dataFileCustomer`, formData, config);
+};
+
 const downLoadFile = (data) => {
-  return axios.post(`file/downLoadFile`, data);
+  return axios.post(`${API_FILE}/downLoadFile`, data, {
+    responseType: "blob", // Chỉ định loại dữ liệu trả về là blob
+  });
 };
 
 export default {
@@ -48,4 +54,5 @@ export default {
   addFileExcelDataCustomerNew,
   addFileExcelDataCustomerOld,
   downLoadFile,
+  dataFileCustomer,
 };
