@@ -392,13 +392,13 @@ function SegmentData() {
     const [numberSegment, setNumberSegment] = useState('');
 
     useEffect(() => {
-        if (jobSelected != '') {
+        if (jobSelected != '' && jobSelected != 0) {
             setNumberSegment(dataJob?.data.filter((item) => item.MANGANH === jobSelected))
+            console.log(dataJob)
+        } else if (jobSelected == 0) {
+            setNumberSegment(0)
         }
     }, [jobSelected])
-
-
-
 
     return (
         <>
@@ -464,7 +464,7 @@ function SegmentData() {
                                     >
                                         {dataSchool?.map((school) => (
                                             <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                                {school.TENTRUONG}
+                                                {school.TENTRUONG || 'Trống'}
                                             </AutocompleteItem>
                                         ))}
                                     </Autocomplete>
@@ -590,7 +590,8 @@ function SegmentData() {
                                             Gợi ý:
                                         </p> */}
                                         <div className="flex gap-1">
-                                            Dữ liệu khả dụng: {numberSegment[0].count}
+                                            Dữ liệu khả dụng: {numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount}
+                                            {/* {console.log(numberSegment[0].count)} */}
                                             {/* <Chip className="cursor-pointer">1/2</Chip>
                                             <Chip className="cursor-pointer">1/4</Chip>
                                             <Chip className="cursor-pointer">1/6</Chip> */}

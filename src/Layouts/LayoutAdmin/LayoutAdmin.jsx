@@ -100,7 +100,9 @@ const LayoutAdmin = () => {
 
             </Sider>
 
-            <Layout>
+            <Layout style={{
+                backgroundColor: "#F0F3F7"
+            }}>
                 <Header
                     className='flex justify-end'
                     style={{
@@ -135,7 +137,6 @@ const LayoutAdmin = () => {
                 <Content
                     style={{
                         margin: '0 16px',
-                        backgroundColor: "#F0F3F7"
                     }}
                 >
                     <Breadcrumbs />

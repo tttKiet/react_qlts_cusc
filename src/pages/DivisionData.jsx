@@ -16,7 +16,8 @@ import {
     Select, SelectItem,
     Autocomplete,
     AutocompleteItem,
-    Button
+    Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
+    Chip
 } from "@nextui-org/react";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
@@ -34,6 +35,8 @@ import SegmentService from "../service/SegmentService";
 function DivisionData() {
 
     const [statusContact, setStatusContact] = useState('');
+
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
     const [provinceSelected, setProvinceSelected] = useState('');
     const [schoolSelected, setSchoolSelected] = useState('');
@@ -83,7 +86,7 @@ function DivisionData() {
         { name: "User manager", uid: "usermanager", sortable: true },
         { name: "Tên trường", uid: "tentruong", sortable: true },
         { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Mở liên hệ", uid: "contacts" },
+        { name: "Lần liên hệ", uid: "contacts" },
         { name: "Action", uid: "actions" },
 
     ];
@@ -149,6 +152,9 @@ function DivisionData() {
         return sortedItems.slice(startIdx, endIdx);
     }, [sortedItems, page, rowsPerPage]);
 
+    const [record, setRecord] = useState();
+    const [contactTimes, setContactTimes] = useState();
+
     const options = [
         {
             label: "Lần 1", value: "1"
@@ -160,9 +166,22 @@ function DivisionData() {
             label: "Lần 3", value: "3"
         },
         {
+            label: "Lần 4", value: "4"
+        },
+        {
+            label: "Lần 5", value: "5"
+        },
+        {
+            label: "Lần 6", value: "6"
+        },
+        {
+            label: "Lần 7", value: "7"
+        },
+        {
             label: "Đóng", value: "0"
         },
     ]
+
 
     const renderCell = useCallback((segment, columnKey) => {
         const cellValue = segment[columnKey];
@@ -207,31 +226,16 @@ function DivisionData() {
             case "contacts":
                 return (
                     <div className="relative flex items-center gap-2">
-                        <Segmented options={options} value={`${cellValue}`}
-                            onChange={(value) => {
-                                setStatusContact(value);
-                                handleUpdateSegment(segment, value);
-                            }}
-                        />
 
+                        <Chip variant="bordered" radius="sm" className="text-black"> {cellValue == 0 ? 'Đóng' : `Lần ${cellValue}`}</Chip>
                     </div>
                 );
             case "actions":
                 return (
                     <div className="relative flex items-center gap-2">
-                        <Popconfirm
-                            title="Delete the task"
-                            description="Are you sure to delete this task?"
-                            onConfirm={() => confirm(segment)}
-                            onCancel={cancel}
-                            okText="Yes"
-                            cancelText="No"
-                        >
-                            <button className="bg-red-500 hover:bg-red-600 text-white font-bold  px-2 py-1 rounded inline-flex items-center ">
-                                <FontAwesomeIcon className="mr-1" icon={faRotateLeft} />
-                                <span>Thu hồi</span>
-                            </button>
-                        </Popconfirm>
+                        <Chip color="primary" className="text-white cursor-pointer" radius="sm" onClick={() => hanldeOpen(segment)}>
+                            Mở liên hệ
+                        </Chip>
 
                     </div>
                 );
@@ -323,6 +327,17 @@ function DivisionData() {
 
     }
 
+    const hanldeOpen = (data) => {
+        console.log("record", data);
+        setRecord(data)
+        setContactTimes(data.contacts);
+        onOpen();
+    }
+
+    // useEffect(() => {
+    //     setRecord();
+    // }, [record])
+
     const handleUpdateSegment = async (segment, contact) => {
         try {
             const dataUpdateSegment = {
@@ -330,9 +345,10 @@ function DivisionData() {
                 TRANGTHAILIENHE: contact
             }
             const res = await SegmentService.updateSegment(dataUpdateSegment)
-            console.log(res)
+            // console.log(res)
             toast.success(res.message)
             fetchSegment()
+            setContactTimes(contact)
 
         } catch (e) {
             console.log(e.message)
@@ -349,6 +365,7 @@ function DivisionData() {
             console.log(res)
             toast.success(res.message)
             fetchSegment()
+            onClose();
         }
         catch (e) {
             console.log(e)
@@ -403,7 +420,7 @@ function DivisionData() {
                                 >
                                     {dataSchool?.map((school) => (
                                         <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                            {school.TENTRUONG}
+                                            {school.TENTRUONG || 'Trống'}
                                         </AutocompleteItem>
                                     ))}
                                 </Autocomplete>
@@ -570,6 +587,46 @@ function DivisionData() {
                     </Table>
                 </div >
             </div >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" className="w-50">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Thao tác liên hệ</ModalHeader>
+                            <ModalBody>
+                                <div>
+                                    <p className="pb-2">Mở liên hệ</p>
+                                    <div className="flex">
+                                        <Segmented options={options} value={`${contactTimes}`}
+                                            onChange={(value) => {
+                                                setStatusContact(value);
+                                                handleUpdateSegment(record, value);
+                                            }}
+                                        />
+                                        <Popconfirm
+                                            title="Delete the task"
+                                            description="Are you sure to delete this task?"
+                                            onConfirm={() => confirm(record)}
+                                            onCancel={cancel}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <button className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded inline-flex items-center ">
+                                                <FontAwesomeIcon className="mr-1" icon={faRotateLeft} />
+                                                <span>Thu hồi</span>
+                                            </button>
+                                        </Popconfirm>
+                                    </div>
+                                </div>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Đóng
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }
