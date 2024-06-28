@@ -28,34 +28,18 @@ import moment from "moment";
 import FormThematic from "../components/body/FormThematic";
 import ThematicService from "../service/ThematicService";
 import { toast } from "react-toastify";
+import FormThematicEdit from "../components/body/FormThematicEdit";
+import ModalThematic from "../components/Modal/ModalThematic";
 const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
 function ManagerThematic() {
 
     const { data: dataThematic, mutate: fetchDataThematic } = useSWR(`${API_THEMATIC}/readAll`)
-    const [provinceSelected, setProvinceSelected] = useState('');
-    const [schoolSelected, setSchoolSelected] = useState('');
-    const [jobSelected, setJobSelected] = useState('');
-
-    const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
-    const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
-    const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
-
-    const [record, setRecord] = useState()
+    const [record, setRecord] = useState();
+    // console.log(dataThematic)
 
     // Modal
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    useEffect(() => {
-        if (provinceSelected) {
-            setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`)
-        }
-    }, [provinceSelected])
-    const { data: dataSchool } = useSWR(urlSchool)
-
-    useEffect(() => {
-        if (schoolSelected) {
-            setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`)
-        }
-    }, [schoolSelected])
+    const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit, onClose: onCloseEdit } = useDisclosure();
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const data = useMemo(() => {
@@ -67,7 +51,8 @@ function ManagerThematic() {
                 usermanager: thematic?.usermanager?.HOTEN || 'Trống',
                 ngaythongbao: thematic?.THOIGIANTHONGBAO,
                 ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
-                noidung: thematic?.NOIDUNG
+                noidung: thematic?.NOIDUNG,
+                sdt: thematic?.SDT
 
             }
         }) || []
@@ -155,7 +140,7 @@ function ManagerThematic() {
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="edit">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => setRecord(thematic)} >
+                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => hanldeShowEdit(thematic)} >
                                 <EditIcon />
                             </span>
                         </Tooltip>
@@ -244,6 +229,31 @@ function ManagerThematic() {
                 SDT: data.usermanager
             }
             const res = await ThematicService.createThematic(dataThematic)
+            fetchDataThematic()
+            toast.success(res.message)
+        } catch (e) {
+            toast.error(e.message)
+        }
+    }
+
+    const hanldeShowEdit = (data) => {
+        setRecord(data)
+        onOpenEdit()
+    }
+
+    const onSubmitEdit = async (data) => {
+        try {
+            console.log(data)
+            const ngaytochucFormat = moment(data.ngaytochuc).format("YYYY-MM-DD")
+            const dataThematicEdit = {
+                TENCHUYENDE: data.tenchuyende,
+                THOIGIANTOCHUCCHUYENDE: ngaytochucFormat,
+                NOIDUNG: data.noidung,
+                MATRUONG: data.tentruong,
+                SDT: data.sdt
+            }
+            console.log("dataThematicEdit", dataThematicEdit)
+            const res = await ThematicService.updateThematic(dataThematicEdit)
             fetchDataThematic()
             toast.success(res.message)
         } catch (e) {
@@ -356,9 +366,12 @@ function ManagerThematic() {
                         </TableBody>
                     </Table>
                 </div>
-                <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={onClose} size="2xl" okModal="Thêm người dùng" cancelModal="Đóng"  >
+                <ModalThematic footer={false} isOpen={isOpen} onOpen={onOpen} onClose={onClose} size="2xl" >
                     <FormThematic onClose={onClose} onSubmit={onSubmit} />
-                </ModalComponent>
+                </ModalThematic>
+                <ModalThematic footer={false} isOpen={isOpenEdit} onOpen={onOpenEdit} onClose={onCloseEdit} size="2xl" okModal="Thêm người dùng" cancelModal="Đóng" title="Chỉnh sửa chuyên đề" >
+                    <FormThematicEdit onClose={onCloseEdit} onSubmit={onSubmitEdit} record={record} />
+                </ModalThematic>
             </div>
         </>
     );

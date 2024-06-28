@@ -8,7 +8,7 @@ function ModalComponent({ isOpen, onOpen, onClose, title, okModal, cancelModal, 
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1">{title || 'Modal tạo người dùng'}</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">{title || 'Tạo người dùng'}</ModalHeader>
                         <ModalBody>
                             {children}
                         </ModalBody>

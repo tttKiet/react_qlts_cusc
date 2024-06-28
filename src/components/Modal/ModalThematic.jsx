@@ -8,7 +8,7 @@ function ModalThematic({ isOpen, onOpen, onClose, title, okModal, cancelModal, s
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1">{title || 'Modal tạo người dùng'}</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1">{title || 'Thêm chuyên đề'}</ModalHeader>
                         <ModalBody>
                             {children}
                         </ModalBody>

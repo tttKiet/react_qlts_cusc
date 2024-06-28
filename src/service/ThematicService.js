@@ -5,8 +5,13 @@ const createThematic = async (data) => {
     return axios.post(`${API_THEMATIC}/create`, data)
 }
 
+const updateThematic = async (data) => {
+    return axios.put(`${API_THEMATIC}/update`, data)
+}
+
 export default {
-    createThematic
+    createThematic,
+    updateThematic
 };
 
 
