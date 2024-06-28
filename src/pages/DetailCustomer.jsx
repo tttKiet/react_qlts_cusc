@@ -98,9 +98,12 @@ function DetailCustomer() {
       if (res && res.statusCode === 200) {
         toast.success("Upload file thành công");
         onOpenChange(false);
+        mutate();
       }
     } catch (error) {
-      toast.error(error);
+      if (error.statusCode == 500 || error.statusCode == 422) {
+        toast.error("Dữ liệu file có vấn đề nhé  !!!");
+      }
       console.error("Error while uploading file:", error);
     }
   };

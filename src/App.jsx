@@ -26,6 +26,8 @@ import EditData from "./pages/EditData";
 import CreateData from "./pages/CreateData";
 import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
+import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
+import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
 
 const LayoutOnly = () => {
   return (
@@ -44,88 +46,99 @@ function App() {
       children: [
         {
           index: true,
-          element: <HomePage />
+          element: <HomePage />,
         },
         {
-          path: '/thongtinkhachhang',
+          path: "/thongtinkhachhang",
           element: <DetailCustomer />,
-
         },
-      ]
-
+      ],
     },
     {
       path: "/login",
       element: <Login />,
     },
+
+    // ADMIN
     {
       path: "/admin",
-      element: <LayoutAdmin />,
-      children: [{
-        index: true,
-        element: <AdminHomePage />
-      },
-      {
-        path: "user",
-        element: <ManagerUser />
-      },
-      {
-        path: "detail",
-        element: <ProfileUser />
-      },
-      {
-        path: "add",
-        element: <CreateData />
-      },
-      {
-        path: "data",
-        element: <ListData />
-      },
-      {
-        path: "data/:id",
-        element: <DetailData />
-      },
-      {
-        path: "data/edit/:id",
-        element: <EditData />
-      },
-      {
-        path: "segment",
-        element: <SegmentData />
-      },
-      {
-        path: "segment/:id",
-        element: <SegmentDetail />
-      },
-      {
-        path: "division",
-        element: <DivisionData />
-      },
-      {
-        path: "time",
-        element: <TimeLogin />
-      },
-      {
-        path: "thematic",
-        element: <ManagerThematic />
-      },
-      {
-        path: "profile",
-        element: <ProfileAdmin />
-      },
-
-      ]
+      element: (
+        <ProtectedRoute>
+          <LayoutAdmin />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          index: true,
+          element: <AdminHomePage />,
+        },
+        {
+          path: "user",
+          element: <ManagerUser />,
+        },
+        {
+          path: "detail",
+          element: <ProfileUser />,
+        },
+        {
+          path: "add",
+          element: <CreateData />,
+        },
+        {
+          path: "data",
+          element: <ListData />,
+        },
+        {
+          path: "data/:id",
+          element: <DetailData />,
+        },
+        {
+          path: "data/edit/:id",
+          element: <EditData />,
+        },
+        {
+          path: "segment",
+          element: <SegmentData />,
+        },
+        {
+          path: "segment/:id",
+          element: <SegmentDetail />,
+        },
+        {
+          path: "division",
+          element: <DivisionData />,
+        },
+        {
+          path: "time",
+          element: <TimeLogin />,
+        },
+        {
+          path: "thematic",
+          element: <ManagerThematic />,
+        },
+        {
+          path: "profile",
+          element: <ProfileAdmin />,
+        },
+      ],
     },
+
+    // USER MANAGER
     {
       path: "/usermanager",
-      element: <LayoutUserManager />,
-      children: [{
-        index: true,
-        element: <UserManagerHomePage />
-      },
-      ]
-    }
-  ])
+      element: (
+        <ProtectedRouteUserManager>
+          <LayoutUserManager />
+        </ProtectedRouteUserManager>
+      ),
+      children: [
+        {
+          index: true,
+          element: <UserManagerHomePage />,
+        },
+      ],
+    },
+  ]);
 
   return (
     <>
