@@ -338,21 +338,29 @@ function DivisionData() {
     //     setRecord();
     // }, [record])
 
+    const [isDisableSegment, setIsDisableSegment] = useState(false);
+
     const handleUpdateSegment = async (segment, contact) => {
         try {
+            setIsDisableSegment(true)
             const dataUpdateSegment = {
                 MAPQ: segment.madoan,
                 TRANGTHAILIENHE: contact
             }
             const res = await SegmentService.updateSegment(dataUpdateSegment)
             // console.log(res)
-            toast.success(res.message)
-            fetchSegment()
-            setContactTimes(contact)
+            if (res.statusCode === 200) {
+                toast.success(res.message)
+                fetchSegment()
+                setContactTimes(contact)
+                setIsDisableSegment(false)
+            }
+
 
         } catch (e) {
             console.log(e.message)
             toast.error(e.message)
+            setIsDisableSegment(false)
         }
     };
 
@@ -601,6 +609,7 @@ function DivisionData() {
                                                 setStatusContact(value);
                                                 handleUpdateSegment(record, value);
                                             }}
+                                            disabled={isDisableSegment}
                                         />
                                         <Popconfirm
                                             title="Delete the task"
