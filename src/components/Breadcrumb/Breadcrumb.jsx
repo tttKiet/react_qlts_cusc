@@ -16,6 +16,7 @@ const breadcrumbNameMap = {
     '/admin/profile': 'Thông tin cá nhân',
     '/admin/user/detail': 'Chi tiết người dùng',
     '/usermanager': 'Trang chủ',
+    '/usermanager/data': 'Danh sách dữ liệu',
 };
 
 const getBreadcrumbName = (pathname) => {

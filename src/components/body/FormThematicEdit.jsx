@@ -6,7 +6,6 @@ import { API_DATA, API_USER } from "../../constants";
 import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 
 function FormThematicEdit({ onClose, onSubmit, record }) {
-    console.log("record", record);
 
     // Khởi tạo URL để fetch danh sách trường
     const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
@@ -20,7 +19,7 @@ function FormThematicEdit({ onClose, onSubmit, record }) {
     // Khởi tạo state
     const [provinceSelected, setProvinceSelected] = useState(provinceCode);
     const [schoolSelected, setSchoolSelected] = useState(record?.tentruong);
-    const [dateSelected, setDateSelected] = useState(parseDate(record?.ngaythongbao));
+    const [dateSelected, setDateSelected] = useState(parseDate(record?.ngaytochuc));
     const [nameThematic, setNameThematic] = useState(record?.tenchuyende);
     const [usermanager, setUsermanager] = useState(record?.sdt);
     const [contentThematic, setContentThematic] = useState(record?.noidung);
@@ -36,7 +35,7 @@ function FormThematicEdit({ onClose, onSubmit, record }) {
 
     const handleSubmitForm = () => {
         const data = {
-            id: record?.id,
+            id: record?.machuyende,
             ngaytochuc: dateSelected,
             noidung: contentThematic,
             sdt: usermanager,
