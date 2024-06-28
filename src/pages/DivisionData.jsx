@@ -333,11 +333,6 @@ function DivisionData() {
         setContactTimes(data.contacts);
         onOpen();
     }
-
-    // useEffect(() => {
-    //     setRecord();
-    // }, [record])
-
     const [isDisableSegment, setIsDisableSegment] = useState(false);
 
     const handleUpdateSegment = async (segment, contact) => {
@@ -348,7 +343,6 @@ function DivisionData() {
                 TRANGTHAILIENHE: contact
             }
             const res = await SegmentService.updateSegment(dataUpdateSegment)
-            // console.log(res)
             if (res.statusCode === 200) {
                 toast.success(res.message)
                 fetchSegment()

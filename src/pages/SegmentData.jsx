@@ -49,6 +49,7 @@ function SegmentData() {
     const [urlJob, setUrlJob] = useState(`${API_DATA}/job-like`);
     const { data: dataProvince, mutate } = useSWR(`${API_DATA}/province`)
 
+
     // Modal
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
@@ -121,6 +122,7 @@ function SegmentData() {
             fetchSegment();
             fetchJob();
             setJobSelected('')
+            setSelectedKeys([])
         }
         catch (e) {
             toast.error(e.message)
@@ -230,13 +232,13 @@ function SegmentData() {
                             variant="flat"
                             color="success"
                         >
-                            Success
+                            Đã phân công
                         </Chip>) : (<Chip
                             className="text-tiny"
                             variant="flat"
                             color="warning"
                         >
-                            Watting
+                            Đợi phân công
                         </Chip>)}
 
 
@@ -365,12 +367,24 @@ function SegmentData() {
             newErorrs.segment = 'Vui lòng nhập giá trị phân đoạn'
         } if (Object.keys(newErorrs).length === 0) {
             setErrors({})
-            const dataSend = {
-                ...(jobSelected != 0 ? { MANGANH: jobSelected } : {}),
-                MATRUONG: schoolSelected,
-                SODONG: segment
+            let dataSend = {};
+            if (jobSelected === 'NG08') {
+                dataSend = {
+                    ...(jobSelected != 0 ? { MANGANH: jobSelected } : {}),
+                    MATRUONG: schoolSelected,
+                    SODONG: segment,
+                    NHOMNGANH: typeMajorsSelected
+                }
+            } else {
+                dataSend = {
+                    ...(jobSelected != 0 ? { MANGANH: jobSelected } : {}),
+                    MATRUONG: schoolSelected,
+                    SODONG: segment
+                }
             }
+
             try {
+                console.log("dataSend", dataSend)
                 const res = await SegmentService.createSegment(dataSend)
                 console.log(res)
                 toast.success(res.message)
@@ -390,15 +404,34 @@ function SegmentData() {
     }
 
     const [numberSegment, setNumberSegment] = useState('');
+    const [typeMajors, setTypeMajors] = useState([]);
+    const [typeMajorsSelected, setTypeMajorsSelected] = useState();
 
     useEffect(() => {
         if (jobSelected != '' && jobSelected != 0) {
-            setNumberSegment(dataJob?.data.filter((item) => item.MANGANH === jobSelected))
-            console.log(dataJob)
+            if (jobSelected === 'NG08') {
+                setTypeMajors(dataJob.dataDir)
+                setNumberSegment(dataJob.dataDir[0].count)
+                setTypeMajorsSelected(`${dataJob.dataDir[0].MANHOMNGANH}`)
+            } else {
+                setNumberSegment(dataJob?.data.filter((item) => item.MANGANH === jobSelected))
+                setTypeMajors([])
+            }
+
         } else if (jobSelected == 0) {
             setNumberSegment(0)
         }
     }, [jobSelected])
+
+    useEffect(() => {
+        const numberSegmentTypeMarjorsSelected = dataJob?.dataDir?.find((item) => item.MANHOMNGANH == typeMajorsSelected).count
+        setNumberSegment(numberSegmentTypeMarjorsSelected)
+    }, [typeMajorsSelected])
+
+    const handleCloseModal = () => {
+        setSegment(0)
+        onClose()
+    }
 
     return (
         <>
@@ -514,7 +547,6 @@ function SegmentData() {
                                         {(job) => (
                                             <SelectItem key={job.MANGANH} textValue={job.TENNGANH} value={jobSelected}>
                                                 <div className="flex gap-2 items-center">
-
                                                     <div className="">
                                                         <span className="text-small">{job.TENNGANH}</span>
                                                         <span className="text-tiny text-default-400 ms-1">{job.count} dòng khả dụng</span>
@@ -577,29 +609,36 @@ function SegmentData() {
                             <>
                                 <ModalHeader className="flex flex-col gap-1">Phân đoạn dữ liệu</ModalHeader>
                                 <ModalBody>
-                                    <div className="">
+                                    <div className="flex gap-2">
+                                        {jobSelected && jobSelected === "NG08" && (
+                                            <Autocomplete
+                                                label="Chọn nhóm ngành"
+                                                defaultItems={typeMajors}
+                                                className="max-w-xs"
+                                                selectedKey={typeMajorsSelected}
+                                                onSelectionChange={setTypeMajorsSelected}
+                                            >
+                                                {(item) => <AutocompleteItem key={item.MANHOMNGANH} value={item.MANHOMNGANH} textValue={item.TENNHOMNGANH}>{item.TENNHOMNGANH} {item.count} dòng khả dụng</AutocompleteItem>}
+                                            </Autocomplete>
+                                        )}
                                         <Input type="Number"
-                                            label="Nhập số lượng phân đoạn"
+                                            label="Nhập số lượng dòng trên 1 đoạn"
                                             value={segment} onValueChange={setSegment}
                                             isInvalid={errors && errors.segment ? true : false}
                                             errorMessage={errors && errors.segment}
                                         />
                                     </div>
                                     <div className="flex">
-                                        {/* <p className="me-2">
-                                            Gợi ý:
-                                        </p> */}
                                         <div className="flex gap-1">
-                                            Dữ liệu khả dụng: {numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount}
+                                            {/* Dữ liệu khả dụng: {numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount} */}
+                                            Dữ liệu khả dụng: {jobSelected === 'NG08' ? numberSegment : (numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount)}
+                                            {/* {console.log("numberSegment", numberSegment)} */}
                                             {/* {console.log(numberSegment[0].count)} */}
-                                            {/* <Chip className="cursor-pointer">1/2</Chip>
-                                            <Chip className="cursor-pointer">1/4</Chip>
-                                            <Chip className="cursor-pointer">1/6</Chip> */}
                                         </div>
                                     </div>
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={onClose}>
+                                    <Button color="danger" variant="light" onPress={handleCloseModal}>
                                         Đóng
                                     </Button>
                                     <Button color="primary" isDisabled={segment > 0 ? false : true} onPress={handleSegment}>

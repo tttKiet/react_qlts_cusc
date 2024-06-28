@@ -30,6 +30,7 @@ import ThematicService from "../service/ThematicService";
 import { toast } from "react-toastify";
 import FormThematicEdit from "../components/body/FormThematicEdit";
 import ModalThematic from "../components/Modal/ModalThematic";
+import { Popconfirm } from "antd";
 const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
 function ManagerThematic() {
 
@@ -46,6 +47,7 @@ function ManagerThematic() {
         return dataThematic?.map((thematic, index) => {
             return {
                 id: index + 1,
+                machuyende: thematic?.MACHUYENDE,
                 tenchuyende: thematic?.TENCHUYENDE,
                 tentruong: thematic?.MATRUONG,
                 usermanager: thematic?.usermanager?.HOTEN || 'Trống',
@@ -145,9 +147,19 @@ function ManagerThematic() {
                             </span>
                         </Tooltip>
                         <Tooltip color="danger" content="Delete">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50" >
-                                <DeleteIcon />
-                            </span>
+                            <Popconfirm
+                                title="Delete the task"
+                                description="Are you sure to delete this task?"
+                                onConfirm={() => confirm(thematic)}
+                                onCancel={cancel}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+
+                                <span className="text-lg text-danger cursor-pointer active:opacity-50" >
+                                    <DeleteIcon />
+                                </span>
+                            </Popconfirm>
                         </Tooltip>
                     </div>
                 );
@@ -243,23 +255,41 @@ function ManagerThematic() {
 
     const onSubmitEdit = async (data) => {
         try {
-            console.log(data)
             const ngaytochucFormat = moment(data.ngaytochuc).format("YYYY-MM-DD")
             const dataThematicEdit = {
+                MACHUYENDE: data.id,
                 TENCHUYENDE: data.tenchuyende,
                 THOIGIANTOCHUCCHUYENDE: ngaytochucFormat,
                 NOIDUNG: data.noidung,
                 MATRUONG: data.tentruong,
                 SDT: data.sdt
             }
-            console.log("dataThematicEdit", dataThematicEdit)
             const res = await ThematicService.updateThematic(dataThematicEdit)
             fetchDataThematic()
             toast.success(res.message)
+            setRecord(null)
         } catch (e) {
             toast.error(e.message)
         }
     }
+
+    const confirm = async (e) => {
+        try {
+            const data = {
+                MACHUYENDE: e.machuyende
+            }
+            const res = await ThematicService.deleteThematic(data);
+            fetchDataThematic()
+            toast.success(res.message)
+
+        } catch (e) {
+            console.log(e)
+            toast.error(e)
+        }
+    };
+    const cancel = (e) => {
+        console.log(e);
+    };
 
     return (
         <>
@@ -285,7 +315,6 @@ function ManagerThematic() {
                                     placeholder="Tìm kiếm theo tên chuyên đề"
                                     size="sm"
                                     startContent={<SearchIcon className="text-default-300" />}
-                                    // value={filterSearchName}
                                     variant="bordered"
                                     onClear={() => setFillterSearchName("")}
                                     onValueChange={debounce(onSearchChange, 300)}
@@ -311,7 +340,6 @@ function ManagerThematic() {
                                         >
                                             {columns.map((column) => (
                                                 <DropdownItem key={column.uid} className="capitalize">
-                                                    {/* {capitalize(column.name)} */}
                                                     {column.name}
                                                 </DropdownItem>
                                             ))}

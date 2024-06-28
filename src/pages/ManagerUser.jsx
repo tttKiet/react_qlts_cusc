@@ -298,7 +298,7 @@ function ManagerUser() {
                             size="sm"
                             onPress={onOpen}
                         >
-                            Add New
+                            Thêm người dùng
                         </Button>
                     </div>
                 </div>
@@ -391,7 +391,7 @@ function ManagerUser() {
                 onClose()
                 toast.success(res.message)
                 mutate()
-                console.log("Data recieved from backend", res)
+                setRecord({})
             } catch (e) {
                 toast.error(e.message)
             }
@@ -413,9 +413,11 @@ function ManagerUser() {
                     console.log(res.message)
                     toast.success(res.message)
                     onClose()
+                    setRecord({})
                 }
             } catch (e) {
                 console.log(e)
+                toast.error(e.message)
             }
         }
     }

@@ -26,6 +26,7 @@ import EditData from "./pages/EditData";
 import CreateData from "./pages/CreateData";
 import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
+import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 
 const LayoutOnly = () => {
   return (
@@ -122,6 +123,10 @@ function App() {
       children: [{
         index: true,
         element: <UserManagerHomePage />
+      },
+      {
+        path: "data",
+        element: <ManagerDataUsermanager />
       },
       ]
     }
