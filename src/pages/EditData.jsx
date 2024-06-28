@@ -1,6 +1,6 @@
 import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone, faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, CardHeader, CardBody, Divider, Tabs, Tab, Chip, Input, Button, Autocomplete, AutocompleteItem, Accordion, AccordionItem, DatePicker, Select, SelectItem } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider, Tabs, Tab, Chip, Input, Button, Autocomplete, AutocompleteItem, Accordion, AccordionItem, DatePicker, Select, SelectItem, useSwitch } from "@nextui-org/react";
 import { Tag } from "antd";
 import { useParams } from 'react-router-dom';
 import useSWR from "swr";
@@ -8,6 +8,7 @@ import { API_CUSTOMER, API_DATA } from "../constants";
 import { useEffect, useState } from "react";
 import CustomerService from "../service/CustomerService";
 import { toast } from "react-toastify";
+import { parseDate } from "@internationalized/date";
 
 function EditData() {
 
@@ -22,6 +23,33 @@ function EditData() {
         { label: "Gần công nghệ thông tin", value: "gcntt" },
     ]
 
+    const detailStatus = [
+        { value: "Chưa liên hệ", label: "Chưa liên hệ" },
+        { value: "Tài chính", label: "Tài chính" },
+        { value: "Cá nhân", label: "Cá nhân" },
+        { value: "Bằng cấp", label: "Bằng cấp" },
+        { value: "Việc làm", label: "Việc làm" },
+        { value: "Liên thông", label: "Liên thông" },
+        { value: "Chương trình", label: "Chương trình" },
+        { value: "Chất lượng", label: "Chất lượng" },
+        { value: "Xem lại", label: "Xem lại" },
+        { value: "Thời gian", label: "Thời gian" },
+        { value: "Không liên lạc được", label: "Không liên lạc được" },
+        { value: "Không nghe máy", label: "Không nghe máy" },
+        { value: "Không phải số", label: "Không phải số" },
+        { value: "Trùng", label: "Trùng" },
+        { value: "Tự liên lạc", label: "Tự liên lạc" },
+        { value: "Đang học", label: "Đang học" },
+        { value: "Đang bận", label: "Đang bận" },
+        { value: "Sinh viên", label: "Sinh viên" },
+        { value: "Học sinh lớp 10", label: "Học sinh lớp 10" },
+        { value: "Học sinh lớp 11", label: "Học sinh lớp 11" },
+        { value: "Không quan tâm", label: "Không quan tâm" },
+        { value: "Người đi làm", label: "Người đi làm" },
+        { value: "Học trường khác", label: "Học trường khác" },
+        { value: "Nhắn lại", label: "Nhắn lại" },
+    ]
+
     const { id } = useParams();
     // API doituong
     const { data: dataThematic, mutate: fetchDataThematic } = useSWR(`${API_DATA}/table-thematic`);
@@ -31,7 +59,10 @@ function EditData() {
     const { data: dataCourse, mutate: fetchDataCourse } = useSWR(`${API_DATA}/table-course`);
     const { data: dataGraduation, mutate: fetchDataGraduation } = useSWR(`${API_DATA}/table-graduation`);
     const { data: dataJobRegister, mutate: fetchDataJobRegister } = useSWR(`${API_DATA}/table-majors`);
-    console.log("dataGraduation", dataJobRegister)
+    const { data: dataTypeMajors, mutate: fetchDataTypeMajors } = useSWR(`${API_DATA}/table-type-majors`)
+    // console.log("dataGraduation", dataJobRegister)
+    const { data: dataStatus, mutate: fetchDataStatus } = useSWR(`${API_DATA}/status`)
+    console.log("DataStatus", dataStatus)
 
     const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
     console.log(detailData)
@@ -65,9 +96,14 @@ function EditData() {
             setFaceBook(detailData?.dulieukhachhang?.FACEBOOK)
             setZalo(detailData?.dulieukhachhang?.SDTZALO)
             setEmail(detailData?.EMAIL)
-            setThematic([detailData.chitietchuyende[0].MACHUYENDE] || "")
-            setOption([detailData?.chitietchuyende[0].TRANGTHAI])
-            setJob(detailData?.nghenghiep.MANGHENGHIEP)
+            if (detailData?.chitietchuyende.length > 0) {
+                setThematic([detailData.chitietchuyende[0].MACHUYENDE])
+                setOption([detailData?.chitietchuyende[0].TRANGTHAI])
+            }
+            if (detailData?.nghenghiep != null) {
+                setJob(detailData?.nghenghiep.MANGHENGHIEP || "")
+            }
+
             setChannel(detailData?.phieudkxettuyen.MAKENH)
             setCourse(`${detailData?.phieudkxettuyen.MALOAIKHOAHOC}`)
             setGraduation(`${detailData?.phieudkxettuyen.MAKETQUA}`)
@@ -75,20 +111,23 @@ function EditData() {
         }
     }, [detailData])
 
-    useEffect(() => {
-        console.log("course", course)
-    }, [course])
+    // useEffect(() => {
+    //     console.log("detailData.chitietchuyende[0].MACHUYENDE", detailData.chitietchuyende)
+    // }, [detailData])
 
 
     const contactDetails = [1, 2, 3].map(lan => {
         const contact = detailData?.lienhe.find(c => c.LAN == lan);
         return {
             LAN: lan,
-            THOIGIAN: contact ? contact.THOIGIAN : 'Trống',
-            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : 'Trống',
-            KETQUA: contact ? contact.KETQUA : 'Trống',
+            THOIGIAN: contact ? parseDate(contact.THOIGIAN) : null,
+            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : "",
+            KETQUA: contact ? contact.KETQUA : "",
+            TRANGTHAI: contact ? contact.MATRANGTHAI : ""
         };
     });
+
+    console.log("contactDetails", contactDetails)
 
 
 
@@ -253,7 +292,7 @@ function EditData() {
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
                             <Select
-                                items={dataThematic}
+                                items={dataThematic || []}
                                 label="Chuyên đề tham gia"
                                 variant="bordered"
                                 labelPlacement="inside"
@@ -287,7 +326,6 @@ function EditData() {
                             <Select
                                 label="Lựa chọn"
                                 variant="bordered"
-                                placeholder="Select an animal"
                                 selectedKeys={option}
 
                                 onChange={(e) => setOption([e.target.value])}
@@ -430,12 +468,12 @@ function EditData() {
                                 <Autocomplete
                                     label="Chọn loại ngành"
                                     variant="bordered"
-                                    defaultItems={selectOther}
+                                    defaultItems={dataTypeMajors}
 
                                     selectedKey={typeJob}
                                     onSelectionChange={setTypeJob}
                                 >
-                                    {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                    {(item) => <AutocompleteItem key={item.MANHOMNGANH} value={item.MANHOMNGANH}>{item.TENNHOMNGANH}</AutocompleteItem>}
                                 </Autocomplete>
                             </div>
                         ) : ""}
@@ -467,39 +505,40 @@ function EditData() {
                 <div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
-                            <DatePicker label="Ngày liên hệ" className="max-w-[284px]" />
+                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[0].THOIGIAN} onChange={() => { }} isDisabled />
                         </div>
                         <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
+                            <div className="col-span-2 md:col-span-1">
+                                <Autocomplete
+                                    label="Trạng thái"
+                                    selectedKey={contactDetails[0].TRANGTHAI} isDisabled
+                                >
+                                    {dataStatus?.map((status) => (
+                                        <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
+                                            {status.TENTRANGTHAI}
+                                        </AutocompleteItem>
+                                    ))}
+                                </Autocomplete>
+                            </div>
 
-                            >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
-                                    </AutocompleteItem>
-                                ))} */}
-                            </Autocomplete>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
+                        <Autocomplete
+                            label="Chi tiết trạng thái"
+                            selectedKey={contactDetails[0].CHITIETTRANGTHAI}
+                            isDisabled
+                        >
+                            {detailStatus?.map((detail) => (
+                                <AutocompleteItem key={detail.value} value={detail.value}>
+                                    {detail.label}
+                                </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
                         <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-
-                            >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
-                                    </AutocompleteItem>
-                                ))} */}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" />
+                            <Input type="text" label="Kết quả" value={contactDetails[0].KETQUA} onChange={() => { }} isDisabled />
                         </div>
                     </div>
-                    <Button color="primary">Xác nhận</Button>
                 </div>
             )
         },
@@ -510,18 +549,18 @@ function EditData() {
                 <div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
-                            <DatePicker label="Ngày liên hệ" className="max-w-[284px]" />
+                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[1].THOIGIAN} onChange={() => { }} isDisabled />
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
                                 label="Trạng thái"
-
+                                selectedKey={contactDetails[1].TRANGTHAI} isDisabled
                             >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
+                                {dataStatus?.map((status) => (
+                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
+                                        {status.TENTRANGTHAI}
                                     </AutocompleteItem>
-                                ))} */}
+                                ))}
                             </Autocomplete>
                         </div>
                     </div>
@@ -529,20 +568,20 @@ function EditData() {
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
                                 label="Chi tiết trạng thái"
-
+                                selectedKey={contactDetails[1].CHITIETTRANGTHAI}
+                                isDisabled
                             >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
+                                {detailStatus?.map((detail) => (
+                                    <AutocompleteItem key={detail.value} value={detail.value}>
+                                        {detail.label}
                                     </AutocompleteItem>
-                                ))} */}
+                                ))}
                             </Autocomplete>
                         </div>
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" />
+                            <Input type="text" label="Kết quả" value={contactDetails[1].KETQUA} onChange={() => { }} isDisabled />
                         </div>
                     </div>
-                    <Button color="primary">Xác nhận</Button>
                 </div>
             )
         },
@@ -553,18 +592,18 @@ function EditData() {
                 <div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
-                            <DatePicker label="Ngày liên hệ" className="max-w-[284px]" />
+                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[2].THOIGIAN} onChange={() => { }} isDisabled />
                         </div>
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
                                 label="Trạng thái"
-
+                                selectedKey={contactDetails[2].TRANGTHAI} isDisabled
                             >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
+                                {dataStatus?.map((status) => (
+                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
+                                        {status.TENTRANGTHAI}
                                     </AutocompleteItem>
-                                ))} */}
+                                ))}
                             </Autocomplete>
                         </div>
                     </div>
@@ -572,20 +611,20 @@ function EditData() {
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
                                 label="Chi tiết trạng thái"
-
+                                selectedKey={contactDetails[2].CHITIETTRANGTHAI}
+                                isDisabled
                             >
-                                {/* {animals.map((animal) => (
-                                    <AutocompleteItem key={animal.value} value={animal.value}>
-                                        {animal.label}
+                                {detailStatus?.map((detail) => (
+                                    <AutocompleteItem key={detail.value} value={detail.value}>
+                                        {detail.label}
                                     </AutocompleteItem>
-                                ))} */}
+                                ))}
                             </Autocomplete>
                         </div>
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" />
+                            <Input type="text" label="Kết quả" value={contactDetails[2].KETQUA} onChange={() => { }} isDisabled />
                         </div>
                     </div>
-                    <Button color="primary">Xác nhận</Button>
                 </div>
             )
         }
