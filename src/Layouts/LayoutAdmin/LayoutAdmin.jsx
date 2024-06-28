@@ -55,7 +55,7 @@ const LayoutAdmin = () => {
     }, [location]);
 
     const handleClick = (e) => {
-        setCurrent(e.key);
+        setCurrent(e.key); 
     };
 
     const { profile, isLoading } = useAuth();
