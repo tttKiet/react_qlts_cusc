@@ -603,7 +603,7 @@ function SegmentData() {
                         </TableBody>
                     </Table>
                 </div>
-                <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
                     <ModalContent>
                         {(onClose) => (
                             <>

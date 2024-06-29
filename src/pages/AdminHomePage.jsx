@@ -2,7 +2,7 @@ import { faClipboardList, faDatabase, faEllipsisVertical, faPencil, faPlus, faSc
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown, message, Space } from 'antd';
 import useSWR from "swr";
-import { API_CHART, API_THEMATIC } from "../constants";
+import { API_CHART, API_NOTE, API_THEMATIC } from "../constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 const INITIAL_VISIBLE_COLUMNS = ["id", "usermanager", "segment", "contact_1", "contact_2", "contact_3", "contact_4", "contact_5", "contact_6", "contact_7"];
 import {
@@ -15,13 +15,18 @@ import {
     Pagination,
     Tooltip, Progress, User
 } from "@nextui-org/react";
+import { useSelector } from "react-redux";
+import moment from "moment"
+import { toast } from "react-toastify";
+import NoteService from "../service/NoteService";
 function AdminHomePage() {
-
+    const user = useSelector((state) => state.account.user);
     const { data: dataStatic, mutate: fetchDataStatic } = useSWR(`${API_CHART}/admin?page=home&index=1`);
     const { data: dataAdmission, mutate: fetchDataAdmission } = useSWR(`${API_CHART}/admin?page=home&index=2`);
 
     const { data: dataSegment, mutate: fetchDataSegment } = useSWR(`${API_CHART}/admin?page=home&index=3`);
     // console.log("dataSegment", dataSegment);
+    const { data: dataNote, mutate: fetchDataNote } = useSWR(`${API_NOTE}/readAll?MAADMIN=${user.MAADMIN}`)
     const data = useMemo(() => {
         return dataSegment?.map((segment, index) => {
             return {
@@ -260,6 +265,46 @@ function AdminHomePage() {
         );
     }, [data.length, page, rowsPerPage, total]);
 
+    const [note, setNote] = useState("")
+
+    const handleCreateNote = async () => {
+        try {
+            const currentDay = new Date();
+            const data = {
+                MAADMIN: user.MAADMIN,
+                NOIDUNG: note,
+                THOIGIAN: currentDay,
+                TRANGTHAI: 0
+            }
+            const res = await NoteService.createNote(data);
+            fetchDataNote()
+            toast.success(res.message)
+            setNote("")
+        } catch (e) {
+            console.log(e)
+            toast.error(e.message[0])
+        }
+    }
+
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') {
+            handleCreateNote()
+        }
+    }
+
+    const handleDeleteNote = async (e) => {
+        try {
+            const STT = e.STT;
+            const res = await NoteService.deleteUser(STT)
+            toast.success(res.message)
+            fetchDataNote()
+        } catch (e) {
+            console.log(e)
+            toast.error(e.message)
+        }
+    }
+
+
     return (
         <>
             <div>
@@ -477,81 +522,52 @@ function AdminHomePage() {
                                     <h2 className="mb-2 text-medium font-medium text-center py-2">Ghi chú</h2>
                                 </div>
                                 <div className="content min-h-64 max-h-64 overflow-y-auto">
-
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
-
+                                    {dataNote && dataNote.length > 0 ? (
+                                        dataNote.map((note, index) => (
+                                            <div key={index} className="note my-2">
+                                                <div className="grid grid-cols-12">
+                                                    <User className="col-span-2"
+                                                        avatarProps={{
+                                                            src: "https://i.pinimg.com/564x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg"
+                                                        }}
+                                                    />
+                                                    <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
+                                                        <p className="font-medium">{user.HOTEN}</p>
+                                                        <p>{note.NOIDUNG}</p>
+                                                    </div>
+                                                    <Dropdown className="col-span-1 m-auto"
+                                                        menu={{
+                                                            items: [
+                                                                {
+                                                                    label: <p className="font-medium text-red-500" onClick={() => handleDeleteNote(note)}>Xóa</p>,
+                                                                    key: '0',
+                                                                },
+                                                            ]
+                                                        }}
+                                                        trigger={['click']}
+                                                    >
+                                                        <a onClick={(e) => e.preventDefault()}>
+                                                            <Space>
+                                                                <FontAwesomeIcon icon={faEllipsisVertical} />
+                                                            </Space>
+                                                        </a>
+                                                    </Dropdown>
+                                                </div>
+                                                <div className="timeCreateNote text-end text-xs text-gray-400">
+                                                    {moment(note.THOIGIAN).format("DD-MM-YYYY HH:mm")}
+                                                </div>
                                             </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items: [
-                                                        {
-                                                            label: <p className="font-medium text-red-500">Xóa</p>,
-                                                            key: '0',
-                                                        },
-                                                    ]
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
+                                        ))
+                                    ) : (
+                                        <div className="text-center text-gray-500">Không có ghi chú nào.</div>
+                                    )}
 
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items: [
-                                                        {
-                                                            label: <p className="font-medium text-red-500">Xóa</p>,
-                                                            key: '0',
-                                                        },
-                                                    ]
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
 
                                 </div>
                                 <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
-                                        <input type="text" className="outline-none  h-10 px-2" placeholder="Viết ghi chú" />
-                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-yellow-400 m-auto p-2 rounded-full text-white" icon={faPencil} /></div>
+                                        <input type="text" className="outline-none  h-10 px-2" placeholder="Viết ghi chú" value={note} onChange={(value) => setNote(value.target.value)} onKeyDown={handleEnter} />
+                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-yellow-400 m-auto p-2 rounded-full text-white" icon={faPencil} onClick={handleCreateNote} /></div>
                                     </div>
                                 </div>
                             </div>

@@ -28,6 +28,9 @@ import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
 import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
 import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
+import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
+import DetailDataUsermanager from "./pages/DetailDataUsermanager";
+import EditDataUsermanager from "./pages/EditDataUsermanager";
 
 const LayoutOnly = () => {
   return (
@@ -135,6 +138,18 @@ function App() {
         {
           index: true,
           element: <UserManagerHomePage />,
+        },
+        {
+          path: "data",
+          element: <ManagerDataUsermanager />,
+        },
+        {
+          path: "data/:id",
+          element: <DetailDataUsermanager />,
+        },
+        {
+          path: "data/edit/:id",
+          element: <EditDataUsermanager />,
         },
       ],
     },
