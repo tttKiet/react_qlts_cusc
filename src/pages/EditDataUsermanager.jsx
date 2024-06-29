@@ -9,8 +9,11 @@ import { useEffect, useState } from "react";
 import CustomerService from "../service/CustomerService";
 import { toast } from "react-toastify";
 import { parseDate } from "@internationalized/date";
+import FormContact from "../components/body/FormContact";
 
-function EditData() {
+function EditDataUsermanager() {
+
+    const [selectedTimes, setSelectedTimes] = useState(1);
 
     const options = [
         { label: "Đồng ý", value: "Đồng ý" },
@@ -62,10 +65,9 @@ function EditData() {
     const { data: dataTypeMajors, mutate: fetchDataTypeMajors } = useSWR(`${API_DATA}/table-type-majors`)
     // console.log("dataGraduation", dataJobRegister)
     const { data: dataStatus, mutate: fetchDataStatus } = useSWR(`${API_DATA}/status`)
-    console.log("DataStatus", dataStatus)
+    // console.log("DataStatus", dataStatus)
 
     const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
-    console.log(detailData)
     const [fullName, setFullName] = useState("")
     const [province, setProvince] = useState("")
     const [school, setSchool] = useState("")
@@ -84,6 +86,8 @@ function EditData() {
     const [jobRegister, setJobRegister] = useState("")
     const [typeJob, setTypeJob] = useState("")
     const [jobInput, setJobInput] = useState("")
+
+    const [statusContact, setStatusContact] = useState("")
 
     useEffect(() => {
         if (detailData) {
@@ -108,29 +112,21 @@ function EditData() {
             setCourse(`${detailData?.phieudkxettuyen.MALOAIKHOAHOC}`)
             setGraduation(`${detailData?.phieudkxettuyen.MAKETQUA}`)
             setJobRegister(detailData?.phieudkxettuyen.NGANHDK)
+            setStatusContact(detailData?.segment.TRANGTHAILIENHE)
         }
     }, [detailData])
+
+
+    console.log("statusContact", statusContact)
+
+    const classDisable = 'pointer-events-none opacity-50';
 
     // useEffect(() => {
     //     console.log("detailData.chitietchuyende[0].MACHUYENDE", detailData.chitietchuyende)
     // }, [detailData])
 
 
-    const contactDetails = [1, 2, 3, 4, 5, 6, 7].map(lan => {
-        const contact = detailData?.lienhe.find(c => c.LAN == lan);
-        return {
-            LAN: lan,
-            THOIGIAN: contact ? parseDate(contact.THOIGIAN) : null,
-            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : "",
-            KETQUA: contact ? contact.KETQUA : "",
-            TRANGTHAI: contact ? contact.MATRANGTHAI : ""
-        };
-    });
-
-    console.log("contactDetails", contactDetails)
-
-
-
+    // console.log("contactDetails", contactDetails)
     const itemClasses = {
         base: "py-0 w-full",
         title: "font-normal text-medium",
@@ -497,311 +493,18 @@ function EditData() {
             )
         }
     ];
-    let contacts = [
-        {
-            id: "contact1",
-            label: "Liên hệ lần 1",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[0].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <div className="col-span-2 md:col-span-1">
-                                <Autocomplete
-                                    label="Trạng thái"
-                                    selectedKey={contactDetails[0].TRANGTHAI} isDisabled
-                                >
-                                    {dataStatus?.map((status) => (
-                                        <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                            {status.TENTRANGTHAI}
-                                        </AutocompleteItem>
-                                    ))}
-                                </Autocomplete>
-                            </div>
 
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <Autocomplete
-                            label="Chi tiết trạng thái"
-                            selectedKey={contactDetails[0].CHITIETTRANGTHAI}
-                            isDisabled
-                        >
-                            {detailStatus?.map((detail) => (
-                                <AutocompleteItem key={detail.value} value={detail.value}>
-                                    {detail.label}
-                                </AutocompleteItem>
-                            ))}
-                        </Autocomplete>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[0].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact2",
-            label: "Liên hệ lần 2",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[1].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[1].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[1].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[1].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact3",
-            label: "Liên hệ lần 3",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[2].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[2].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[2].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[2].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact4",
-            label: "Liên hệ lần 4",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[3].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[3].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[3].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[3].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact5",
-            label: "Liên hệ lần 5",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[4].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[4].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[4].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[4].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact6",
-            label: "Liên hệ lần 6",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[5].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[5].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[5].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[5].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: "contact7",
-            label: "Liên hệ lần 7",
-            content: (
-                <div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <DatePicker className="max-w-[284px]" label="Ngày liên hệ" value={contactDetails[6].THOIGIAN} onChange={() => { }} isDisabled />
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Trạng thái"
-                                selectedKey={contactDetails[6].TRANGTHAI} isDisabled
-                            >
-                                {dataStatus?.map((status) => (
-                                    <AutocompleteItem key={status.MATRANGTHAI} value={status.MATRANGTHAI}>
-                                        {status.TENTRANGTHAI}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="col-span-2 md:col-span-1">
-                            <Autocomplete
-                                label="Chi tiết trạng thái"
-                                selectedKey={contactDetails[6].CHITIETTRANGTHAI}
-                                isDisabled
-                            >
-                                {detailStatus?.map((detail) => (
-                                    <AutocompleteItem key={detail.value} value={detail.value}>
-                                        {detail.label}
-                                    </AutocompleteItem>
-                                ))}
-                            </Autocomplete>
-                        </div>
-                        <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Kết quả" value={contactDetails[6].KETQUA} onChange={() => { }} isDisabled />
-                        </div>
-                    </div>
-                </div>
-            )
+    const onSubmit = async (data) => {
+        try {
+            const res = await CustomerService.updateContact(data)
+            console.log(res)
+            mutate()
+            toast.success(res.message)
+        } catch (e) {
+            console.log(e)
+            toast.error(e.message)
         }
-    ];
-
+    }
 
 
     return (
@@ -830,15 +533,12 @@ function EditData() {
                     <div className="col-span-5 md:col-span-2">
                         <Card>
                             <CardBody>
-                                <Tabs aria-label="Dynamic tabs" items={contacts} variant="light">
-                                    {(item) => (
-                                        <Tab key={item.id} title={item.label}>
-                                            <div>
-                                                {item.content}
-                                            </div>
-
-                                        </Tab>
-                                    )}
+                                <Tabs aria-label="Dynamic tabs" variant="light" selectedKey={selectedTimes}
+                                    onSelectionChange={setSelectedTimes}>
+                                    {[1, 2, 3, 4, 5, 6, 7].map((lan) =>
+                                        <Tab key={lan} title={`Liên hệ lần ${lan}`}>
+                                            <FormContact onSubmit={onSubmit} lan={lan} statusContact={statusContact} />
+                                        </Tab>)}
                                 </Tabs>
                             </CardBody>
                         </Card>
@@ -851,4 +551,4 @@ function EditData() {
     );
 }
 
-export default EditData;
+export default EditDataUsermanager;

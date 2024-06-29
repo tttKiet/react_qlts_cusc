@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
 
-function DetailData() {
+function DetailDataUsermanager() {
 
     const { id } = useParams();
 
@@ -140,13 +140,8 @@ function DetailData() {
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Hồ sơ</p>
-                                    <div className="max-w-[400px]">
-                                        {/* <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p> */}
-                                        <div>{detailData?.phieudkxettuyen.hoso.length > 0 ? (
-                                            detailData?.phieudkxettuyen.hoso.map((item, index) => (
-                                                <p key={index}>{item.HOSO}</p>
-                                            ))
-                                        ) : 'Trống'}</div>
+                                    <div>
+                                        <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p>
                                     </div>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
@@ -183,7 +178,6 @@ function DetailData() {
                         </Card>
                     </div>
                 </div>
-
                 <div className="grid grid-cols-4 mt-4 gap-4">
                     {contactDetails.map((contact, index) => (
                         <div key={index} className="col-span-4 md:col-span-1">
@@ -219,8 +213,6 @@ function DetailData() {
                     ))}
 
                 </div>
-
-
             </div >
 
 
@@ -228,4 +220,4 @@ function DetailData() {
     );
 }
 
-export default DetailData;
+export default DetailDataUsermanager;

@@ -511,7 +511,7 @@ function DivisionData() {
                     base: "w-full sm:max-w-[24%]",
                     inputWrapper: "border-1",
                   }}
-                  placeholder="Search by name..."
+                  placeholder="Tìm kiếm theo mã đoạn"
                   size="sm"
                   startContent={<SearchIcon className="text-default-300" />}
                   // value={filterSearchName}

@@ -14,10 +14,15 @@ const updateRegister = async (data) => {
     return axios.post(`${API_CUSTOMER}/edit-registration`, data)
 }
 
+const updateContact = async (data) => {
+    return axios.post(`${API_CUSTOMER}/contact`, data)
+}
+
 export default {
     updateCustomer,
     updateObject,
-    updateRegister
+    updateRegister,
+    updateContact
 };
 
 
