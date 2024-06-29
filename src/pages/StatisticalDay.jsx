@@ -48,13 +48,13 @@ function StatisticalDay() {
 
   const labelsChartJS = useMemo(() => {
     return chart?.map((item) => {
-      return item.thoigian;
+      return item?.thoigian;
     });
   }, [chart]);
 
   const dataChearJS = useMemo(() => {
     return chart?.map((item) => {
-      return item.solan;
+      return item?.solan;
     });
   }, [chart]);
 

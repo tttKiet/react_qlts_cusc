@@ -122,13 +122,13 @@ function StatisticalContact() {
   // handleDataChart1
   const labelsChartJS1 = useMemo(() => {
     return chartContact?.data?.map((item) => {
-      return item.LAN;
+      return item?.LAN;
     });
   }, [chartContact]);
 
   const dataCharrJS1 = useMemo(() => {
     return chartContact?.data?.map((item) => {
-      return item.SOLAN;
+      return item?.SOLAN;
     });
   }, [chartContact]);
 
@@ -145,22 +145,22 @@ function StatisticalContact() {
   // handleDataChart21
   const labelsChartJS21 = useMemo(() => {
     return chartContact?.contactStatus?.lan_1?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS21 = useMemo(() => {
     return chartContact?.contactStatus?.lan_1?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart21 = {
-    labels: labelsChartJS21,
+    labels: labelsChartJS21 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS21,
+        data: dataCharrJS21 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -174,22 +174,22 @@ function StatisticalContact() {
   // handleDataChart22
   const labelsChartJS22 = useMemo(() => {
     return chartContact?.contactStatus?.lan_2?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS22 = useMemo(() => {
     return chartContact?.contactStatus?.lan_2?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart22 = {
-    labels: labelsChartJS22,
+    labels: labelsChartJS22 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS22,
+        data: dataCharrJS22 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -203,22 +203,22 @@ function StatisticalContact() {
   // handleDataChart23
   const labelsChartJS23 = useMemo(() => {
     return chartContact?.contactStatus?.lan_3?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS23 = useMemo(() => {
     return chartContact?.contactStatus?.lan_3?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart23 = {
-    labels: labelsChartJS23,
+    labels: labelsChartJS23 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS23,
+        data: dataCharrJS23 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -232,22 +232,22 @@ function StatisticalContact() {
   // handleDataChart24
   const labelsChartJS24 = useMemo(() => {
     return chartContact?.contactStatus?.lan_4?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS24 = useMemo(() => {
     return chartContact?.contactStatus?.lan_4?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart24 = {
-    labels: labelsChartJS24,
+    labels: labelsChartJS24 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS24,
+        data: dataCharrJS24 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -261,22 +261,22 @@ function StatisticalContact() {
   // handleDataChart25
   const labelsChartJS25 = useMemo(() => {
     return chartContact?.contactStatus?.lan_5?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS25 = useMemo(() => {
     return chartContact?.contactStatus?.lan_5?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart25 = {
-    labels: labelsChartJS25,
+    labels: labelsChartJS25 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS25,
+        data: dataCharrJS25 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -290,22 +290,22 @@ function StatisticalContact() {
   // handleDataChart26
   const labelsChartJS26 = useMemo(() => {
     return chartContact?.contactStatus?.lan_6?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS26 = useMemo(() => {
     return chartContact?.contactStatus?.lan_6?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart26 = {
-    labels: labelsChartJS26,
+    labels: labelsChartJS26 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS26,
+        data: dataCharrJS26 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -318,22 +318,22 @@ function StatisticalContact() {
   // handleDataChart27
   const labelsChartJS27 = useMemo(() => {
     return chartContact?.contactStatus?.lan_7?.map((item) => {
-      return item.TENTRANGTHAI;
+      return item?.TENTRANGTHAI;
     });
   }, [chartContact]);
 
   const dataCharrJS27 = useMemo(() => {
     return chartContact?.contactStatus?.lan_7?.map((item) => {
-      return item.percent;
+      return item?.percent;
     });
   }, [chartContact]);
 
   const dataChart27 = {
-    labels: labelsChartJS27,
+    labels: labelsChartJS27 || [],
     datasets: [
       {
         label: "%",
-        data: dataCharrJS27,
+        data: dataCharrJS27 || [],
         backgroundColor: [
           "rgb(255, 99, 132)",
           "rgb(54, 162, 235)",
@@ -416,53 +416,53 @@ function StatisticalContact() {
         <Bar data={dataChart1} />
       </div>
       <div className="border flex flex-wrap justify-between">
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 1
           </div>
           <Pie data={dataChart21} />
         </div>
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 2
           </div>
           <Pie data={dataChart22} />
         </div>
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 3
           </div>
 
           <Pie data={dataChart23} />
         </div>
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 4
           </div>
 
-          <Pie data={dataChart23} />
+          <Pie data={dataChart24} />
         </div>
       </div>
       <div className="border flex flex-wrap justify-between">
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 5
           </div>
 
-          <Pie data={dataChart23} />
+          <Pie data={dataChart25} />
         </div>
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 6
           </div>
 
-          <Pie data={dataChart23} />
+          <Pie data={dataChart26} />
         </div>
-        <div className="w-72 border border-blue-600">
-          <div className="border border-blue-600 border-x-1">
+        <div className="w-72 ">
+          <div className=" border-x-1">
             Biểu đồ thống kê trạng thái liên hệ lần 7
           </div>
-          <Pie data={dataChart23} />
+          <Pie data={dataChart27} />
         </div>
       </div>
     </div>
