@@ -31,6 +31,9 @@ import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPage
 import StatisticalDay from "./pages/StatisticalDay";
 import StatisticalContact from "./pages/StatisticalContact";
 import StatisticalThematic from "./pages/StatisticalThematic";
+import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
+import DetailDataUsermanager from "./pages/DetailDataUsermanager";
+import EditDataUsermanager from "./pages/EditDataUsermanager";
 
 const LayoutOnly = () => {
   return (
@@ -150,6 +153,18 @@ function App() {
         {
           index: true,
           element: <UserManagerHomePage />,
+        },
+        {
+          path: "data",
+          element: <ManagerDataUsermanager />,
+        },
+        {
+          path: "data/:id",
+          element: <DetailDataUsermanager />,
+        },
+        {
+          path: "data/edit/:id",
+          element: <EditDataUsermanager />,
         },
       ],
     },

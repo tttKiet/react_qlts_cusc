@@ -109,7 +109,7 @@ function useAuth() {
         if (res.data.account.MAADMIN) {
           navigate("/admin");
         } else if (res.data.account.SDT && res.data.account.MAADMIN == null) {
-          navigate("/admin/manager/user");
+          navigate("/usermanager");
         } else {
           navigate("/");
         }
