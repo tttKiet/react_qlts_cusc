@@ -28,6 +28,9 @@ import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
 import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
 import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
+import StatisticalDay from "./pages/StatisticalDay";
+import StatisticalContact from "./pages/StatisticalContact";
+import StatisticalThematic from "./pages/StatisticalThematic";
 import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
@@ -122,6 +125,18 @@ function App() {
         {
           path: "profile",
           element: <ProfileAdmin />,
+        },
+        {
+          path: "statistical/day",
+          element: <StatisticalDay />,
+        },
+        {
+          path: "statistical/contact",
+          element: <StatisticalContact />,
+        },
+        {
+          path: "statistical/thematic",
+          element: <StatisticalThematic />,
         },
       ],
     },
