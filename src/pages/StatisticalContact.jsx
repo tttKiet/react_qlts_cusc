@@ -80,9 +80,9 @@ function StatisticalContact() {
     }
     return data;
   });
-
+  const index = sdtUM ? 3 : 2;
   const { data, error, isLoading } = useSWR(
-    `/api/v1/chart/admin?page=data&index=2&${conditon}`
+    `/api/v1/chart/admin?page=data&index=${index}&${conditon}`
   );
   const chartContact = useMemo(() => {
     return data || [];
