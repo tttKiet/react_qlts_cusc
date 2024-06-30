@@ -5,6 +5,7 @@ import { Tag } from "antd";
 import { useParams } from 'react-router-dom';
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
+import { toast } from "react-toastify";
 
 function DetailData() {
 
@@ -23,6 +24,51 @@ function DetailData() {
             KETQUA: contact ? contact.KETQUA : 'Trống',
         };
     });
+
+    const handleDownloadFile = async (data) => {
+        const MAHOSO = data?.MAHOSO;
+        if (!MAHOSO) {
+            return toast.warning("MAHOSO chưa có nhé");
+        }
+        try {
+            const response = await SegmentService.downLoadFile({
+                MAHOSO: MAHOSO,
+            });
+
+            console.log("response", response);
+
+            // Kiểm tra xem response có dữ liệu file không
+            if (!response || !response.data) {
+                return toast.error("Không có dữ liệu tệp để tải xuống.");
+            }
+
+            // Chuyển đổi dữ liệu nhận được thành một đối tượng Blob
+            const blob = new Blob([response.data]);
+
+            // Tạo URL để hiển thị hoặc tải xuống file
+            const url = window.URL.createObjectURL(blob);
+
+            // Tạo một phần tử <a> ẩn để khởi tạo việc tải xuống file
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = response.filename || "downloaded_file"; // Tên file để tải về
+
+            // Thêm phần tử <a> vào DOM và kích hoạt sự kiện click để tải xuống file
+            document.body.appendChild(a);
+            a.click();
+
+            // Sau khi hoàn tất, loại bỏ phần tử <a> đã tạo
+            document.body.removeChild(a);
+
+            // Giải phóng URL đã tạo
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading file:", { error: error?.message });
+            toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
+        }
+    };
+
 
     return (
         <>
@@ -106,8 +152,8 @@ function DetailData() {
                                     <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || 'Trống'}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
-                                    <p className='font-bold'>Ngành yêu thích</p>
-                                    <div className="text-right">
+                                    <p className="font-bold flex items-center">Ngành yêu thích</p>
+                                    <div className="text-right w-80">
                                         {detailData?.nganhyeuthich.length != 0 ? detailData?.nganhyeuthich.map((job, index) => (
                                             <Tag key={index} bordered={false} color="processing">
                                                 {job?.nganh?.TENNGANH}
@@ -138,19 +184,28 @@ function DetailData() {
                                     <p className='font-bold'>Khóa học quan tâm</p>
                                     <p>Dài hạn</p>
                                 </div>
-                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hồ sơ</p>
-                                    <div className="max-w-[400px]">
-                                        {/* <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p> */}
-                                        <div>{detailData?.phieudkxettuyen.hoso.length > 0 ? (
-                                            detailData?.phieudkxettuyen.hoso.map((item, index) => (
-                                                <p key={index}>{item.HOSO}</p>
-                                            ))
-                                        ) : 'Trống'}</div>
+                                <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
+                                    <p className="font-bold flex items-center">Hồ sơ</p>
+                                    <div className="max-w-[300px]">
+                                        {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {
+                                            const fullPath = item?.HOSO;
+                                            const parts = fullPath.split("\\");
+                                            const fileName = parts[parts.length - 1];
+                                            return (
+                                                <p
+                                                    key={index}
+                                                    onClick={() => handleDownloadFile(item)}
+                                                    className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
+                                                >
+                                                    {fileName}
+                                                </p>
+                                            );
+                                        })}
                                     </div>
                                 </div>
+
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
+                                    <p className='font-bold'>Kết quả Cao đẳng/Đại học</p>
 
                                     {detailData?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 1 ? (
                                         <Chip

@@ -3,10 +3,13 @@ import {
   faUser,
   faAddressCard,
   faClipboard,
+  faPenToSquare,
+  faFloppyDisk,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faArrowUpRightFromSquare,
   faBullseye,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +27,8 @@ import {
   CardFooter,
   Image,
   Chip,
+  Tooltip,
+  Input,
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { useParams, useNavigate } from "react-router-dom";
@@ -33,10 +38,11 @@ import { toast } from "react-toastify";
 import { Result, Tag } from "antd";
 import { useAuth } from "../hooks";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spin } from "antd";
 
 import SegmentService from "../service/SegmentService";
+import CustomerService from "../service/CustomerService";
 
 function DetailCustomer() {
   const navigate = useNavigate();
@@ -81,6 +87,8 @@ function DetailCustomer() {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
+    formData.append("MAPHIEUDK", data?.phieudkxettuyen?.MAPHIEUDK);
+
 
     try {
       const config = {
@@ -152,6 +160,58 @@ function DetailCustomer() {
     }
   };
 
+  const [isEdit, setIsEdit] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [province, setProvince] = useState("");
+  const [school, setSchool] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phoneFather, setPhoneFather] = useState("");
+  const [phoneMother, setPhoneMother] = useState("");
+  const [zalo, setZalo] = useState("");
+  const [faceBook, setFaceBook] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setFullName(data?.HOTEN)
+    setProvince(data?.tinh.TENTINH)
+    setSchool(data?.truong.TENTRUONG)
+    setPhone(data?.SDT)
+    setPhoneFather(data?.dulieukhachhang.SDTBA || "")
+    setPhoneMother(data?.dulieukhachhang.SDTME || "")
+    setZalo(data?.dulieukhachhang.SDTZALO || "")
+    setFaceBook(data?.dulieukhachhang.FACEBOOK || "")
+    setEmail(data?.EMAIL || "")
+  }, [data])
+
+  const handleEditToggle = () => {
+    setIsEdit(!isEdit);
+  };
+
+  const handleUpdateInfo = async () => {
+    try {
+      const dataInfo = {
+        customer: {
+          SDT: phone,
+          HOTEN: fullName,
+          EMAIL: email
+        },
+        data: {
+          SDTBA: phoneFather,
+          SDTME: phoneMother,
+          SDTZALO: zalo,
+          FACEBOOK: faceBook
+        }
+      }
+      const res = await CustomerService.updateCustomer(dataInfo);
+      mutate();
+      toast.success(res.message)
+    } catch (e) {
+      toast.error(e.message)
+    }
+  }
+
+  console.log("data", data)
+
   return (
     <>
       <div>
@@ -190,9 +250,21 @@ function DetailCustomer() {
                   <Card className="max-w-[500px] m-auto h-full">
                     <CardHeader className="flex gap-3 px-6 justify-center">
                       <FontAwesomeIcon icon={faUser} />
-                      <div className="">
+                      <div className="flex">
                         <h1 className="font-bold">Thông tin cá nhân</h1>
+
+                        <div onClick={handleEditToggle} className="absolute right-5 cursor-pointer">
+                          {isEdit ? (
+                            <Tooltip content="Lưu" color="primary">
+                              <FontAwesomeIcon onClick={handleUpdateInfo} className="text-blue-600" size="lg" icon={faFloppyDisk} />
+                            </Tooltip>) : (
+                            <Tooltip content="Chỉnh sửa" color="primary">
+                              <FontAwesomeIcon size="lg" className="text-blue-600" icon={faPenToSquare} />
+                            </Tooltip>
+                          )}
+                        </div>
                       </div>
+
                     </CardHeader>
                     <Divider />
                     <CardBody className="px-6 gap-4">
@@ -223,24 +295,44 @@ function DetailCustomer() {
                         <p>{data?.dulieukhachhang?.SDT}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Điện thoại ba</p>
-                        <p>{data?.dulieukhachhang?.SDTBA || "Trống"}</p>
+                        <p className="font-bold flex items-center">Điện thoại ba</p>
+                        {isEdit ? (
+                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" size="sm" className="w-32" variant="underlined" value={phoneFather} onValueChange={setPhoneFather} />
+                        ) : (
+                          <p>{data?.dulieukhachhang?.SDTBA || "Trống"}</p>
+                        )}
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Điện thoại mẹ</p>
-                        <p>{data?.dulieukhachhang?.SDTME || "Trống"}</p>
+                        <p className="font-bold flex items-center">Điện thoại mẹ</p>
+                        {isEdit ? (
+                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={phoneMother} onValueChange={setPhoneMother} />
+                        ) : (
+                          <p>{data?.dulieukhachhang?.SDTME || "Trống"}</p>
+                        )}
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Zalo</p>
-                        <p>{data?.dulieukhachhang?.SDTZALO || "Trống"}</p>
+                        <p className="font-bold flex items-center">Zalo</p>
+                        {isEdit ? (
+                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={zalo} onValueChange={setZalo} />
+                        ) : (
+                          <p>{data?.dulieukhachhang?.SDTZALO || "Trống"}</p>
+                        )}
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">FaceBook</p>
-                        <p>{data?.dulieukhachhang?.FACEBOOK || "Trống"}</p>
+                        <p className="font-bold flex items-center">FaceBook</p>
+                        {isEdit ? (
+                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={faceBook} onValueChange={setFaceBook} />
+                        ) : (
+                          <p>{data?.dulieukhachhang?.FACEBOOK || "Trống"}</p>
+                        )}
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Email</p>
-                        <p>{data?.EMAIL || "Trống"}</p>
+                        <p className="font-bold flex items-center">Email</p>
+                        {isEdit ? (
+                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-40" variant="underlined" value={email} onValueChange={setEmail} />
+                        ) : (
+                          <p>{data?.EMAIL || "Trống"}</p>
+                        )}
                       </div>
                     </CardBody>
                   </Card>
@@ -264,18 +356,18 @@ function DetailCustomer() {
                         <p>{data?.hinhthucthuthap?.TENHINHTHUC || "Trống"}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Ngành yêu thích</p>
-                        <div>
+                        <p className="font-bold flex items-center">Ngành yêu thích</p>
+                        <div className="text-right w-72">
                           {data?.nganhyeuthich.length != 0
                             ? data?.nganhyeuthich.map((job, index) => (
-                                <Tag
-                                  key={index}
-                                  bordered={false}
-                                  color="processing"
-                                >
-                                  {job?.nganh?.TENNGANH}
-                                </Tag>
-                              ))
+                              <Tag
+                                key={index}
+                                bordered={false}
+                                color="processing"
+                              >
+                                {job?.nganh?.TENNGANH}
+                              </Tag>
+                            ))
                             : "Trống"}
                         </div>
                       </div>
@@ -303,44 +395,61 @@ function DetailCustomer() {
                         <p className="font-bold">Khóa học quan tâm</p>
                         <p>Dài hạn</p>
                       </div>
-                      <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Hồ sơ</p>
-                        {/* <div>
-                          <Link
-                            to="https://github.com/nextui-org/nextui"
-                            className="cursor-pointer text-primary-500"
-                          >
-                            Vui lòng truy cập vào đây
-                            <FontAwesomeIcon
-                              className="ms-1 text-tiny"
-                              icon={faArrowUpRightFromSquare}
-                            />
-                          </Link>
-                        </div> */}
-                        {data?.phieudkxettuyen?.hoso?.map((item, index) => {
-                          const fullPath = item?.HOSO;
-                          const parts = fullPath.split("\\");
-                          const fileName = parts[parts.length - 1];
-                          return (
-                            <div
-                              key={index}
-                              onClick={() => handleDownloadFile(item)}
-                              style={{
-                                textDecoration: "underline",
-                                cursor: "pointer",
-                                color: "blue",
-                              }}
-                            >
-                              {fileName}
-                            </div>
-                          );
-                        })}
+                      <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
+                        <p className="font-bold flex items-center">Hồ sơ</p>
+                        <div className="text-right w-60">
+                          {data?.phieudkxettuyen?.hoso?.map((item, index) => {
+                            const fullPath = item?.HOSO;
+                            const parts = fullPath.split("\\");
+                            const fileName = parts[parts.length - 1];
+                            return (
+                              <div className="flex" key={index}>
+                                <FontAwesomeIcon icon={faTrash} style={{ color: "#d60000", }} className="mt-1 me-2 cursor-pointer" />
+                                <p
+                                  onClick={() => handleDownloadFile(item)}
+                                  className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
+                                >
+                                  {fileName}
+                                </p>
+                              </div>
+
+                            );
+                          })}
+                        </div>
+
+
+
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold">Kết quả Cao đăng/Đại học</p>
-                        <Chip variant="flat" color="warning">
+                        <p className="font-bold">Kết quả Cao đẳng/Đại học</p>
+                        {/* <Chip variant="flat" color="warning">
                           Đang chờ
-                        </Chip>
+                        </Chip> */}
+                        {data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 1 ? (
+                          <Chip
+                            variant="flat"
+                            color="success"
+                          >
+                            {data?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
+                          </Chip>
+                        ) : (
+                          data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 3 ? (
+                            <Chip
+                              variant="flat"
+                              color="warning"
+                            >
+                              {data?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
+                            </Chip>
+                          ) : (
+                            <Chip
+                              variant="flat"
+                              color="default"
+                            >
+                              Chưa có thông tin
+                            </Chip>
+                          )
+
+                        )}
                       </div>
                     </CardBody>
                   </Card>

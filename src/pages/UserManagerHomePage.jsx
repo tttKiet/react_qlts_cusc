@@ -242,7 +242,67 @@ function UserManagerHomePage() {
     return (
         <>
             <div>
-                <div className="grid grid-cols-1 gap-4 lg:gap-8 md:grid-cols-7 pb-5">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4 pb-5">
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
                     <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
                         <div className="space-y-1">
                             <div className="flex gap-4">
@@ -264,134 +324,70 @@ function UserManagerHomePage() {
                         </div>
                     </div>
 
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 2</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 3</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 4</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 5</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 6</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div className="space-y-1">
-                            <div className="flex gap-4">
-                                <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        <span>Liên hệ lần 7</span>
-                                    </div>
-                                    <div className="text-xl dark:text-gray-100">
-                                        4/125
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pb-5">
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 1</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div style={{
                     padding: 24,

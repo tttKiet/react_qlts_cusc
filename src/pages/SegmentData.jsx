@@ -37,6 +37,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 function SegmentData() {
 
+    const otherJob = [
+        { value: "1", label: "CNTT" },
+        { value: "2", label: "Gần CNTT" },
+        { value: "3", label: "Học bổng" },
+    ]
     // const { data: dataSegment, mutate: fetchSegment } = useSWR(`${API_DATA}/segment`)
     const [urlSegment, setUrlSegment] = useState(`${API_DATA}/segment`)
     const [total, setTotal] = useState(1);
@@ -66,7 +71,6 @@ function SegmentData() {
             fetchSchool();
             fetchJob();
             setSchoolSelected('')
-            setJobSelected('')
         }
     }, [provinceSelected])
     const { data: dataSchool, mutate: fetchSchool } = useSWR(urlSchool)
@@ -75,17 +79,21 @@ function SegmentData() {
         if (schoolSelected) {
             setUrlSegment(`${API_DATA}/segment?schoolCode=${schoolSelected}`)
             fetchJob();
-            setJobSelected('')
         }
     }, [schoolSelected])
 
     const { data: dataSegment, mutate: fetchSegment } = useSWR(urlSegment)
 
-    const { data: dataJob, mutate: fetchJob } = useSWR(`${API_DATA}/job-like?schoolCode=${schoolSelected}&isAvalable=true`);
-    const extendedDataJob = useMemo(() => {
-        return dataJob?.allCount ? [{ MANGANH: "0", TENNGANH: "Tất cả", count: dataJob?.allCount }, ...dataJob.data] : [{ MANGANH: "-1", TENNGANH: "Trống", count: 0 }];
+    // const { data: dataJob, mutate: fetchJob } = useSWR(`${API_DATA}/job-like?schoolCode=${schoolSelected}&isAvalable=true`);
+    const { data: dataJob, mutate: fetchJob } = useSWR(`${API_DATA}/job-like?isAvalable=true`);
+    console.log("Data job", dataJob)
 
-    }, [dataJob])
+
+    // const extendedDataJob = useMemo(() => {
+    //     return dataJob?.allCount ? [{ MANGANH: "0", TENNGANH: "Tất cả", count: dataJob?.allCount }, ...dataJob.data] : [{ MANGANH: "-1", TENNGANH: "Trống", count: 0 }];
+
+    // }, [dataJob])
+
     const [segment, setSegment] = useState(0)
 
     const [filterSearchName, setFillterSearchName] = useState('')
@@ -435,221 +443,248 @@ function SegmentData() {
 
     return (
         <>
-            <div className="">
-                <div className="mt-3" style={{
-                    padding: 24,
-                    minHeight: 425,
-                    background: "#fff",
-                    borderRadius: "10px"
-                }}>
-                    <div className="flex gap-2">
-                        <h1 className="mb-2 text-lg font-medium">Phân đoạn dữ liệu</h1>
-                        {notification?.map((notification, index) => (
-                            <Chip key={index} onClose={() => handleClose(notification)} variant="flat" color="primary">
-                                Một học sinh có thể có nhiều ngành yêu thích
-                            </Chip>
-                        ))}
+            <div className="mt-3" style={{
+                padding: 24,
+                minHeight: 425,
+                background: "#fff",
+                borderRadius: "10px"
+            }}>
+                <div className="flex gap-2">
+                    <h1 className="mb-2 text-lg font-medium">Phân đoạn dữ liệu</h1>
+                    {notification?.map((notification, index) => (
+                        <Chip key={index} onClose={() => handleClose(notification)} variant="flat" color="primary">
+                            Một học sinh có thể có nhiều ngành yêu thích
+                        </Chip>
+                    ))}
+                </div>
+                <div className="grid grid-cols-8">
+                    <div className="col-span-2 border-1">
+                        <Input
+                            isClearable
+                            classNames={{
+                                base: "w-full sm:max-w-[90%]",
+                                inputWrapper: "border-1",
+                            }}
+                            className="col-span-4 md:col-span-1"
+                            placeholder="Tìm kiếm theo tên"
+                            size="sm"
+                            startContent={<SearchIcon className="text-default-300" />}
+                            variant="bordered"
+                            onClear={() => setFillterSearchName("")}
+                            onValueChange={debounce(onSearchChange, 300)}
+                        />
                     </div>
-                    <div className="flex flex-col gap-4 mb-3">
-                        <div className="grid grid-cols-4">
-                            <Input
-                                isClearable
-                                classNames={{
-                                    base: "w-full sm:max-w-[90%]",
-                                    inputWrapper: "border-1",
-                                }}
-                                className="col-span-4 md:col-span-1"
-                                placeholder="Tìm kiếm theo tên"
-                                size="sm"
-                                startContent={<SearchIcon className="text-default-300" />}
+                    <div className="col-span-5 border-1 flex">
+                        <div className="border-1 border-red-500 flex gap-2">
+                            <Autocomplete
+                                aria-labelledby="province-label"
+                                placeholder="Chọn tỉnh"
+
                                 variant="bordered"
-                                onClear={() => setFillterSearchName("")}
-                                onValueChange={debounce(onSearchChange, 300)}
-                            />
-                            <div className="col-span-4 md:col-span-3">
-                                <div className="flex gap-3">
+                                size="sm"
+                                selectedKey={provinceSelected}
+                                onSelectionChange={(value) => setProvinceSelected(value)}
+                            >
+                                {dataProvince?.map((province) => (
+                                    <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                                        {province.TENTINH}
+                                    </AutocompleteItem>
+                                ))}
 
-                                    <Autocomplete
-                                        aria-labelledby="province-label"
-                                        placeholder="Chọn tỉnh"
-                                        className="max-w-xs"
-                                        variant="bordered"
-                                        size="sm"
-                                        selectedKey={provinceSelected}
-                                        onSelectionChange={(value) => setProvinceSelected(value)}
-                                    >
-                                        {dataProvince?.map((province) => (
-                                            <AutocompleteItem key={province.MATINH} value={province.MATINH}>
-                                                {province.TENTINH}
-                                            </AutocompleteItem>
-                                        ))}
+                            </Autocomplete>
+                            <Autocomplete
+                                aria-labelledby="province-label"
+                                placeholder="Chọn trường"
 
-                                    </Autocomplete>
-                                    <Autocomplete
-                                        aria-labelledby="province-label"
-                                        placeholder="Chọn trường"
-                                        className="max-w-xs"
-                                        variant="bordered"
-                                        size="sm"
-                                        isDisabled={provinceSelected != '' ? false : true}
-                                        selectedKey={schoolSelected}
-                                        onSelectionChange={(value) => setSchoolSelected(value)}
-                                    >
-                                        {dataSchool?.map((school) => (
-                                            <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                                                {school.TENTRUONG || 'Trống'}
-                                            </AutocompleteItem>
-                                        ))}
-                                    </Autocomplete>
-                                    <Select
-                                        items={extendedDataJob || []}
-                                        aria-labelledby="province-label"
-                                        placeholder="Chọn ngành"
-                                        className="max-w-xs"
-                                        variant="bordered"
-                                        isDisabled={schoolSelected != '' && dataJob?.allCount > 0 ? false : true}
-                                        // onSelectionChange={(value) => setJobSelected(value)}
-                                        selectedKeys={[jobSelected]}
-                                        onChange={(e) => setJobSelected(e.target.value)}
-                                        size="sm"
-                                        listboxProps={{
-                                            itemClasses: {
-                                                base: [
-                                                    "rounded-md",
-                                                    "text-default-500",
-                                                    "transition-opacity",
-                                                    "data-[hover=true]:text-foreground",
-                                                    "data-[hover=true]:bg-default-100",
-                                                    "dark:data-[hover=true]:bg-default-50",
-                                                    "data-[selectable=true]:focus:bg-default-50",
-                                                    "data-[pressed=true]:opacity-70",
-                                                    "data-[focus-visible=true]:ring-default-500",
-                                                ],
-                                            },
-                                        }}
-                                        popoverProps={{
-                                            classNames: {
-                                                base: "before:bg-default-200",
-                                                content: "p-0 border-small border-divider bg-background",
-                                            },
-                                        }}
-                                        renderValue={(items) => {
-                                            return items.map((item) => (
-                                                <div key={item.data.MANGANH} className="flex items-center gap-2">
-                                                    <div className="">
-                                                        <span>{item.data.TENNGANH}</span>
-                                                        <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
-                                                    </div>
-                                                </div>
-                                            ));
-                                        }}
-                                    >
-                                        {(job) => (
-                                            <SelectItem key={job.MANGANH} textValue={job.TENNGANH} value={jobSelected}>
-                                                <div className="flex gap-2 items-center">
-                                                    <div className="">
-                                                        <span className="text-small">{job.TENNGANH}</span>
-                                                        <span className="text-tiny text-default-400 ms-1">{job.count} dòng khả dụng</span>
-                                                    </div>
-                                                </div>
-                                            </SelectItem>
-                                        )}
-                                    </Select>
-                                    <Button color="primary" className="h-100" onPress={onOpen} isDisabled={schoolSelected == ''}>
-                                        Phân đoạn
-                                    </Button>
-                                </div>
-                            </div>
+                                variant="bordered"
+                                size="sm"
+                                isDisabled={provinceSelected != '' ? false : true}
+                                selectedKey={schoolSelected}
+                                onSelectionChange={(value) => setSchoolSelected(value)}
+                            >
+                                {dataSchool?.map((school) => (
+                                    <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                                        {school.TENTRUONG || 'Trống'}
+                                    </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                        </div>
+                        <div className="border-1 border-red-500 flex gap-2">
+                            {/* <Select
+                                items={dataJob}
+                                aria-labelledby="province-label"
+                                placeholder="Chọn ngành"
+
+                                variant="bordered"
+                                // onSelectionChange={(value) => setJobSelected(value)}
+                                selectedKeys={[jobSelected]}
+                                onChange={(e) => setJobSelected(e.target.value)}
+                                size="sm"
+                                listboxProps={{
+                                    itemClasses: {
+                                        base: [
+                                            "rounded-md",
+                                            "text-default-500",
+                                            "transition-opacity",
+                                            "data-[hover=true]:text-foreground",
+                                            "data-[hover=true]:bg-default-100",
+                                            "dark:data-[hover=true]:bg-default-50",
+                                            "data-[selectable=true]:focus:bg-default-50",
+                                            "data-[pressed=true]:opacity-70",
+                                            "data-[focus-visible=true]:ring-default-500",
+                                        ],
+                                    },
+                                }}
+                                popoverProps={{
+                                    classNames: {
+                                        base: "before:bg-default-200",
+                                        content: "p-0 border-small border-divider bg-background",
+                                    },
+                                }}
+                                renderValue={(items) => {
+                                    return items.map((item) => (
+                                        <div key={item.data.MANGANH} className="flex items-center gap-2">
+                                            <div className="">
+                                                <span>{item.data.TENNGANH}</span>
+                                                <span className="text-default-500 text-tiny ms-1">{item.data.count} dòng dữ liệu</span>
+                                            </div>
+                                        </div>
+                                    ));
+                                }}
+                            >
+                                {(job) => (
+                                    <SelectItem key={job.MANGANH} textValue={job.TENNGANH} value={jobSelected}>
+                                        <div className="flex gap-2 items-center">
+                                            <div className="">
+                                                <span className="text-small">{job.TENNGANH}</span>
+                                                <span className="text-tiny text-default-400 ms-1">{job.count} dòng khả dụng</span>
+                                            </div>
+                                        </div>
+                                    </SelectItem>
+                                )}
+                            </Select> */}
+                            <Autocomplete
+                                aria-labelledby="province-label"
+
+                                placeholder="Chọn ngành"
+                                variant="bordered"
+                                size="sm"
+                            >
+                                {dataJob.map((job) => (
+                                    <AutocompleteItem key={job.MANGANH} value={job.value}>
+                                        {job.TENNGANH}
+                                    </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                            <Autocomplete
+                                aria-labelledby="province-label"
+                                placeholder="Chọn ngành khác"
+                                variant="bordered"
+                                size="sm"
+                            >
+                                {otherJob.map((job) => (
+                                    <AutocompleteItem key={job.value} value={job.value}>
+                                        {job.label}
+                                    </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
 
                         </div>
 
-                    </div >
-                    <Table
-                        // isCompact
-                        removeWrapper
-                        aria-label="Example table with custom cells, pagination and sorting"
-                        bottomContent={bottomContent}
-                        bottomContentPlacement="outside"
-                        checkboxesProps={{
-                            classNames: {
-                                wrapper: "after:bg-foreground after:text-background text-background",
-                            },
-                        }}
-                        sortDescriptor={sortDescriptor}
+                    </div>
+                    <div className="col-span-1 border-1">
+                        <Button color="primary" className="" onPress={onOpen} isDisabled={schoolSelected == ''}>
+                            Phân đoạn
+                        </Button>
+                    </div>
 
-                        topContentPlacement="outside"
-                        onSortChange={setSortDescriptor}
-                        selectedKeys={selectedKeys}
-                        selectionMode="multiple"
-                        onSelectionChange={setSelectedKeys}
-                    >
-                        <TableHeader columns={headerColumns}>
-                            {(column) => (
-                                <TableColumn
-                                    key={column.uid}
-                                    align={column.uid === "actions" ? "center" : "start"}
-                                    allowsSorting={column.sortable}
-                                >
-                                    {column.name}
-                                </TableColumn>
-                            )}
-                        </TableHeader>
-                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
-                            {(item) => (
-                                <TableRow key={item.madoan}>
-                                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
                 </div>
-                <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
-                    <ModalContent>
-                        {(onClose) => (
-                            <>
-                                <ModalHeader className="flex flex-col gap-1">Phân đoạn dữ liệu</ModalHeader>
-                                <ModalBody>
-                                    <div className="flex gap-2">
-                                        {jobSelected && jobSelected === "NG08" && (
-                                            <Autocomplete
-                                                label="Chọn nhóm ngành"
-                                                defaultItems={typeMajors}
-                                                className="max-w-xs"
-                                                selectedKey={typeMajorsSelected}
-                                                onSelectionChange={setTypeMajorsSelected}
-                                            >
-                                                {(item) => <AutocompleteItem key={item.MANHOMNGANH} value={item.MANHOMNGANH} textValue={item.TENNHOMNGANH}>{item.TENNHOMNGANH} {item.count} dòng khả dụng</AutocompleteItem>}
-                                            </Autocomplete>
-                                        )}
-                                        <Input type="Number"
-                                            label="Nhập số lượng dòng trên 1 đoạn"
-                                            value={segment} onValueChange={setSegment}
-                                            isInvalid={errors && errors.segment ? true : false}
-                                            errorMessage={errors && errors.segment}
-                                        />
-                                    </div>
-                                    <div className="flex">
-                                        <div className="flex gap-1">
-                                            {/* Dữ liệu khả dụng: {numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount} */}
-                                            Dữ liệu khả dụng: {jobSelected === 'NG08' ? numberSegment : (numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount)}
-                                            {/* {console.log("numberSegment", numberSegment)} */}
-                                            {/* {console.log(numberSegment[0].count)} */}
-                                        </div>
-                                    </div>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={handleCloseModal}>
-                                        Đóng
-                                    </Button>
-                                    <Button color="primary" isDisabled={segment > 0 ? false : true} onPress={handleSegment}>
-                                        Phân đoạn
-                                    </Button>
-                                </ModalFooter>
-                            </>
+                <Table
+                    // isCompact
+                    removeWrapper
+                    aria-label="Example table with custom cells, pagination and sorting"
+                    bottomContent={bottomContent}
+                    bottomContentPlacement="outside"
+                    checkboxesProps={{
+                        classNames: {
+                            wrapper: "after:bg-foreground after:text-background text-background",
+                        },
+                    }}
+                    sortDescriptor={sortDescriptor}
+
+                    topContentPlacement="outside"
+                    onSortChange={setSortDescriptor}
+                    selectedKeys={selectedKeys}
+                    selectionMode="multiple"
+                    onSelectionChange={setSelectedKeys}
+                >
+                    <TableHeader columns={headerColumns}>
+                        {(column) => (
+                            <TableColumn
+                                key={column.uid}
+                                align={column.uid === "actions" ? "center" : "start"}
+                                allowsSorting={column.sortable}
+                            >
+                                {column.name}
+                            </TableColumn>
                         )}
-                    </ModalContent>
-                </Modal>
+                    </TableHeader>
+                    <TableBody emptyContent={"Không tìm thấy người dùng"} items={paginatedItems}>
+                        {(item) => (
+                            <TableRow key={item.madoan}>
+                                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+
             </div>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Phân đoạn dữ liệu</ModalHeader>
+                            <ModalBody>
+                                <div className="flex gap-2">
+                                    {jobSelected && jobSelected === "NG08" && (
+                                        <Autocomplete
+                                            label="Chọn nhóm ngành"
+                                            defaultItems={typeMajors}
+                                            className="max-w-xs"
+                                            selectedKey={typeMajorsSelected}
+                                            onSelectionChange={setTypeMajorsSelected}
+                                        >
+                                            {(item) => <AutocompleteItem key={item.MANHOMNGANH} value={item.MANHOMNGANH} textValue={item.TENNHOMNGANH}>{item.TENNHOMNGANH} {item.count} dòng khả dụng</AutocompleteItem>}
+                                        </Autocomplete>
+                                    )}
+                                    <Input type="Number"
+                                        label="Nhập số lượng dòng trên 1 đoạn"
+                                        value={segment} onValueChange={setSegment}
+                                        isInvalid={errors && errors.segment ? true : false}
+                                        errorMessage={errors && errors.segment}
+                                    />
+                                </div>
+                                <div className="flex">
+                                    <div className="flex gap-1">
+                                        {/* Dữ liệu khả dụng: {numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount} */}
+                                        Dữ liệu khả dụng: {jobSelected === 'NG08' ? numberSegment : (numberSegment != 0 ? numberSegment[0].count : dataJob?.allCount)}
+                                        {/* {console.log("numberSegment", numberSegment)} */}
+                                        {/* {console.log(numberSegment[0].count)} */}
+                                    </div>
+                                </div>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={handleCloseModal}>
+                                    Đóng
+                                </Button>
+                                <Button color="primary" isDisabled={segment > 0 ? false : true} onPress={handleSegment}>
+                                    Phân đoạn
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 }

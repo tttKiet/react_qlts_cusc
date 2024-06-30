@@ -31,6 +31,7 @@ function getItem(label, key, icon, children) {
 const items = [
     getItem(<Link to={"/usermanager"}>Dashboard</Link>, '/usermanager', <DashboardOutlined />),
     getItem(<Link to={"/usermanager/data"}>Danh sách dữ liệu</Link>, '/usermanager/data', <DatabaseOutlined />),
+    getItem(<Link to={"/usermanager/thematic"}>Quản lý chuyên đề</Link>, "/usermanager/thematic", <FontAwesomeIcon icon={faClipboard} />),
     // getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
     //     getItem(<Link to={"/admin/user"}>Danh sách người dùng</Link>, '/admin/user'),
     // ]),
