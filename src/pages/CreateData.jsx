@@ -62,7 +62,23 @@ function CreateData() {
         config
       );
       if (res && res.statusCode === 200) {
-        toast.success("Upload file thành công");
+        const kh = res.data.kh.info;
+        const numbersKH = kh.match(/\d+/g).map(Number);
+
+        const newCustomers = numbersKH[0] - numbersKH[1];
+        const duplicateCustomers = numbersKH[1];
+
+        if (newCustomers > 0) {
+          toast.success(
+            <>
+              Số khách hàng mới được thêm vào: {newCustomers}
+              <br />
+              Số khách hàng bị trùng nhau: {duplicateCustomers}
+            </>
+          );
+        } else {
+          toast.success(`Số khách hàng mới được thêm vào: ${newCustomers} `);
+        }
       }
 
       // Xử lý kết quả trả về (nếu cần)

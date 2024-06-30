@@ -81,6 +81,7 @@ function DetailCustomer() {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
+    formData.append("MAPHIEUDK", data?.phieudkxettuyen?.MAPHIEUDK);
 
     try {
       const config = {
@@ -322,9 +323,9 @@ function DetailCustomer() {
                           const parts = fullPath.split("\\");
                           const fileName = parts[parts.length - 1];
                           return (
-                            <div
+                            <a
                               key={index}
-                              onClick={() => handleDownloadFile(item)}
+                              href={`/api/v1/file/downLoadFile?MAHOSO=${item.MAHOSO}`}
                               style={{
                                 textDecoration: "underline",
                                 cursor: "pointer",
@@ -332,7 +333,7 @@ function DetailCustomer() {
                               }}
                             >
                               {fileName}
-                            </div>
+                            </a>
                           );
                         })}
                       </div>
