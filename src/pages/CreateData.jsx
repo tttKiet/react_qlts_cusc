@@ -62,7 +62,8 @@ function CreateData() {
         config
       );
       if (res && res.statusCode === 200) {
-        const kh = res.data.kh.info;
+        const kh = res?.data?.kh?.raw?.info;
+        const kh_Ex = res?.data?.kh?.excel;
         const numbersKH = kh.match(/\d+/g).map(Number);
 
         const newCustomers = numbersKH[0] - numbersKH[1];
@@ -74,10 +75,18 @@ function CreateData() {
               Số khách hàng mới được thêm vào: {newCustomers}
               <br />
               Số khách hàng bị trùng nhau: {duplicateCustomers}
+              <br />
+              Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
             </>
           );
         } else {
-          toast.success(`Số khách hàng mới được thêm vào: ${newCustomers} `);
+          toast.success(
+            <>
+              Số khách hàng mới được thêm vào: {newCustomers}
+              <br />
+              Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
+            </>
+          );
         }
       }
 
