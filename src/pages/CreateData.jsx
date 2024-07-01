@@ -13,6 +13,9 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import { Spin } from "antd";
 
+import ExcelJS from "exceljs";
+import fs from "fs";
+
 import SegmentService from "../service/SegmentService";
 
 function CreateData() {
@@ -38,6 +41,42 @@ function CreateData() {
     getInputProps: getInputProps2,
     isDragActive: isDragActive2,
   } = useDropzone({ onDrop: onDrop2 });
+
+  async function exportDuplicatesToExcel(data) {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("My Sheet");
+
+      worksheet.columns = [
+        { header: "SDT bị trùng", key: "SDT", width: 20 },
+        { header: "Số lần trùng", key: "count", width: 10 },
+      ];
+
+      data?.forEach((item) => {
+        worksheet.addRow({ SDT: item.SDT, count: item.count });
+      });
+
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Tạo URL tạm thời để tải xuống
+        const url = window.URL.createObjectURL(blob);
+
+        // Tạo thẻ a để kích hoạt tải xuống
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "duplicate_phone_numbers.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    } catch (error) {
+      console.error("Error generating Excel:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
 
   const handleUploadFileDataCustomerNew = async () => {
     if (!files1[0]) {
@@ -88,6 +127,10 @@ function CreateData() {
             </>
           );
         }
+
+        if (res?.data?.kh?.excel?.length > 0) {
+          exportDuplicatesToExcel(res?.data?.kh?.excel);
+        }
       }
 
       // Xử lý kết quả trả về (nếu cần)
@@ -127,12 +170,27 @@ function CreateData() {
         formData,
         config
       );
+      const tableOld = res?.data?.tableCusOld?.info;
+      const excel = res?.data?.excel;
+      const numbersKH = tableOld.match(/\d+/g).map(Number);
+
+      const newCustomers = numbersKH[0] - numbersKH[1];
+      const duplicateCustomers = numbersKH[1];
+
       if (res && res.statusCode === 200) {
-        toast.success("Upload file thành công");
+        toast.success(
+          <>
+            Số khách hàng cũ được thêm vào db là : {newCustomers}
+            <br />
+            Số khách hàng bị trùng SDT trong file Excel: {excel?.length}
+          </>
+        );
+
+        if (res?.data?.excel?.length > 0) {
+          await exportDuplicatesToExcel(res?.data?.excel);
+        }
       }
-      // Xử lý kết quả trả về (nếu cần)
     } catch (error) {
-      // Xử lý lỗi nếu có
       if (error.statusCode == 422) {
         toast.error("Lưu ý định dạng file upload là file excel nhé !!!");
       }
