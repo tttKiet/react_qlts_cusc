@@ -34,6 +34,7 @@ import StatisticalThematic from "./pages/StatisticalThematic";
 import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
+import ManagerFile from "./pages/ManagerFile";
 
 const LayoutOnly = () => {
   return (
@@ -137,6 +138,10 @@ function App() {
         {
           path: "statistical/thematic",
           element: <StatisticalThematic />,
+        },
+        {
+          path: "file/manager",
+          element: <ManagerFile />,
         },
       ],
     },
