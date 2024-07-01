@@ -71,7 +71,7 @@ function ProfileUser() {
     {
         id: 3,
         thoigianphan: "9:00",
-        tentruong: "Trường Cao Đăng Sư Phạm",
+        tentruong: "Trường Cao đẳng Sư Phạm",
         sodong: "7",
         madoan: "MD3",
         lienhe1: 0,

@@ -40,7 +40,9 @@ const dataFileCustomer = (formData, config) => {
 };
 
 const downLoadFile = (data) => {
-  return axios.get(`${API_FILE}/downLoadFile?MAHOSO=${data.MAHOSO}`);
+  return axios.post(`${API_FILE}/downLoadFile`, data, {
+    responseType: "blob", // Chỉ định loại dữ liệu trả về là blob
+  });
 };
 
 export default {

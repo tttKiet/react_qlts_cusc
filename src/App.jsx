@@ -34,6 +34,7 @@ import StatisticalThematic from "./pages/StatisticalThematic";
 import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
+import ManagerThematicUsermanager from "./pages/ManagerThematicUsermanager";
 
 const LayoutOnly = () => {
   return (
@@ -165,6 +166,10 @@ function App() {
         {
           path: "data/edit/:id",
           element: <EditDataUsermanager />,
+        },
+        {
+          path: "thematic",
+          element: <ManagerThematicUsermanager />,
         },
       ],
     },
