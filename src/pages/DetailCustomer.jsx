@@ -1,40 +1,33 @@
 // import { faEnvelope, faLocationDot, faPhone } from "@fortawesome/free-solid-svg-icons";
 import {
-  faUser,
   faAddressCard,
   faClipboard,
+  faUser,
 } from "@fortawesome/free-regular-svg-icons";
-import {
-  faArrowUpRightFromSquare,
-  faBullseye,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBullseye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  useDisclosure,
   Card,
-  CardHeader,
-  Divider,
   CardBody,
-  CardFooter,
-  Image,
+  CardHeader,
   Chip,
+  Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
 } from "@nextui-org/react";
-import { Link } from "react-router-dom";
-import { useParams, useNavigate } from "react-router-dom";
+import { Result, Tag } from "antd";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
-import { toast } from "react-toastify";
-import { Result, Tag } from "antd";
 import { useAuth } from "../hooks";
-import { useSelector } from "react-redux";
-import { useState } from "react";
-import { Spin } from "antd";
 
 import SegmentService from "../service/SegmentService";
 
@@ -102,51 +95,6 @@ function DetailCustomer() {
     } catch (error) {
       toast.error(error);
       console.error("Error while uploading file:", error);
-    }
-  };
-
-  // handle Download File
-  const handleDownloadFile = async (data) => {
-    const MAHOSO = data?.MAHOSO;
-    if (!MAHOSO) {
-      return toast.warning("MAHOSO chưa có nhé");
-    }
-    try {
-      const response = await SegmentService.downLoadFile({
-        MAHOSO: MAHOSO,
-      });
-
-      console.log("response", response);
-
-      // Kiểm tra xem response có dữ liệu file không
-      if (!response || !response.data) {
-        return toast.error("Không có dữ liệu tệp để tải xuống.");
-      }
-
-      // Chuyển đổi dữ liệu nhận được thành một đối tượng Blob
-      const blob = new Blob([response.data]);
-
-      // Tạo URL để hiển thị hoặc tải xuống file
-      const url = window.URL.createObjectURL(blob);
-
-      // Tạo một phần tử <a> ẩn để khởi tạo việc tải xuống file
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = response.filename || "downloaded_file"; // Tên file để tải về
-
-      // Thêm phần tử <a> vào DOM và kích hoạt sự kiện click để tải xuống file
-      document.body.appendChild(a);
-      a.click();
-
-      // Sau khi hoàn tất, loại bỏ phần tử <a> đã tạo
-      document.body.removeChild(a);
-
-      // Giải phóng URL đã tạo
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading file:", { error: error?.message });
-      toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
     }
   };
 
@@ -320,9 +268,9 @@ function DetailCustomer() {
                           const parts = fullPath.split("\\");
                           const fileName = parts[parts.length - 1];
                           return (
-                            <div
+                            <a
                               key={index}
-                              onClick={() => handleDownloadFile(item)}
+                              href={`/api/v1/file/downLoadFile?MAHOSO=${item.MAHOSO}`}
                               style={{
                                 textDecoration: "underline",
                                 cursor: "pointer",
@@ -330,7 +278,7 @@ function DetailCustomer() {
                               }}
                             >
                               {fileName}
-                            </div>
+                            </a>
                           );
                         })}
                       </div>
