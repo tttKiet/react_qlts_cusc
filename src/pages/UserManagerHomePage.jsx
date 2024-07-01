@@ -1,8 +1,8 @@
 import { faClipboardList, faDatabase, faEllipsisVertical, faPencil, faPhone, faPlus, faSchool, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { Button, Dropdown, message, Popconfirm, Space } from 'antd';
+import { Dropdown, message, Space } from 'antd';
 import useSWR from "swr";
-import { API_THEMATIC } from "../constants";
+import { API_NOTE, API_THEMATIC } from "../constants";
 import {
     Table,
     TableHeader,
@@ -10,22 +10,20 @@ import {
     TableBody,
     TableRow,
     TableCell,
-    Input,
-    Button,
-    DropdownTrigger,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
     Pagination,
-    useDisclosure,
-    Tooltip, User
+    Tooltip, Progress, User
 } from "@nextui-org/react";
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { Space } from "antd";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import NoteService from "../service/NoteService";
+import moment from "moment";
 const INITIAL_VISIBLE_COLUMNS = ["id", "tenchuyende", "tentruong", "usermanager", "ngaythongbao", "ngaytochuc", "noidung", "actions"];
 function UserManagerHomePage() {
-
+    const user = useSelector((state) => state.account.user);
     const { data: dataThematic, mutate: fetchDataThematic } = useSWR(`${API_THEMATIC}/readAll`)
+    const { data: dataNote, mutate: fetchDataNote } = useSWR(`${API_NOTE}/readAll?SDT=${user.SDT}`)
+
     const confirm = (e) => {
         console.log(e);
         message.success('Click on Yes');
@@ -200,69 +198,201 @@ function UserManagerHomePage() {
         );
     }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
+    const [note, setNote] = useState("")
+
+    const handleCreateNote = async () => {
+        try {
+            const currentDay = new Date();
+            const data = {
+                SDT: user.SDT,
+                NOIDUNG: note,
+                THOIGIAN: currentDay,
+                TRANGTHAI: 0
+            }
+            const res = await NoteService.createNote(data);
+            fetchDataNote()
+            toast.success(res.message)
+            setNote("")
+        } catch (e) {
+            console.log(e)
+            toast.error(e.message[0])
+        }
+    }
+
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') {
+            handleCreateNote()
+        }
+    }
+
+    const handleDeleteNote = async (e) => {
+        try {
+            const STT = e.STT;
+            const res = await NoteService.deleteUser(STT)
+            toast.success(res.message)
+            fetchDataNote()
+        } catch (e) {
+            console.log(e)
+            toast.error(e.message)
+        }
+    }
+
+
+
     return (
         <>
             <div>
-                <div class="grid gap-4 lg:gap-8 md:grid-cols-3 pb-5">
-                    <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div class="space-y-5">
+                <div className="grid grid-cols-1 gap-4 lg:gap-8 md:grid-cols-7 pb-5">
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
                             <div className="flex gap-4">
                                 <div className="my-auto">
-                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-3 rounded-lg bg-blue-600 text-white" />
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
                                 </div>
                                 <div>
-                                    <div
-                                        class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                                         <span>Liên hệ lần 1</span>
                                     </div>
-
-                                    <div class="text-2xl dark:text-gray-100">
+                                    <div className="text-xl dark:text-gray-100">
                                         4/125
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
                                 <span>Danh sách chi tiết</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div class="space-y-2">
-                            <div
-                                class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-                                <span>Liên hệ lần 2</span>
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 2</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="text-3xl dark:text-gray-100">
-                                1340
-                            </div>
-
-                            <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
-                                <span>Danh sách chi tiết</span>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="relative p-6 rounded-2xl bg-white shadow dark:bg-gray-800">
-                        <div class="space-y-2">
-                            <div
-                                class="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
-
-                                <span>Liên hệ lần 3</span>
-                            </div>
-
-                            <div class="text-3xl dark:text-gray-100">
-                                3543
-                            </div>
-                            <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
                                 <span>Danh sách chi tiết</span>
                             </div>
                         </div>
                     </div>
+
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 3</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 4</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 5</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 6</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
+                        <div className="space-y-1">
+                            <div className="flex gap-4">
+                                <div className="my-auto">
+                                    <FontAwesomeIcon icon={faPhone} size="xl" className="border-1 p-2 rounded-lg bg-blue-600 text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
+                                        <span>Liên hệ lần 7</span>
+                                    </div>
+                                    <div className="text-xl dark:text-gray-100">
+                                        4/125
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
+                                <span>Danh sách chi tiết</span>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
+
                 <div style={{
                     padding: 24,
                     minHeight: 450,
@@ -318,73 +448,52 @@ function UserManagerHomePage() {
                                 </div>
                                 <div className="content min-h-64 max-h-64 overflow-y-auto">
 
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
-
+                                    {dataNote && dataNote.length > 0 ? (
+                                        dataNote.map((note, index) => (
+                                            <div key={index} className="note my-2">
+                                                <div className="grid grid-cols-12">
+                                                    <User className="col-span-2"
+                                                        avatarProps={{
+                                                            src: "https://i.pinimg.com/564x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg"
+                                                        }}
+                                                    />
+                                                    <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
+                                                        <p className="font-medium">{user.HOTEN}</p>
+                                                        <p>{note.NOIDUNG}</p>
+                                                    </div>
+                                                    <Dropdown className="col-span-1 m-auto"
+                                                        menu={{
+                                                            items: [
+                                                                {
+                                                                    label: <p className="font-medium text-red-500" onClick={() => handleDeleteNote(note)}>Xóa</p>,
+                                                                    key: '0',
+                                                                },
+                                                            ]
+                                                        }}
+                                                        trigger={['click']}
+                                                    >
+                                                        <a onClick={(e) => e.preventDefault()}>
+                                                            <Space>
+                                                                <FontAwesomeIcon icon={faEllipsisVertical} />
+                                                            </Space>
+                                                        </a>
+                                                    </Dropdown>
+                                                </div>
+                                                <div className="timeCreateNote text-end text-xs text-gray-400">
+                                                    {moment(note.THOIGIAN).format("DD-MM-YYYY HH:mm")}
+                                                </div>
                                             </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    //         {
-                                                    //             label: <p className="font-medium text-red-500">Xóa</p>,
-                                                    // key: '0',
-                                                    //         },
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
+                                        ))
+                                    ) : (
+                                        <div className="text-center text-gray-500">Không có ghi chú nào.</div>
+                                    )}
 
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    // items,
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
 
                                 </div>
                                 <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
-                                        <input type="text" className="outline-none  h-10 px-2" placeholder="Viết ghi chú" />
-                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-yellow-400 m-auto p-2 rounded-full text-white" icon={faPencil} /></div>
+                                        <input type="text" className="outline-none  h-10 px-2" placeholder="Viết ghi chú" value={note} onChange={(value) => setNote(value.target.value)} onKeyDown={handleEnter} />
+                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-yellow-400 m-auto p-2 rounded-full text-white" icon={faPencil} onClick={handleCreateNote} /></div>
                                     </div>
                                 </div>
                             </div>

@@ -64,12 +64,19 @@ function CreateData() {
       if (res && res.statusCode === 200) {
         toast.success("Upload file thành công");
       }
-      setLoading(false);
+
       // Xử lý kết quả trả về (nếu cần)
     } catch (error) {
       // Xử lý lỗi nếu có
-      toast.error(error);
+      if (error.statusCode == 422) {
+        toast.error("Lưu ý định dạng file upload là file excel nhé !!!");
+      }
+      if (error.statusCode == 500) {
+        toast.error("Dữ liệu file có vấn đề nhé  !!!");
+      }
       console.error("Error while uploading file:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,12 +105,18 @@ function CreateData() {
       if (res && res.statusCode === 200) {
         toast.success("Upload file thành công");
       }
-      setLoading(false);
       // Xử lý kết quả trả về (nếu cần)
     } catch (error) {
       // Xử lý lỗi nếu có
-      toast.error(error);
+      if (error.statusCode == 422) {
+        toast.error("Lưu ý định dạng file upload là file excel nhé !!!");
+      }
+      if (error.statusCode == 500) {
+        toast.error("Dữ liệu file có vấn đề nhé  !!!");
+      }
       console.error("Error while uploading file:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

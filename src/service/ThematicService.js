@@ -9,9 +9,14 @@ const updateThematic = async (data) => {
     return axios.put(`${API_THEMATIC}/update`, data)
 }
 
+const deleteThematic = async (data) => {
+    return axios.delete(`${API_THEMATIC}/delete`, { data })
+}
+
 export default {
     createThematic,
-    updateThematic
+    updateThematic,
+    deleteThematic
 };
 
 

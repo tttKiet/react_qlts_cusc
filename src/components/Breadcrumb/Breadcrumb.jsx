@@ -15,7 +15,14 @@ const breadcrumbNameMap = {
     '/admin/thematic': 'Quản lý chuyên đề',
     '/admin/profile': 'Thông tin cá nhân',
     '/admin/user/detail': 'Chi tiết người dùng',
+    '/admin/statistical': 'Thống kê',
+    '/admin/statistical/day': 'Ngày',
+    '/admin/statistical/contact': 'Liên hệ',
+    '/admin/statistical/thematic': 'Chuyên đề',
     '/usermanager': 'Trang chủ',
+    '/usermanager/data': 'Danh sách dữ liệu',
+    '/usermanager/data/:id': 'Chi tiết dữ liệu',
+    '/usermanager/data/edit/:id': 'Chỉnh sửa thông tin',
 };
 
 const getBreadcrumbName = (pathname) => {

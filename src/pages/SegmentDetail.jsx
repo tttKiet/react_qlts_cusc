@@ -110,7 +110,7 @@ function SegmentDetail() {
         let filteredUsers = [...data];
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((data) =>
-                data.hoten.toLowerCase().includes(filterSearchName.toLowerCase()),
+                data.sdt.toLowerCase().includes(filterSearchName.toLowerCase()),
             );
         }
 
@@ -265,11 +265,11 @@ function SegmentDetail() {
                             <Input
                                 isClearable
                                 classNames={{
-                                    base: "w-full sm:max-w-[90%]",
+                                    base: "w-full sm:max-w-[100%]",
                                     inputWrapper: "border-1",
                                 }}
                                 className="col-span-4 md:col-span-1"
-                                placeholder="Search by name..."
+                                placeholder="Tìm kiếm theo số điện thoại"
                                 size="sm"
                                 startContent={<SearchIcon className="text-default-300" />}
                                 variant="bordered"

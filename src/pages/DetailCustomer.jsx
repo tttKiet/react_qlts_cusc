@@ -68,16 +68,12 @@ function DetailCustomer() {
   };
 
   const handleUploadFile = async (onClose) => {
-    const MAPHIEUDK = data?.phieudkxettuyen?.MAPHIEUDK;
     if (!selectedFile) {
       return toast.warning("Vui lòng chọn file update nhé ");
     }
-    if (!MAPHIEUDK) {
-      return toast.warning("MAPHIEUDK chưa có nhé");
-    }
+
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("MAPHIEUDK", MAPHIEUDK);
 
     try {
       const config = {
@@ -86,15 +82,21 @@ function DetailCustomer() {
           folder_type: "hosoPhieudkxettuyen",
         },
       };
-
+      setLoading(true);
       const res = await SegmentService.dataFileCustomer(formData, config);
       if (res && res.statusCode === 200) {
         toast.success("Upload file thành công");
         onOpenChange(false);
+        mutate();
+        setSelectedFile(null);
       }
     } catch (error) {
-      toast.error(error);
+      if (error.statusCode == 500 || error.statusCode == 422) {
+        toast.error("Dữ liệu file có vấn đề nhé  !!!");
+      }
       console.error("Error while uploading file:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
