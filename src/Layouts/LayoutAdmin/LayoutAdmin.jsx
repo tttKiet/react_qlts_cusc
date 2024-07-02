@@ -76,12 +76,6 @@ const items = [
   ]),
   getItem(
     <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
-      <Link to={"/admin/statistical/thematic"}>Theo chuyên đề</Link>, 
-      "/admin/statistical/thematic" 
-    ),
-  ]),
-  getItem(
-    <Link to={"/admin/time"}>Thời gian đăng nhập</Link>, 
     "/admin/time",
     <ClockCircleOutlined />
   ),
