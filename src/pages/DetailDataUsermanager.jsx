@@ -26,6 +26,7 @@ function DetailDataUsermanager() {
     });
 
 
+
     return (
         <>
             <div className="">

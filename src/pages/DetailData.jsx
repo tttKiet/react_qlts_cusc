@@ -184,6 +184,7 @@ function DetailData() {
                                     <p className='font-bold'>Khóa học quan tâm</p>
                                     <p>Dài hạn</p>
                                 </div>
+
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Hồ sơ</p>
                                     <div className="max-w-[400px]">

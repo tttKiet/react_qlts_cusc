@@ -38,6 +38,8 @@ import StatisticalThematic from "./pages/StatisticalThematic";
 import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
+import ManagerThematicUsermanager from "./pages/ManagerThematicUsermanager";
+
 import ManagerFile from "./pages/ManagerFile";
 import UM_ManagerFile from "./pages/UM_ManagerFile";
 import { useEffect } from "react";
@@ -199,6 +201,8 @@ function App() {
         {
           path: "file",
           element: <UM_ManagerFile />,
+        }, 
+        {
           path: "thematic",
           element: <ManagerThematicUsermanager />,
         },
