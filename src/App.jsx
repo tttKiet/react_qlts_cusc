@@ -1,41 +1,38 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import { Button } from "@nextui-org/react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import DetailCustomer from "./pages/DetailCustomer";
-import Login from "./pages/Login";
-import LayoutAdmin from "./Layouts/LayoutAdmin/LayoutAdmin";
-import AdminHomePage from "./pages/AdminHomePage";
-import Footer from "./Layouts/OnlyLayout/Footer";
-import ManagerUser from "./pages/ManagerUser";
-import ProfileUser from "./pages/ProfileUser";
-import ListData from "./pages/ListData";
-import SegmentData from "./pages/SegmentData";
-import DivisionData from "./pages/DivisionData";
-import TimeLogin from "./pages/TimeLogin";
-import SegmentDetail from "./pages/SegmentDetail";
-import ManagerThematic from "./pages/ManagerThematic";
-import DetailData from "./pages/DetailData";
-import ProfileAdmin from "./pages/ProfileAdmin";
-import EditData from "./pages/EditData";
-import CreateData from "./pages/CreateData";
-import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
-import UserManagerHomePage from "./pages/UserManagerHomePage";
 import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
 import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
-import StatisticalDay from "./pages/StatisticalDay";
-import StatisticalContact from "./pages/StatisticalContact";
-import StatisticalThematic from "./pages/StatisticalThematic";
-import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
+import LayoutAdmin from "./Layouts/LayoutAdmin/LayoutAdmin";
+import LayoutUserManager from "./Layouts/LayoutUserManager/LayoutUserManager";
+import Footer from "./Layouts/OnlyLayout/Footer";
+import AdminHomePage from "./pages/AdminHomePage";
+import CreateData from "./pages/CreateData";
+import DetailCustomer from "./pages/DetailCustomer";
+import DetailData from "./pages/DetailData";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
+import DivisionData from "./pages/DivisionData";
+import EditData from "./pages/EditData";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
+import HomePage from "./pages/HomePage";
+import ListData from "./pages/ListData";
+import Login from "./pages/Login";
+import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
+import ManagerThematic from "./pages/ManagerThematic";
 import ManagerThematicUsermanager from "./pages/ManagerThematicUsermanager";
-
+import ManagerUser from "./pages/ManagerUser";
+import ProfileAdmin from "./pages/ProfileAdmin";
+import ProfileUser from "./pages/ProfileUser";
+import SegmentData from "./pages/SegmentData";
+import SegmentDetail from "./pages/SegmentDetail";
+import StatisticalContact from "./pages/StatisticalContact";
+import StatisticalDay from "./pages/StatisticalDay";
+import StatisticalThematic from "./pages/StatisticalThematic";
+import TimeLogin from "./pages/TimeLogin";
+import UserManagerHomePage from "./pages/UserManagerHomePage";
+import { useEffect } from "react";
+import authService from "./service/AuthService";
 const LayoutOnly = () => {
   return (
     <div>
@@ -46,6 +43,25 @@ const LayoutOnly = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      console.log("remove");
+      await authService.logout();
+    };
+
+    const handleTabClosing = async () => {
+      await authService.logout();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleTabClosing);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleTabClosing);
+    };
+  });
+
   const router = createBrowserRouter([
     {
       path: "/",
