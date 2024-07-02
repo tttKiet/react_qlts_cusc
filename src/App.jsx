@@ -1,6 +1,5 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
 import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
@@ -31,6 +30,16 @@ import StatisticalDay from "./pages/StatisticalDay";
 import StatisticalThematic from "./pages/StatisticalThematic";
 import TimeLogin from "./pages/TimeLogin";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
+import ProtectedRoute from "./components/ProtectedRoute/protectedPageAdmin";
+import ProtectedRouteUserManager from "./components/ProtectedRoute/protectedPageUserManager";
+import StatisticalDay from "./pages/StatisticalDay";
+import StatisticalContact from "./pages/StatisticalContact";
+import StatisticalThematic from "./pages/StatisticalThematic";
+import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
+import DetailDataUsermanager from "./pages/DetailDataUsermanager";
+import EditDataUsermanager from "./pages/EditDataUsermanager";
+import ManagerFile from "./pages/ManagerFile";
+import UM_ManagerFile from "./pages/UM_ManagerFile";
 import { useEffect } from "react";
 import authService from "./service/AuthService";
 const LayoutOnly = () => {
@@ -155,6 +164,10 @@ function App() {
           path: "statistical/thematic",
           element: <StatisticalThematic />,
         },
+        {
+          path: "file/manager",
+          element: <ManagerFile />,
+        },
       ],
     },
 
@@ -184,6 +197,8 @@ function App() {
           element: <EditDataUsermanager />,
         },
         {
+          path: "file",
+          element: <UM_ManagerFile />,
           path: "thematic",
           element: <ManagerThematicUsermanager />,
         },
