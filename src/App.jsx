@@ -35,6 +35,7 @@ import ManagerDataUsermanager from "./pages/ManagerDataUsermanager";
 import DetailDataUsermanager from "./pages/DetailDataUsermanager";
 import EditDataUsermanager from "./pages/EditDataUsermanager";
 import ManagerFile from "./pages/ManagerFile";
+import UM_ManagerFile from "./pages/UM_ManagerFile";
 
 const LayoutOnly = () => {
   return (
@@ -170,6 +171,10 @@ function App() {
         {
           path: "data/edit/:id",
           element: <EditDataUsermanager />,
+        },
+        {
+          path: "file",
+          element: <UM_ManagerFile />,
         },
       ],
     },

@@ -14,6 +14,7 @@ import { Select } from "antd";
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { SearchOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 
 function UM_ManagerFile() {
   const [pageSize, setPageSize] = useState(5);
@@ -21,6 +22,9 @@ function UM_ManagerFile() {
   const [total, setTotal] = useState(20);
   const [dataFile, setDataFile] = useState([]);
   const [showFile, setShowFile] = useState(null);
+  const user = useSelector((state) => state.account.user);
+
+  console.log("user", user);
 
   const [isShowModalDeleteFile, setIsShowModalDeleteFile] = useState(false);
   const [dataModalDeleteFile, setDataModalDeleteFile] = useState([]);
@@ -31,8 +35,8 @@ function UM_ManagerFile() {
   };
 
   const readAllFile = async () => {
-    const res = await FileService.readAll(
-      `page=${current}&pageSize=${pageSize}`
+    const res = await FileService.readAll_UM(
+      `page=${current}&pageSize=${pageSize}&SDT_UM=${user?.SDT}`
     );
     if (res && res.statusCode == 200) {
       let cus = res?.data?.results?.map((item) => ({
