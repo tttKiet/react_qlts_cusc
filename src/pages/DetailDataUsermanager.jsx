@@ -1,4 +1,5 @@
-import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone } from "@fortawesome/free-solid-svg-icons";
+
+import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Chip } from "@nextui-org/react";
 import { Tag } from "antd";
@@ -23,6 +24,7 @@ function DetailDataUsermanager() {
             KETQUA: contact ? contact.KETQUA : 'Trống',
         };
     });
+
 
     return (
         <>
@@ -139,13 +141,30 @@ function DetailDataUsermanager() {
                                     <p>Dài hạn</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Hồ sơ</p>
-                                    <div>
-                                        <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p>
+
+                                    <p className="font-bold flex items-center">Hồ sơ</p>
+                                    <div className="max-w-[300px]">
+                                        {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {
+                                            const fullPath = item?.HOSO;
+                                            const parts = fullPath.split("\\");
+                                            const fileName = parts[parts.length - 1];
+                                            return (
+                                                <div className="flex justify-end" key={index}>
+                                                    <FontAwesomeIcon icon={faTrash} style={{ color: "#d60000", }} className="mt-1 me-2 cursor-pointer" />
+                                                    <p
+                                                        key={index}
+                                                        onClick={() => handleDownloadFile(item)}
+                                                        className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
+                                                    >
+                                                        {fileName}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                                    <p className='font-bold'>Kết quả Cao đăng/Đại học</p>
+                                    <p className='font-bold'>Kết quả Cao đẳng/Đại học</p>
 
                                     {detailData?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 1 ? (
                                         <Chip

@@ -51,6 +51,20 @@ const items = [
     "/usermanager/file",
     <DatabaseOutlined />
   ),
+    getItem(<Link to={"/usermanager"}>Dashboard</Link>, '/usermanager', <DashboardOutlined />),
+    getItem(<Link to={"/usermanager/data"}>Danh sách dữ liệu</Link>, '/usermanager/data', <DatabaseOutlined />),
+    getItem(<Link to={"/usermanager/thematic"}>Quản lý chuyên đề</Link>, "/usermanager/thematic", <FontAwesomeIcon icon={faClipboard} />),
+    // getItem('Quản lý người dùng', 'sub1', <UserOutlined />, [
+    //     getItem(<Link to={"/admin/user"}>Danh sách người dùng</Link>, '/admin/user'),
+    // ]),
+    // getItem('Quản lý dữ liệu', 'sub2', <DatabaseOutlined />, [
+    //     getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, '/admin/data'),
+    //     getItem(<Link to={"/admin/add"}>Thêm dữ liệu</Link>, '/admin/add'),
+    //     getItem(<Link to={"/admin/segment"}>Phân đoạn dữ liệu</Link>, '/admin/segment'),
+    //     getItem(<Link to={"/admin/division"}>Phân chia dữ liệu</Link>, '/admin/division'),
+    // ]),
+    // getItem(<Link to={"/admin/time"}>Thời gian đăng nhập</Link>, '/admin/time', <ClockCircleOutlined />),
+    // getItem(<Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>, '/admin/thematic', <FontAwesomeIcon icon={faClipboard} />),
 ];
 
 const LayoutUserManager = () => {

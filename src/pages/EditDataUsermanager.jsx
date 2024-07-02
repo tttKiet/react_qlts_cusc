@@ -1,4 +1,4 @@
-import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone, faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
+import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone, faClipboardCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardHeader, CardBody, Divider, Tabs, Tab, Chip, Input, Button, Autocomplete, AutocompleteItem, Accordion, AccordionItem, DatePicker, Select, SelectItem, useSwitch } from "@nextui-org/react";
 import { Tag } from "antd";
@@ -410,7 +410,8 @@ function EditDataUsermanager() {
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
-                                label="Kết quả Cao đăng/Đại học"
+
+                                label="Kết quả Cao đẳng/Đại học"
 
                                 variant="bordered"
                                 selectedKey={graduation}
@@ -436,7 +437,25 @@ function EditDataUsermanager() {
 
                                     title="Hồ sơ"
                                 >
-                                    {detailData?.phieudkxettuyen.hoso > 0 ? detailData?.phieudkxettuyen.hoso : 'Chưa có thông tin'}
+
+                                    <div className="max-w-[300px]">
+                                        {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {
+                                            const fullPath = item?.HOSO;
+                                            const parts = fullPath.split("\\");
+                                            const fileName = parts[parts.length - 1];
+                                            return (
+                                                <div className="flex justify-end" key={index}>
+                                                    <FontAwesomeIcon icon={faTrash} style={{ color: "#d60000", }} className="mt-1 me-2 cursor-pointer" />
+                                                    <p
+                                                        key={index}
+                                                        className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
+                                                    >
+                                                        {fileName}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </AccordionItem>
 
                             </Accordion>
@@ -505,6 +524,7 @@ function EditDataUsermanager() {
             toast.error(e.message)
         }
     }
+
 
 
     return (
