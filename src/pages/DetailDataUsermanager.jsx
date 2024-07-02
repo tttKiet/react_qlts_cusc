@@ -1,3 +1,4 @@
+
 import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquare, faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Chip } from "@nextui-org/react";
@@ -24,49 +25,7 @@ function DetailDataUsermanager() {
         };
     });
 
-    const handleDownloadFile = async (data) => {
-        const MAHOSO = data?.MAHOSO;
-        if (!MAHOSO) {
-            return toast.warning("MAHOSO chưa có nhé");
-        }
-        try {
-            const response = await SegmentService.downLoadFile({
-                MAHOSO: MAHOSO,
-            });
 
-            console.log("response", response);
-
-            // Kiểm tra xem response có dữ liệu file không
-            if (!response || !response.data) {
-                return toast.error("Không có dữ liệu tệp để tải xuống.");
-            }
-
-            // Chuyển đổi dữ liệu nhận được thành một đối tượng Blob
-            const blob = new Blob([response.data]);
-
-            // Tạo URL để hiển thị hoặc tải xuống file
-            const url = window.URL.createObjectURL(blob);
-
-            // Tạo một phần tử <a> ẩn để khởi tạo việc tải xuống file
-            const a = document.createElement("a");
-            a.style.display = "none";
-            a.href = url;
-            a.download = response.filename || "downloaded_file"; // Tên file để tải về
-
-            // Thêm phần tử <a> vào DOM và kích hoạt sự kiện click để tải xuống file
-            document.body.appendChild(a);
-            a.click();
-
-            // Sau khi hoàn tất, loại bỏ phần tử <a> đã tạo
-            document.body.removeChild(a);
-
-            // Giải phóng URL đã tạo
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Error downloading file:", { error: error?.message });
-            toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
-        }
-    };
 
     return (
         <>
@@ -183,6 +142,7 @@ function DetailDataUsermanager() {
                                     <p>Dài hạn</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+
                                     <p className="font-bold flex items-center">Hồ sơ</p>
                                     <div className="max-w-[300px]">
                                         {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {

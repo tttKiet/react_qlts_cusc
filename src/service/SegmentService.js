@@ -3,7 +3,6 @@ import { API_DATA, API_FILE } from "../constants";
 
 const createSegment = async (data) => {
   return axios.post(`${API_DATA}/segment`, data);
-  // console.log("Data send from frontend", data)
 };
 
 const deleteSegment = async (data) => {
@@ -40,7 +39,7 @@ const dataFileCustomer = (formData, config) => {
 };
 
 const downLoadFile = (data) => {
-  return axios.post(`${API_FILE}/downLoadFile`, data, {
+  return axios.post(`/api/v1/file/downLoadFile`, data, {
     responseType: "blob", // Chỉ định loại dữ liệu trả về là blob
   });
 };

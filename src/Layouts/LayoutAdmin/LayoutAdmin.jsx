@@ -24,6 +24,7 @@ import Breadcrumbs from "../../components/Breadcrumb/Breadcrumb";
 import { useSelector } from "react-redux";
 import useAuth from "../../hooks/useAuth";
 import { Avatar } from "@nextui-org/react";
+import { IconFile } from "@tabler/icons-react";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -69,6 +70,12 @@ const items = [
       "/admin/statistical/contact"
     ),
     getItem(
+      <Link to={"/admin/statistical/thematic"}>Theo chuyên đề</Link>,
+      "/admin/statistical/thematic"
+    ),
+  ]),
+  getItem(
+    <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
       <Link to={"/admin/statistical/thematic"}>Theo chuyên đề</Link>, 
       "/admin/statistical/thematic" 
     ),
@@ -82,6 +89,11 @@ const items = [
     <Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>,
     "/admin/thematic",
     <FontAwesomeIcon icon={faClipboard} />
+  ),
+  getItem(
+    <Link to={"/admin/file/manager"}>Quản lý hồ sơ</Link>,
+    "/admin/file/manager",
+    <IconFile size={16} />
   ),
 ];
 

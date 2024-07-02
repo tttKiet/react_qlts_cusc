@@ -1,0 +1,88 @@
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
+import { useState } from "react";
+import { toast } from "react-toastify";
+
+function ModalSegment({
+  isOpen,
+  onClose,
+  handleSubmit,
+  selectedKeys,
+  rowAvailable,
+}) {
+  const [rowQuanlity, setRowQuanlity] = useState(0);
+
+  function handleSubmitLocal() {
+    if (rowQuanlity <= 0) {
+      toast.warning("Vui lòng chọn số dòng > 0.");
+    } else {
+      handleSubmit(rowQuanlity);
+      onClose();
+    }
+  }
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} placement="center">
+      <ModalContent>
+        {() => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              Phân đoạn dữ liệu
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex gap-2">
+                <Input
+                  type="Number"
+                  variant="bordered"
+                  isRequired={true}
+                  label="Nhập số lượng dòng trên 1 đoạn"
+                  classNames={{
+                    label: "font-medium",
+                  }}
+                  value={rowQuanlity}
+                  size="lg"
+                  onValueChange={(value) => setRowQuanlity(value)}
+                />
+              </div>
+              <div className="flex">
+                <div className="flex gap-1 text-sm">
+                  <span>
+                    Bạn đang phân:
+                    <span className=" font-medium"> {selectedKeys?.size} </span>
+                    dòng
+                  </span>{" "}
+                  |
+                  <span>
+                    {" "}
+                    Dữ liệu khả dụng:{" "}
+                    <span className="font-medium">{rowAvailable || 0}</span>.
+                  </span>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Đóng
+              </Button>
+              <Button
+                color="primary"
+                isDisabled={rowQuanlity > 0 ? false : true}
+                onPress={handleSubmitLocal}
+              >
+                Phân đoạn
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+}
+
+export default ModalSegment;
