@@ -13,8 +13,13 @@ const deleted = async (data) => {
   return axios.delete(`${API_FILE}/${data}`);
 };
 
+const downloadFile = async (data) => {
+  return axios.get(`${API_FILE}/downLoadFile?${data}`);
+};
+
 export default {
   readAll,
   deleted,
   readAll_UM,
+  downloadFile,
 };

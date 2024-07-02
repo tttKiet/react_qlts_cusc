@@ -24,8 +24,6 @@ function UM_ManagerFile() {
   const [showFile, setShowFile] = useState(null);
   const user = useSelector((state) => state.account.user);
 
-  console.log("user", user);
-
   const [isShowModalDeleteFile, setIsShowModalDeleteFile] = useState(false);
   const [dataModalDeleteFile, setDataModalDeleteFile] = useState([]);
 
@@ -61,6 +59,20 @@ function UM_ManagerFile() {
         ? null
         : data?.phieudkxettuyen?.MAPHIEUDK
     );
+  };
+
+  const handleDownloadFile = async (data) => {
+    const { MAHOSO } = data;
+    try {
+      const res = await FileService.downloadFile(`MAHOSO=${MAHOSO}`);
+      if (res && res.statusCode == 200) {
+        toast.success("Tải file thành công");
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err) {
+      toast.error(err?.message);
+    }
   };
 
   useEffect(() => {
@@ -216,7 +228,11 @@ function UM_ManagerFile() {
             <div>
               {data?.phieudkxettuyen?.hoso.map((item) => {
                 return (
-                  <div key={item?.MAHOSO} className="flex items-center my-2">
+                  <div
+                    key={item?.MAHOSO}
+                    className="flex items-center my-2"
+                    onClick={() => handleDownloadFile(item)}
+                  >
                     <div>
                       <IconFile size={17} />
                     </div>

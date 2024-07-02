@@ -212,7 +212,11 @@ function UM_ManagerFile() {
             <div>
               {data?.phieudkxettuyen?.hoso.map((item) => {
                 return (
-                  <div key={item?.MAHOSO} className="flex items-center my-2">
+                  <div
+                    key={item?.MAHOSO}
+                    className="flex items-center my-2 cursor-pointer text-blue-600"
+                    onClick={() => handleDownloadFile(item)}
+                  >
                     <div>
                       <IconFile size={17} />
                     </div>
@@ -250,6 +254,20 @@ function UM_ManagerFile() {
 
   const handleF5 = () => {
     location.reload();
+  };
+
+  const handleDownloadFile = async (data) => {
+    const { MAHOSO } = data;
+    try {
+      const res = await FileService.downloadFile(`MAHOSO=${MAHOSO}`);
+      if (res && res.statusCode == 200) {
+        toast.success("Tải file thành công");
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err) {
+      toast.error(err?.message); 
+    }
   };
 
   return (
