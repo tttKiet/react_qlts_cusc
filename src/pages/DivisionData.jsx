@@ -33,6 +33,10 @@ import { API_DATA } from "../constants";
 import segmentService from "../service/SegmentService";
 import moment from "moment";
 import ModalSegmentPermission from "../components/Modal/ModalSegmentPermission";
+import { AiOutlinePhone } from "react-icons/ai";
+import ModalConfirm from "../components/Modal/ModalConfirm";
+import ModalSegmentOpenContact from "../components/Modal/ModalSegmentOpenContact";
+import { TbReceiptRefund } from "react-icons/tb";
 
 function DivisionData() {
   // Const
@@ -103,12 +107,33 @@ function DivisionData() {
   const [schoolSelected, setSchoolSelected] = useState("");
   const [provinceSelected, setProvinceSelected] = useState("");
   const [jobSelected, setJobSelected] = useState("");
+  const [sementEdit, setSementEdit] = useState("");
+  const [segmentEditOpen, setSegmentEditOpen] = useState(null);
   const [typeCodeSelected, setTypeCodeSelected] = useState("");
   const [typeSelected, setTypeSelected] = useState("1");
   const [doneSelected, setDoneSelected] = useState("all");
   const [filterSearchName, setFillterSearchName] = useState("");
   const [page, setPage] = useState(1);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenConfirm,
+    onOpen: onOpenConfirm,
+    onClose: onCloseConfirm,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenRefund,
+    onOpen: onOpenRefund,
+    onClose: onCloseRefund,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenOpenContact,
+    onOpen: onOpenOpenContact,
+    onClose: onCloseOpenContact,
+  } = useDisclosure();
+
   const [total, setTotal] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -132,12 +157,6 @@ function DivisionData() {
   );
   const { data: dataJob } = useSWR(`${API_DATA}/job-like`);
 
-  const { data: dataAvailable, mutate: mutateDataAvailable } = useSWR(
-    `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${
-      jobSelected || ""
-    }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}`
-  );
-
   const { data: dataSegment, mutate: mutateSegment } = useSWR(
     `${API_DATA}/segment?MATINH=${provinceSelected || ""}&MANGANH=${
       jobSelected || ""
@@ -147,6 +166,87 @@ function DivisionData() {
   );
 
   // Function
+  async function handleSubmitOpencontact(choose) {
+    try {
+      const data = {
+        MAPQ: segmentEditOpen.madoan,
+        TRANGTHAILIENHE: choose,
+      };
+      const res = await segmentService.updateSegment(data);
+      console.log("res: ", res);
+      toast.success("Đã cập nhật.");
+      onCloseOpenContact();
+      setSegmentEditOpen("");
+      mutateSegment();
+    } catch (error) {
+      console.log("error ", error);
+      toast.error(
+        error?.message ||
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
+      );
+    }
+  }
+
+  function handleOpenContact(segment) {
+    if (!segment.usermanager) {
+      return toast.warning(
+        "Bạn cần phân quyền cho Usermanager để mở liên hệ.",
+        {}
+      );
+    }
+    setSegmentEditOpen(segment);
+    onOpenOpenContact();
+  }
+
+  async function handleClickDeleteSegment(madoan) {
+    setSementEdit(madoan);
+    onOpenConfirm();
+  }
+
+  async function handleClickRefundSegment(madoan) {
+    setSementEdit(madoan);
+    onOpenRefund();
+  }
+
+  async function handleClickSegment(madoan) {
+    try {
+      const res = await segmentService.deleteSegment([madoan]);
+      console.log("res: ", res);
+      toast.success("Đã xóa thành công.");
+      onCloseConfirm();
+      setSementEdit("");
+      mutateSegment();
+    } catch (error) {
+      console.log("error ", error);
+      toast.error(
+        error?.message ||
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
+      );
+    }
+  }
+
+  async function handleRefundSegment(madoan) {
+    try {
+      const res = await segmentService.refundSegment({
+        MAPQ: madoan,
+      });
+      console.log("res: ", res);
+      toast.success("Đã thu hồi thành công.");
+      onCloseRefund();
+      setSementEdit("");
+      mutateSegment();
+    } catch (error) {
+      console.log("error ", error);
+      toast.error(
+        error?.message ||
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
+      );
+    }
+  }
+
   async function handleSubmitCreateSegment({ usermanager }) {
     const arrRows = Array.from(selectedKeys.values());
 
@@ -415,15 +515,41 @@ function DivisionData() {
         );
       case "actions":
         return (
-          <div className="relative flex items-center gap-2">
-            <Chip
-              color="primary"
-              className="text-white cursor-pointer"
-              radius="sm"
-              // onClick={() => hanldeOpen(segment)}
-            >
-              Mở liên hệ
-            </Chip>
+          <div className="relative flex items-center gap-3">
+            <Tooltip content="Mở liên hệ">
+              <span
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                onClick={() => handleOpenContact(segment)}
+              >
+                <EditIcon />
+              </span>
+            </Tooltip>
+
+            <Tooltip content="Xem danh sách">
+              <Link
+                href={`/admin/segment/${segment?.madoan}`}
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
+                <EyeIcon />
+              </Link>
+            </Tooltip>
+
+            <Tooltip color="danger" content="Thu hồi">
+              <span
+                onClick={() => handleClickRefundSegment(segment?.madoan)}
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+              >
+                <TbReceiptRefund />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Xóa đoạn">
+              <span
+                onClick={() => handleClickDeleteSegment(segment?.madoan)}
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+              >
+                <DeleteIcon />
+              </span>
+            </Tooltip>
           </div>
         );
       default:
@@ -731,7 +857,31 @@ function DivisionData() {
         selectedKeys={selectedKeys}
         onClose={onClose}
         handleSubmit={handleSubmitCreateSegment}
-        rowAvailable={dataAvailable?.total}
+      />
+
+      <ModalSegmentOpenContact
+        isOpen={isOpenOpenContact}
+        onClose={onCloseOpenContact}
+        segmentEditOpen={segmentEditOpen}
+        handleSubmit={handleSubmitOpencontact}
+      />
+
+      <ModalConfirm
+        isOpen={isOpenConfirm}
+        onClose={onCloseConfirm}
+        madoan={sementEdit}
+        handleSubmit={handleClickSegment}
+        title={"Bạn có chắc muốn xóa đoạn " + sementEdit + "?"}
+        content={"Thao tác xóa đoạn sẽ không thể khôi phục."}
+      />
+
+      <ModalConfirm
+        isOpen={isOpenRefund}
+        onClose={onCloseRefund}
+        madoan={sementEdit}
+        handleSubmit={handleRefundSegment}
+        title={"Thu hồi quyền cho đoạn đoạn " + sementEdit + "?"}
+        content={"Thao tác xóa quyền cập nhật của Usermanager."}
       />
     </div>
   );
