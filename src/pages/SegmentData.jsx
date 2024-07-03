@@ -443,7 +443,10 @@ function SegmentData() {
                 className="w-full"
                 size="sm"
                 selectedKey={provinceSelected}
-                onSelectionChange={(value) => setProvinceSelected(value)}
+                onSelectionChange={(value) => {
+                  setProvinceSelected(value);
+                  setPage(1);
+                }}
               >
                 {dataProvince?.map((province) => (
                   <AutocompleteItem
@@ -464,7 +467,10 @@ function SegmentData() {
                 className="w-full"
                 isDisabled={provinceSelected != "" ? false : true}
                 selectedKey={schoolSelected}
-                onSelectionChange={(value) => setSchoolSelected(value)}
+                onSelectionChange={(value) => {
+                  setSchoolSelected(value);
+                  setPage(1);
+                }}
               >
                 {dataSchool?.map((school) => (
                   <AutocompleteItem
@@ -525,6 +531,7 @@ function SegmentData() {
                   variant="bordered"
                   onSelectionChange={(value) => {
                     setJobSelected(value);
+                    setPage(1);
                   }}
                   selectedKeys={jobSelected}
                   size="sm"

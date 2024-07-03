@@ -48,7 +48,7 @@ function StatisticalDay() {
 
   const labelsChartJS = useMemo(() => {
     return chart?.map((item) => {
-      return item?.thoigian;
+      return moment(item?.thoigian).format("DD-MM-YYYY");
     });
   }, [chart]);
 
@@ -62,10 +62,18 @@ function StatisticalDay() {
     labels: labelsChartJS,
     datasets: [
       {
-        label: "My First Dataset",
+        label: "Số lần gọi",
         data: dataChearJS,
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.2)',
+        ],
+        borderColor: [
+          'rgb(75, 192, 192)',
+        ],
+        borderWidth: 1,
       },
     ],
+
   };
 
   const onChangeDate = (dates, dateStrings) => {
@@ -74,11 +82,19 @@ function StatisticalDay() {
   };
 
   return (
-    <div>
+    <div style={{
+      padding: 24,
+      minHeight: 425,
+      background: "#fff",
+      borderRadius: "10px"
+    }}>
+      <h1 className='font-bold text-lg mb-2'>Thống kê dữ liệu theo ngày</h1>
       <div>
         <RangePicker format={"DD-MM-YYYY"} onChange={onChangeDate} />
       </div>
-      <Bar data={data} />
+      <div className="max-w-[1000px] max-h-[500px] flex m-auto mt-1">
+        <Bar data={data} />
+      </div>
     </div>
   );
 }

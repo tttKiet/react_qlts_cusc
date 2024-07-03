@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   Input,
   Modal,
   ModalBody,
@@ -17,7 +18,7 @@ function ModalSegment({
   selectedKeys,
   rowAvailable,
 }) {
-  const [rowQuanlity, setRowQuanlity] = useState(0);
+  const [rowQuanlity, setRowQuanlity] = useState(selectedKeys?.size);
 
   function handleSubmitLocal() {
     if (rowQuanlity <= 0) {
@@ -49,6 +50,67 @@ function ModalSegment({
                   size="lg"
                   onValueChange={(value) => setRowQuanlity(value)}
                 />
+              </div>
+              <div className="flex items-center justify-start gap-2">
+                <span>Gợi ý: </span>
+                <Chip
+                  size="sm"
+                  radius="sm"
+                  variant="bordered"
+                  color="default"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setRowQuanlity(
+                      selectedKeys?.size ? selectedKeys?.size : rowAvailable
+                    )
+                  }
+                >
+                  {selectedKeys?.size ? selectedKeys?.size : rowAvailable}
+                </Chip>
+                <Chip
+                  size="sm"
+                  radius="sm"
+                  variant="bordered"
+                  color="default"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setRowQuanlity(
+                      Math.round(
+                        selectedKeys?.size
+                          ? selectedKeys?.size / 2
+                          : rowAvailable / 2
+                      )
+                    )
+                  }
+                >
+                  {Math.round(
+                    selectedKeys?.size
+                      ? selectedKeys?.size / 2
+                      : rowAvailable / 2
+                  )}
+                </Chip>
+                <Chip
+                  size="sm"
+                  radius="sm"
+                  variant="bordered"
+                  color="default"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setRowQuanlity(
+                      Math.floor(
+                        selectedKeys?.size
+                          ? selectedKeys?.size / 3
+                          : rowAvailable / 3
+                      )
+                    )
+                  }
+                >
+                  {Math.floor(
+                    selectedKeys?.size
+                      ? selectedKeys?.size / 3
+                      : rowAvailable / 3
+                  )}
+                </Chip>
               </div>
               <div className="flex">
                 <div className="flex gap-1 text-sm">

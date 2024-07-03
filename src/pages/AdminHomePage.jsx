@@ -2,7 +2,7 @@ import { faClipboardList, faDatabase, faEllipsisVertical, faPencil, faPlus, faSc
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown, message, Space } from 'antd';
 import useSWR from "swr";
-import { API_CHART, API_NOTE, API_THEMATIC } from "../constants";
+import { API_CHART, API_MISSCALL, API_NOTE, API_THEMATIC } from "../constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 const INITIAL_VISIBLE_COLUMNS = ["id", "usermanager", "segment", "contact_1", "contact_2", "contact_3", "contact_4", "contact_5", "contact_6", "contact_7"];
 import {
@@ -23,6 +23,7 @@ function AdminHomePage() {
     const user = useSelector((state) => state.account.user);
     const { data: dataStatic, mutate: fetchDataStatic } = useSWR(`${API_CHART}/admin?page=home&index=1`);
     const { data: dataAdmission, mutate: fetchDataAdmission } = useSWR(`${API_CHART}/admin?page=home&index=2`);
+    const { data: dataMisscall, mutate: fetchDataMisscall } = useSWR(`${API_MISSCALL}/readAll?TRANGTHAI=0`);
 
     const { data: dataSegment, mutate: fetchDataSegment } = useSWR(`${API_CHART}/admin?page=home&index=3`);
     // console.log("dataSegment", dataSegment);
@@ -433,79 +434,30 @@ function AdminHomePage() {
                                     <h2 className="mb-2 text-medium font-medium text-center py-2">Gọi điện</h2>
                                 </div>
                                 <div className="content min-h-64 max-h-64 overflow-y-auto">
+                                    {dataMisscall?.map((call, index) => (
+                                        <div key={index} className="note my-2">
+                                            <div className="grid grid-cols-12">
+                                                <User className="col-span-2"
+                                                    avatarProps={{
+                                                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                                                    }}
+                                                />
+                                                <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
+                                                    <p className="font-medium">User manager</p>
+                                                    <p>{call.SDT} ({call.khachhang.HOTEN})</p>
 
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>0971144587 (Nguyễn Minh Tùng)</p>
-
-                                            </div>
-                                            <Dropdown
-                                                className="col-span-1 m-auto"
-                                                menu={{
-                                                    items: [
-                                                        {
-                                                            label: <p className="font-medium text-red-500">Xóa</p>,
-                                                            key: '0',
-                                                        },
-                                                    ]
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>0971144587 (Nguyễn Minh Tùng)</p>
+                                                </div>
 
                                             </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items: [
-                                                        {
-                                                            label: <p className="font-medium text-red-500">Xóa</p>,
-                                                            key: '0',
-                                                        },
-                                                    ]
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
+                                            <div className="timeCreateNote text-end text-xs text-gray-400">
+                                                {moment(call.thoigian).format("DD-MM-YYYY HH:mm")}
+                                            </div>
                                         </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
 
+                                    ))}
 
                                 </div>
+
                                 <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
                                         <input type="text" className="outline-none h-10" placeholder="Nhập số điện thoại" />
