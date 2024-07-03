@@ -89,8 +89,8 @@ const LayoutUserManager = () => {
             }}
         >
             <Sider collapsible collapsed={collapsed} width={230} onCollapse={(value) => setCollapsed(value)}>
-                <div className="demo-logo-vertical mb-1 flex"  >
-                    <img src='/image/CUSC_No_Background.png' className='w-20 ms-5' />
+                <div className="demo-logo-vertical mb-1 flex justify-center"  >
+                    <img src='/image/CUSC_No_Background.png' className={`${collapsed === false ? 'max-w-20' : 'max-w-10'} mt-1`} />
                     {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
                 </div>
                 <Menu theme="dark"
