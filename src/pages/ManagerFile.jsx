@@ -266,14 +266,19 @@ function UM_ManagerFile() {
         toast.error(res.message);
       }
     } catch (err) {
-      toast.error(err?.message); 
+      toast.error(err?.message);
     }
   };
 
   return (
-    <div className={"border-1 border-black"}>
-      <div className="flex justify-between border-b-2 border-black p-3">
-        <div className="text-blue-900 font-bold">DANH SÁCH HỒ SƠ</div>
+    <div style={{
+      padding: 24,
+      minHeight: 360,
+      background: "#fff",
+      borderRadius: "10px",
+    }}>
+      <div className="flex justify-between">
+        <h1 className='font-bold text-lg'>Danh sách hồ sơ</h1>
         <div>
           <IconRefresh
             className="cursor-pointer text-blue-900"
@@ -327,7 +332,7 @@ function UM_ManagerFile() {
       setIsShowModalDeleteFile(false);
     };
     return (
-      <div>
+      <div >
         <Modal
           title="Xóa hồ sơ"
           open={isShowModalDeleteFile}

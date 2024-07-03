@@ -6,6 +6,7 @@ import {
   DatabaseOutlined,
   ClockCircleOutlined,
   LogoutOutlined,
+  AreaChartOutlined
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -49,7 +50,7 @@ const items = [
     ),
   ]),
   getItem("Quản lý dữ liệu", "sub2", <DatabaseOutlined />, [
-    // getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, "/admin/data"),
+    getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, "/admin/data"),
     getItem(<Link to={"/admin/add"}>Thêm dữ liệu</Link>, "/admin/add"),
     getItem(
       <Link to={"/admin/segment"}>Danh sách dữ liệu</Link>,
@@ -60,7 +61,7 @@ const items = [
       "/admin/division"
     ),
   ]),
-  getItem("Thống kê dữ liệu", "sub3", <DatabaseOutlined />, [
+  getItem("Thống kê dữ liệu", "sub3", <AreaChartOutlined />, [
     getItem(
       <Link to={"/admin/statistical/day"}>Theo ngày</Link>,
       "/admin/statistical/day"
@@ -74,19 +75,19 @@ const items = [
       "/admin/statistical/thematic"
     ),
   ]),
-  getItem(
-    <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
-    "/admin/time",
-    <ClockCircleOutlined />
-  ),
+  // getItem(
+  //   <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
+  //   "/admin/time",
+  //   <ClockCircleOutlined />
+  // ),
   getItem(
     <Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>,
     "/admin/thematic",
     <FontAwesomeIcon icon={faClipboard} />
   ),
   getItem(
-    <Link to={"/admin/file/manager"}>Quản lý hồ sơ</Link>,
-    "/admin/file/manager",
+    <Link to={"/admin/file"}>Quản lý hồ sơ</Link>,
+    "/admin/file",
     <IconFile size={16} />
   ),
 ];
@@ -143,11 +144,8 @@ const LayoutAdmin = () => {
         width={230}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className="demo-logo-vertical mb-1 flex">
-          <img
-            src="/image/CUSC_No_Background.png"
-            className={`${collapsed ? "w-10" : "w-20 ms-5"}`}
-          />
+        <div className="demo-logo-vertical mb-1 flex justify-center">
+          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu

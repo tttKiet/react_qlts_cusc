@@ -126,7 +126,7 @@ function App() {
           element: <SegmentData />,
         },
         {
-          path: "segment/:id",
+          path: "division/:id",
           element: <SegmentDetail />,
         },
         {
@@ -158,7 +158,7 @@ function App() {
           element: <StatisticalThematic />,
         },
         {
-          path: "file/manager",
+          path: "file",
           element: <ManagerFile />,
         },
       ],

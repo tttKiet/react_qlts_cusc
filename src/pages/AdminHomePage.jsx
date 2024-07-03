@@ -433,8 +433,8 @@ function AdminHomePage() {
                                 <div className="title w-full bg-green-400 rounded-t-lg text-white">
                                     <h2 className="mb-2 text-medium font-medium text-center py-2">Gọi điện</h2>
                                 </div>
-                                <div className="content min-h-64 max-h-64 overflow-y-auto">
-                                    {dataMisscall?.map((call, index) => (
+                                <div className="content min-h-[320px] max-h-[320px] overflow-y-auto">
+                                    {dataMisscall?.length > 0 ? (dataMisscall?.map((call, index) => (
                                         <div key={index} className="note my-2">
                                             <div className="grid grid-cols-12">
                                                 <User className="col-span-2"
@@ -454,17 +454,17 @@ function AdminHomePage() {
                                             </div>
                                         </div>
 
-                                    ))}
+                                    ))) : <div className="text-center text-gray-500">Không có gọi nhỡ</div>}
 
                                 </div>
 
-                                <div className="createNote">
+                                {/* <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
                                         <input type="text" className="outline-none h-10" placeholder="Nhập số điện thoại" />
                                         <input type="date" className="outline-none h-10" />
                                         <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-green-400 m-auto p-2 rounded-full text-white ms-2 w-4" icon={faPlus} /></div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
 
                         </div>
@@ -511,7 +511,7 @@ function AdminHomePage() {
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="text-center text-gray-500">Không có ghi chú nào.</div>
+                                        <div className="text-center text-gray-500">Không có ghi chú nào</div>
                                     )}
 
 
