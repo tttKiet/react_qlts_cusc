@@ -31,6 +31,8 @@ import { SearchIcon } from "../components/icons/SearchIcon";
 import ModalSegment from "../components/Modal/ModalSegment";
 import { API_DATA } from "../constants";
 import segmentService from "../service/SegmentService";
+import { IconFile } from "@tabler/icons-react";
+import excel from "../components/ExportFile/ExportFile";
 
 function SegmentData() {
   // Const
@@ -105,6 +107,62 @@ function SegmentData() {
   );
 
   // Function
+  // XU LI DU LIEU EXCEL
+  const handleEXcel = () => {
+    const header = [
+      {
+        header: "STT",
+        key: "STT",
+      },
+      {
+        header: "Họ và tên",
+        key: "HOTEN",
+      },
+      {
+        header: "Tỉnh/Thành phố",
+        key: "CCCD",
+      },
+      {
+        header: "Trường",
+        key: "TRUONG",
+      },
+      {
+        header: "Điện thoại",
+        key: "DIENTHOAI",
+      },
+      {
+        header: "Nghành yêu thích",
+        key: "JOBLIKE",
+      },
+    ];
+
+    const data = dataAvailable?.data?.map((item, index) => {
+      return {
+        STT: index + 1,
+        HOTEN: item?.HOTEN,
+        CCCD: item?.CCCD,
+        TRUONG: item?.truong?.TENTRUONG,
+        DIENTHOAI: item?.SDT,
+        EMAIL: item?.EMAIL,
+        JOBLIKE: item.nganhyeuthich?.[0]?.nhomnganh
+          ? item.nganhyeuthich?.[0]?.nhomnganh?.TENNHOMNGANH +
+            ": " +
+            item.nganhyeuthich?.[0]?.CHITIET
+          : item?.nganhyeuthich?.reduce((init, item, index, arr) => {
+              return init + item?.nganh?.TENNGANH + index != arr.length
+                ? ", "
+                : "";
+            }, ""),
+      };
+    });
+
+    excel.EX_Excel({
+      header,
+      data,
+      nameFile: "Dữ liệu khách hàng",
+    });
+  };
+
   async function handleSubmitCreateSegment(rowQuanlity) {
     const arrRows = Array.from(selectedKeys.values());
     const dataCusomter = filterArrayFromIndex(arrRows, sortedItems);
@@ -634,6 +692,11 @@ function SegmentData() {
                   0}
               </span>
               <span> | </span>
+              <Button onClick={handleEXcel}>
+                <IconFile size="18" /> Xuất file
+              </Button>
+              <span> | </span>
+
               <Button
                 color="primary"
                 className=""

@@ -1,10 +1,7 @@
 import ExcelJS from "exceljs";
 import fs from "fs";
 
-
-async function EX_Excel({ header, data }) {
-  console.log("header", header);
-  console.log("data", data);
+async function EX_Excel({ header, data, nameFile }) {
   try {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Du lieu full data");
@@ -35,7 +32,7 @@ async function EX_Excel({ header, data }) {
       // Tạo thẻ a để kích hoạt tải xuống
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "duplicate_phone_numbers.xlsx");
+      link.setAttribute("download", `${nameFile}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

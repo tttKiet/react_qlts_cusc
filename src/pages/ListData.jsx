@@ -513,7 +513,7 @@ function ListData() {
         TRUONG: item?.truong?.TENTRUONG,
         DIENTHOAI: item?.SDT,
         DIENTHOAIBA: item?.dulieukhachhang?.SDTBA,
-        DIENTHOAIBA: item?.dulieukhachhang?.SDTME,
+        DIENTHOAIME: item?.dulieukhachhang?.SDTME,
         ZALO: item?.dulieukhachhang?.SDTZALO,
         FACEBOOK: item?.dulieukhachhang?.FACEBOOK,
         EMAIL: item?.EMAIL,
