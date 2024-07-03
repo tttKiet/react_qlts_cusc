@@ -750,19 +750,6 @@ function DivisionData() {
               <FiFolder size={18} />
               Đoạn dữ liệu
             </h1>
-            {/* {notification?.map((notification, index) => (
-              <Chip
-                key={index}
-                onClose={() => handleClose(notification)}
-                variant="flat"
-                className="ml-1"
-                color="primary"
-                size="md"
-                radius="md"
-              >
-                Một học sinh có thể có nhiều ngành yêu thích
-              </Chip>
-            ))} */}
           </div>
           <div className="flex mb-4 mt-2 items-center justify-between gap-2">
             <div className="">
@@ -779,22 +766,13 @@ function DivisionData() {
             </div>
 
             <div className="col-span-1 flex items-center gap-3">
-              <span>
-                Chọn:{" "}
-                {selectedKeys.size || (
-                    <span>
-                      <span className="font-medium">{dataSegment?.length}</span>{" "}
-                      (Tất cả)
-                    </span>
-                  ) ||
-                  0}
-              </span>
+              <span>Chọn: {selectedKeys.size || 0}</span>
               <span> | </span>
               <Button
                 color="primary"
                 className=""
                 onPress={onOpen}
-                isDisabled={sortedItems.length == 0}
+                isDisabled={sortedItems.length == 0 || selectedKeys.size == 0}
               >
                 Phân quyền
               </Button>

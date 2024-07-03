@@ -100,25 +100,33 @@ function StatisticalThematic() {
   const defaultLabels = ["Đồng ý", "Không đồng ý", "Xem lại"];
 
   const labelChart = useMemo(() => {
-    const labels = chartContact?.data?.map((item) => item?.TRANGTHAI).filter(label => label !== null) || [];
-    const missingLabels = defaultLabels.filter(label => !labels.includes(label));
+    const labels =
+      chartContact?.data
+        ?.map((item) => item?.TRANGTHAI)
+        .filter((label) => label !== null) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !labels.includes(label)
+    );
     return [...labels, ...missingLabels];
   }, [chartContact]);
 
   // console.log("labelChart", labelChart)
 
   const dataChart = useMemo(() => {
-    const chart_data = chartContact?.data?.map((item) => parseInt(item?.count)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.data?.find(entry => entry.TRANGTHAI === label);
+    const chart_data =
+      chartContact?.data?.map((item) => parseInt(item?.count)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.data?.find(
+        (entry) => entry.TRANGTHAI === label
+      );
       return item ? parseInt(item.count) : 0;
     });
     return [...missingData];
   }, [chartContact]);
 
-  console.log("labelChart", labelChart)
+  console.log("labelChart", labelChart);
 
-  console.log(dataChart)
+  console.log(dataChart);
 
   const dataBar = {
     labels: defaultLabels,
@@ -126,19 +134,18 @@ function StatisticalThematic() {
       {
         data: dataChart,
         backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(255, 205, 86, 0.2)',
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(255, 205, 86, 0.2)",
         ],
         borderColor: [
-          'rgb(75, 192, 192)',
-          'rgb(255, 99, 132)',
-          'rgb(255, 205, 86)',
+          "rgb(75, 192, 192)",
+          "rgb(255, 99, 132)",
+          "rgb(255, 205, 86)",
         ],
         borderWidth: 1,
       },
     ],
-
   };
 
   const [selected, setSelected] = useState("all");
@@ -147,19 +154,19 @@ function StatisticalThematic() {
     setMaTruong("");
     setSdtUM("");
     setThematic("");
-    setSelected(e)
-  }
-
-
+    setSelected(e);
+  };
 
   return (
     <>
-      <div style={{
-        padding: 24,
-        minHeight: 360,
-        background: "#fff",
-        borderRadius: "10px"
-      }}>
+      <div
+        style={{
+          padding: 24,
+          minHeight: 360,
+          background: "#fff",
+          borderRadius: "10px",
+        }}
+      >
         <Tabs
           aria-label="Options"
           selectedKey={selected}
@@ -175,7 +182,7 @@ function StatisticalThematic() {
               onChange={handleChangeSelectThematic}
               options={thematics?.map((item) => {
                 return {
-                  label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager.HOTEN}`,
+                  label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                   value: item?.MACHUYENDE,
                 };
               })}
@@ -204,7 +211,7 @@ function StatisticalThematic() {
                 onChange={handleChangeSelectThematic}
                 options={thematics?.map((item) => {
                   return {
-                    label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager.HOTEN}`,
+                    label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                     value: item?.MACHUYENDE,
                   };
                 })}
@@ -247,7 +254,7 @@ function StatisticalThematic() {
                 onChange={handleChangeSelectThematic}
                 options={thematics?.map((item) => {
                   return {
-                    label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager.HOTEN}`,
+                    label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                     value: item?.MACHUYENDE,
                   };
                 })}
@@ -271,13 +278,16 @@ function StatisticalThematic() {
           </Tab>
         </Tabs>
         <div className="max-w-[950px] flex m-auto">
-          <Bar data={dataBar} options={{
-            plugins: {
-              legend: {
-                display: false,
+          <Bar
+            data={dataBar}
+            options={{
+              plugins: {
+                legend: {
+                  display: false,
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
       </div>
     </>
