@@ -6,3 +6,4 @@ export const API_CUSTOMER = "/api/v1/customer";
 export const API_CHART = "/api/v1/chart";
 export const API_FILE = "/api/v1/file";
 export const API_NOTE = "/api/v1/note";
+export const API_MISSCALL = "/api/v1/misscall";
