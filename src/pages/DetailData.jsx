@@ -184,23 +184,17 @@ function DetailData() {
                                     <p className='font-bold'>Khóa học quan tâm</p>
                                     <p>Dài hạn</p>
                                 </div>
-                                <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
-                                    <p className="font-bold flex items-center">Hồ sơ</p>
-                                    <div className="max-w-[300px]">
-                                        {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {
-                                            const fullPath = item?.HOSO;
-                                            const parts = fullPath.split("\\");
-                                            const fileName = parts[parts.length - 1];
-                                            return (
-                                                <p
-                                                    key={index}
-                                                    onClick={() => handleDownloadFile(item)}
-                                                    className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
-                                                >
-                                                    {fileName}
-                                                </p>
-                                            );
-                                        })}
+
+                                <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                                    <p className='font-bold'>Hồ sơ</p>
+                                    <div className="max-w-[400px]">
+                                        {/* <p>{detailData?.phieudkxettuyen?.hoso || 'Trống'}</p> */}
+                                        <div>{detailData?.phieudkxettuyen.hoso.length > 0 ? (
+                                            detailData?.phieudkxettuyen.hoso.map((item, index) => (
+                                                <p key={index}>{item.HOSO}</p>
+                                            ))
+                                        ) : 'Trống'}</div>
+
                                     </div>
                                 </div>
 

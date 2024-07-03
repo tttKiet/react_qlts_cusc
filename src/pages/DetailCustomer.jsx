@@ -395,31 +395,40 @@ function DetailCustomer() {
                         <p className="font-bold">Khóa học quan tâm</p>
                         <p>Dài hạn</p>
                       </div>
-                      <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
-                        <p className="font-bold flex items-center">Hồ sơ</p>
-                        <div className="text-right w-60">
-                          {data?.phieudkxettuyen?.hoso?.map((item, index) => {
-                            const fullPath = item?.HOSO;
-                            const parts = fullPath.split("\\");
-                            const fileName = parts[parts.length - 1];
-                            return (
-                              <div className="flex" key={index}>
-                                <FontAwesomeIcon icon={faTrash} style={{ color: "#d60000", }} className="mt-1 me-2 cursor-pointer" />
-                                <p
-                                  onClick={() => handleDownloadFile(item)}
-                                  className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
-                                >
-                                  {fileName}
-                                </p>
-                              </div>
 
-                            );
-                          })}
-                        </div>
+                      <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
+                        <p className="font-bold">Hồ sơ</p>
+                        {/* <div>
+                          <Link
+                            to="https://github.com/nextui-org/nextui"
+                            className="cursor-pointer text-primary-500"
+                          >
+                            Vui lòng truy cập vào đây
+                            <FontAwesomeIcon
+                              className="ms-1 text-tiny"
+                              icon={faArrowUpRightFromSquare}
+                            />
+                          </Link>
+                        </div> */}
+                        {data?.phieudkxettuyen?.hoso?.map((item, index) => {
+                          const fullPath = item?.HOSO;
+                          const parts = fullPath.split("\\");
+                          const fileName = parts[parts.length - 1];
+                          return (
+                            <a
+                              key={index}
+                              href={`/api/v1/file/downLoadFile?MAHOSO=${item.MAHOSO}`}
+                              style={{
+                                textDecoration: "underline",
+                                cursor: "pointer",
+                                color: "blue",
+                              }}
+                            >
+                              {fileName}
+                            </a>
+                          );
+                        })}
 
-
-
-                      </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Kết quả Cao đẳng/Đại học</p>
                         {/* <Chip variant="flat" color="warning">

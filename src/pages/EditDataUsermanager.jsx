@@ -410,6 +410,7 @@ function EditDataUsermanager() {
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
                             <Autocomplete
+
                                 label="Kết quả Cao đẳng/Đại học"
 
                                 variant="bordered"
@@ -436,6 +437,7 @@ function EditDataUsermanager() {
 
                                     title="Hồ sơ"
                                 >
+
                                     <div className="max-w-[300px]">
                                         {detailData?.phieudkxettuyen?.hoso?.map((item, index) => {
                                             const fullPath = item?.HOSO;
@@ -567,6 +569,7 @@ function EditDataUsermanager() {
             toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
         }
     };
+
 
     return (
         <>
