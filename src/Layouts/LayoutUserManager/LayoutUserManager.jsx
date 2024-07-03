@@ -36,21 +36,6 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem(
-    <Link to={"/usermanager"}>Dashboard</Link>,
-    "/usermanager",
-    <DashboardOutlined />
-  ),
-  getItem(
-    <Link to={"/usermanager/data"}>Danh sách dữ liệu</Link>,
-    "/usermanager/data",
-    <DatabaseOutlined />
-  ),
-  getItem(
-    <Link to={"/usermanager/file"}>Danh sách hồ sơ</Link>,
-    "/usermanager/file",
-    <DatabaseOutlined />
-  ),
   getItem(<Link to={"/usermanager"}>Dashboard</Link>, '/usermanager', <DashboardOutlined />),
   getItem(<Link to={"/usermanager/data"}>Danh sách dữ liệu</Link>, '/usermanager/data', <DatabaseOutlined />),
   getItem(<Link to={"/usermanager/thematic"}>Quản lý chuyên đề</Link>, "/usermanager/thematic", <FontAwesomeIcon icon={faClipboard} />),
@@ -115,8 +100,8 @@ const LayoutUserManager = () => {
         width={230}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className="demo-logo-vertical mb-1 flex">
-          <img src="/image/CUSC_No_Background.png" className="w-20 ms-5" />
+        <div className="demo-logo-vertical mb-1 flex justify-center">
+          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu

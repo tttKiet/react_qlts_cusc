@@ -428,7 +428,7 @@ function DetailCustomer() {
                             </a>
                           );
                         })}
-
+                      </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Kết quả Cao đẳng/Đại học</p>
                         {/* <Chip variant="flat" color="warning">

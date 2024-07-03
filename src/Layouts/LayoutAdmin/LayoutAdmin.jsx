@@ -144,7 +144,7 @@ const LayoutAdmin = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical mb-1 flex">
-          <img src="/image/CUSC_No_Background.png" className="w-20 ms-5" />
+          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu
