@@ -61,20 +61,6 @@ function UM_ManagerFile() {
     );
   };
 
-  const handleDownloadFile = async (data) => {
-    const { MAHOSO } = data;
-    try {
-      const res = await FileService.downloadFile(`MAHOSO=${MAHOSO}`);
-      if (res && res.statusCode == 200) {
-        toast.success("Tải file thành công");
-      } else {
-        toast.error(res.message);
-      }
-    } catch (err) {
-      toast.error(err?.message);
-    }
-  };
-
   useEffect(() => {
     readAllFile();
   }, [pageSize, current]);
@@ -227,17 +213,26 @@ function UM_ManagerFile() {
           {data?.phieudkxettuyen?.MAPHIEUDK == showFile ? (
             <div>
               {data?.phieudkxettuyen?.hoso.map((item) => {
+                const fullPath = item?.HOSO;
+                const parts = fullPath.split("\\");
+                const fileName = parts[parts.length - 1];
+
+                console.log("item?.MAHOSO", item?.MAHOSO);
                 return (
-                  <div
+                  <a
                     key={item?.MAHOSO}
                     className="flex items-center my-2"
-                    onClick={() => handleDownloadFile(item)}
+                    href={`/api/v1/file/downLoadFile?MAHOSO=${item?.MAHOSO}`}
+                    style={{
+                      cursor: "pointer",
+                      color: "blue",
+                    }}
                   >
                     <div>
                       <IconFile size={17} />
                     </div>
-                    <div> {item?.HOSO}</div>
-                  </div>
+                    <div> {fileName}</div>
+                  </a>
                 );
               })}
             </div>
@@ -264,7 +259,7 @@ function UM_ManagerFile() {
           </div>
         );
       },
-      width: 50,
+      width: 150,
     },
   ];
 
@@ -273,9 +268,16 @@ function UM_ManagerFile() {
   };
 
   return (
-    <div className={"border-1 border-black"}>
-      <div className="flex justify-between border-b-2 border-black p-3">
-        <div className="text-blue-900 font-bold">DANH SÁCH HỒ SƠ</div>
+    <div
+      style={{
+        padding: 24,
+        minHeight: 450,
+        background: "#fff",
+        borderRadius: "10px",
+      }}
+    >
+      <div className="flex justify-between ">
+        <h1 className="mb-2 text-lg font-medium">Danh sách hồ sơ</h1>
         <div>
           <IconRefresh
             className="cursor-pointer text-blue-900"
