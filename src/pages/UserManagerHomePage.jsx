@@ -339,7 +339,7 @@ function UserManagerHomePage() {
   return (
     <>
       <div>
-        <div className="grid grid-cols-1 gap-4 lg:gap-8 md:grid-cols-7 pb-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 pb-5">
           <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
             <div className="space-y-1">
               <div className="flex gap-4">
@@ -377,7 +377,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 2</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">3/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
@@ -400,7 +400,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 3</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">1/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
@@ -423,7 +423,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 4</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">2/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
@@ -432,6 +432,9 @@ function UserManagerHomePage() {
             </div>
           </div>
 
+
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pb-5">
           <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
             <div className="space-y-1">
               <div className="flex gap-4">
@@ -446,7 +449,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 5</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">3/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
@@ -469,7 +472,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 6</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">5/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">
@@ -492,7 +495,7 @@ function UserManagerHomePage() {
                   <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span>Liên hệ lần 7</span>
                   </div>
-                  <div className="text-xl dark:text-gray-100">4/125</div>
+                  <div className="text-xl dark:text-gray-100">1/125</div>
                 </div>
               </div>
               <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-blue-500 cursor-pointer">

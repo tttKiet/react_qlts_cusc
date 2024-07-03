@@ -29,7 +29,6 @@ import {
   Autocomplete,
   AutocompleteItem,
 } from "@nextui-org/react";
-import { IconFile } from "@tabler/icons-react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
 import { SearchIcon } from "../components/icons/SearchIcon";
@@ -66,6 +65,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 import excel from "../components/ExportFile/ExportFile";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 function ListData() {
   const [provinceSelected, setProvinceSelected] = useState("");
   const [schoolSelected, setSchoolSelected] = useState("");
@@ -643,9 +644,9 @@ function ListData() {
         >
           <div className="flex items-center my-2">
             <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
-            <div className="mx-2">
-              <Button onClick={handleEXcel}>
-                <IconFile /> Xuất file
+            <div className="ms-auto">
+              <Button size="sm" className="p-4" color="primary" onClick={handleEXcel}>
+                <FontAwesomeIcon icon={faFile} /> Xuất file
               </Button>
             </div>
           </div>

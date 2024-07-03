@@ -99,8 +99,7 @@ function SegmentData() {
   );
 
   const { data: dataAvailable, mutate: mutateDataAvailable } = useSWR(
-    `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${
-      jobSelected || ""
+    `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${jobSelected || ""
     }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}`
   );
 
@@ -131,8 +130,8 @@ function SegmentData() {
 
       toast.error(
         error?.message ||
-          error?.message?.[0] ||
-          "Lỗi không xác định. Vui lòng thử lại."
+        error?.message?.[0] ||
+        "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -212,19 +211,19 @@ function SegmentData() {
   const dataJobAuto = useMemo(() => {
     let temp = Array.isArray(dataJob)
       ? dataJob
-          ?.map((d) => ({
-            label: d.TENNGANH,
-            value: d.MANGANH,
-            ...d,
-          }))
-          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
+        ?.map((d) => ({
+          label: d.TENNGANH,
+          value: d.MANGANH,
+          ...d,
+        }))
+        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
       : dataJob?.data
-          ?.map((d) => ({
-            label: d.TENNGANH,
-            value: d.MANGANH,
-            ...d,
-          }))
-          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
+        ?.map((d) => ({
+          label: d.TENNGANH,
+          value: d.MANGANH,
+          ...d,
+        }))
+        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
 
     return temp;
   }, [dataJob]);
@@ -624,13 +623,13 @@ function SegmentData() {
               <span>
                 Chọn:{" "}
                 {selectedKeys.size || (
-                    <span>
-                      <span className="font-medium">
-                        {dataAvailable?.total}
-                      </span>{" "}
-                      (Tất cả)
-                    </span>
-                  ) ||
+                  <span>
+                    <span className="font-medium">
+                      {dataAvailable?.total}
+                    </span>{" "}
+                    (Tất cả)
+                  </span>
+                ) ||
                   0}
               </span>
               <span> | </span>

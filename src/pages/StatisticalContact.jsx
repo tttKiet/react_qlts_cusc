@@ -505,8 +505,9 @@ function StatisticalContact() {
         minHeight: 425,
         background: "#fff",
         borderRadius: "10px"
-      }}>
+      }} className="shadow-lg">
         <div>
+          <h1 className='font-bold text-lg mb-2'>Thống kê liên hệ</h1>
           <Tabs
             aria-label="Options"
             selectedKey={selected}
@@ -580,7 +581,9 @@ function StatisticalContact() {
         </div>
         <div className="ss1 max-w-[1000px] flex m-auto">
           <Bar data={dataChart1} />
+
         </div>
+        <h1 className="text-center font-medium text-[17px]">Thống kê số lần gọi theo ngày</h1>
       </div>
       <div className="flex flex-wrap justify-between mt-5">
         <div className="w-72 shadow-lg" style={{
