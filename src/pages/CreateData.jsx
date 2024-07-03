@@ -116,7 +116,10 @@ function CreateData() {
               Số khách hàng bị trùng nhau: {duplicateCustomers}
               <br />
               Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
-            </>
+            </>,
+            {
+              autoClose: 10000,
+            }
           );
         } else {
           toast.success(
@@ -124,7 +127,10 @@ function CreateData() {
               Số khách hàng mới được thêm vào: {newCustomers}
               <br />
               Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
-            </>
+            </>,
+            {
+              autoClose: 10000,
+            }
           );
         }
 
@@ -183,7 +189,10 @@ function CreateData() {
             Số khách hàng cũ được thêm vào db là : {newCustomers}
             <br />
             Số khách hàng bị trùng SDT trong file Excel: {excel?.length}
-          </>
+          </>,
+          {
+            autoClose: 10000,
+          }
         );
 
         if (res?.data?.excel?.length > 0) {

@@ -24,6 +24,7 @@ import Breadcrumbs from "../../components/Breadcrumb/Breadcrumb";
 import { useSelector } from "react-redux";
 import useAuth from "../../hooks/useAuth";
 import { Avatar } from "@nextui-org/react";
+import { IconFile } from "@tabler/icons-react";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -49,7 +50,7 @@ const items = [
   getItem(
     <Link to={"/usermanager/file"}>Danh sách hồ sơ</Link>,
     "/usermanager/file",
-    <DatabaseOutlined />
+    <IconFile size={16} />
   ),
 ];
 
@@ -102,7 +103,10 @@ const LayoutUserManager = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical mb-1 flex justify-center">
-          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
+          <img
+            src="/image/CUSC_No_Background.png"
+            className={`${collapsed ? "w-10" : "w-20 ms-5"}`}
+          />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu
