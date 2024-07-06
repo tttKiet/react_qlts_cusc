@@ -40,6 +40,14 @@ function SegmentData() {
     { value: "3", label: "Học bổng" },
   ];
 
+  const prefixPhone = [
+    { value: "", label: "Tất cả" },
+    { value: "viettel", label: "Viettel" },
+    { value: "vinaphone", label: "Vinaphone" },
+    { value: "mobifone", label: "Mobifone" },
+    { value: "other", label: "Khác" },
+  ];
+
   const columns = [
     { name: "STT", uid: "id", sortable: true },
     { name: "SĐT", uid: "sdt" },
@@ -69,6 +77,7 @@ function SegmentData() {
   const [provinceSelected, setProvinceSelected] = useState("");
   const [jobSelected, setJobSelected] = useState("");
   const [typeCodeSelected, setTypeCodeSelected] = useState("");
+  const [phoneCodeSelected, setPhoneCodeSelected] = useState("");
   const [typeSelected, setTypeSelected] = useState("1");
   const [filterSearchName, setFillterSearchName] = useState("");
   const [page, setPage] = useState(1);
@@ -101,7 +110,9 @@ function SegmentData() {
   const { data: dataAvailable, mutate: mutateDataAvailable } = useSWR(
     `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${
       jobSelected || ""
-    }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}`
+    }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}&DAUSO=${
+      phoneCodeSelected || ""
+    }`
   );
 
   // Function
@@ -432,7 +443,7 @@ function SegmentData() {
           Lọc dữ liệu
         </h1>
 
-        <div className="mb-4">
+        <div className="mb-4 ">
           <h4 className="text-base font-medium mb-2">Vị trí</h4>
           <div className="grid grid-cols-12  gap-4">
             <div className="col-span-4">
@@ -485,92 +496,118 @@ function SegmentData() {
           </div>
         </div>
 
-        <div className="mb-4">
-          <h4 className="text-base font-medium mb-2">Loại</h4>
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-2">
-              <Autocomplete
-                aria-labelledby="province-label"
-                placeholder=""
-                variant="bordered"
-                className="w-full"
-                defaultSelectedKey={1}
-                allowsEmptyCollection={false}
-                size="sm"
-                selectedKey={typeSelected}
-                isClearable={false}
-                onSelectionChange={(value) => {
-                  if (value == 1) {
-                    setJobSelected("");
-                    setTypeCodeSelected("");
-                  } else if (value == 2) {
-                    setTypeCodeSelected("");
-                  } else if (value == 3) {
-                    setJobSelected("");
-                  }
-                  setTypeSelected(value);
-                }}
-              >
-                <AutocompleteItem key={"1"} value={"1"}>
-                  Tất cả
-                </AutocompleteItem>
-                <AutocompleteItem key={"2"} value={"2"}>
-                  Ngành
-                </AutocompleteItem>
-                <AutocompleteItem key={"3"} value={"3"}>
-                  Nhóm
-                </AutocompleteItem>
-              </Autocomplete>
-            </div>
-
-            {typeSelected == 2 && (
-              <div className="col-span-3">
+        <div className="grid grid-cols-12 gap-4">
+          <div className="mb-4  col-span-6">
+            <h4 className="text-base font-medium mb-2">Loại</h4>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-4">
                 <Autocomplete
-                  aria-label="Job"
-                  placeholder="Chọn ngành"
+                  aria-labelledby="province-label"
+                  placeholder=""
                   variant="bordered"
-                  onSelectionChange={(value) => {
-                    setJobSelected(value);
-                    setPage(1);
-                  }}
-                  selectedKeys={jobSelected}
+                  className="w-full"
+                  defaultSelectedKey={1}
+                  allowsEmptyCollection={false}
                   size="sm"
-                  required={true}
+                  selectedKey={typeSelected}
+                  isClearable={false}
+                  onSelectionChange={(value) => {
+                    if (value == 1) {
+                      setJobSelected("");
+                      setTypeCodeSelected("");
+                    } else if (value == 2) {
+                      setTypeCodeSelected("");
+                    } else if (value == 3) {
+                      setJobSelected("");
+                    }
+                    setTypeSelected(value);
+                  }}
                 >
-                  {dataJobAuto?.map((job) => (
-                    <AutocompleteItem
-                      key={job.MANGANH}
-                      value={job.MANGANH}
-                      textValue={job.TENNGANH}
-                      classNames={{}}
-                    >
-                      <div className="font-medium"> {job.TENNGANH}</div>
-                      <div> {job.count} dòng khả dụng</div>
-                    </AutocompleteItem>
-                  ))}
+                  <AutocompleteItem key={"1"} value={"1"}>
+                    Tất cả
+                  </AutocompleteItem>
+                  <AutocompleteItem key={"2"} value={"2"}>
+                    Ngành
+                  </AutocompleteItem>
+                  <AutocompleteItem key={"3"} value={"3"}>
+                    Nhóm
+                  </AutocompleteItem>
                 </Autocomplete>
               </div>
-            )}
-            {typeSelected == 3 && (
-              <div className="col-span-3">
+
+              {typeSelected == 2 && (
+                <div className="col-span-4">
+                  <Autocomplete
+                    aria-label="Job"
+                    placeholder="Chọn ngành"
+                    variant="bordered"
+                    onSelectionChange={(value) => {
+                      setJobSelected(value);
+                      setPage(1);
+                    }}
+                    selectedKeys={jobSelected}
+                    size="sm"
+                    required={true}
+                  >
+                    {dataJobAuto?.map((job) => (
+                      <AutocompleteItem
+                        key={job.MANGANH}
+                        value={job.MANGANH}
+                        textValue={job.TENNGANH}
+                        classNames={{}}
+                      >
+                        <div className="font-medium"> {job.TENNGANH}</div>
+                        <div> {job.count} dòng khả dụng</div>
+                      </AutocompleteItem>
+                    ))}
+                  </Autocomplete>
+                </div>
+              )}
+
+              {typeSelected == 3 && (
+                <div className="col-span-4">
+                  <Autocomplete
+                    isClearable={false}
+                    allowsEmptyCollection={false}
+                    aria-labelledby="province-label"
+                    placeholder="Chọn nhóm"
+                    selectedKey={typeCodeSelected}
+                    onSelectionChange={(value) => setTypeCodeSelected(value)}
+                    variant="bordered"
+                    size="sm"
+                  >
+                    {otherJob.map((job) => (
+                      <AutocompleteItem key={job.value} value={job.value}>
+                        {job.label}
+                      </AutocompleteItem>
+                    ))}
+                  </Autocomplete>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="mb-4 col-span-6">
+            <h4 className="text-base font-medium mb-2 ">Nhà mạng</h4>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-4">
                 <Autocomplete
                   isClearable={false}
                   allowsEmptyCollection={false}
                   aria-labelledby="province-label"
-                  placeholder="Chọn nhóm"
-                  selectedKey={typeCodeSelected}
-                  onSelectionChange={(value) => setTypeCodeSelected(value)}
+                  placeholder="Chọn nhà mạng"
+                  selectedKey={phoneCodeSelected}
+                  onSelectionChange={(value) => setPhoneCodeSelected(value)}
                   variant="bordered"
                   size="sm"
                 >
-                  {otherJob.map((job) => (
+                  {prefixPhone.map((job) => (
                     <AutocompleteItem key={job.value} value={job.value}>
                       {job.label}
                     </AutocompleteItem>
                   ))}
                 </Autocomplete>
               </div>
-            )}
+            </div>
           </div>
         </div>
 

@@ -68,42 +68,16 @@ function DivisionData() {
     "createdAt",
   ];
 
-  const optionTimes = [
-    {
-      label: "Lần 1",
-      value: "1",
-    },
-    {
-      label: "Lần 2",
-      value: "2",
-    },
-    {
-      label: "Lần 3",
-      value: "3",
-    },
-    {
-      label: "Lần 4",
-      value: "4",
-    },
-    {
-      label: "Lần 5",
-      value: "5",
-    },
-    {
-      label: "Lần 6",
-      value: "6",
-    },
-    {
-      label: "Lần 7",
-      value: "7",
-    },
-    {
-      label: "Đóng",
-      value: "0",
-    },
+  const prefixPhone = [
+    { value: "", label: "Tất cả" },
+    { value: "viettel", label: "Viettel" },
+    { value: "vinaphone", label: "Vinaphone" },
+    { value: "mobifone", label: "Mobifone" },
+    { value: "other", label: "Khác" },
   ];
 
   // State
+  const [phoneCodeSelected, setPhoneCodeSelected] = useState("");
   const [schoolSelected, setSchoolSelected] = useState("");
   const [provinceSelected, setProvinceSelected] = useState("");
   const [jobSelected, setJobSelected] = useState("");
@@ -162,7 +136,7 @@ function DivisionData() {
       jobSelected || ""
     }&schoolCode=${schoolSelected || ""}&MANHOM=${
       typeCodeSelected || ""
-    }&type=${doneSelected || ""}`
+    }&type=${doneSelected || ""}&DAUSO=${phoneCodeSelected || ""}`
   );
 
   // Function
@@ -612,8 +586,8 @@ function DivisionData() {
           </div>
         </div>
 
-        <div className="mb-4 grid grid-cols-2 gap-6">
-          <div className="col-span-1 w-full">
+        <div className="mb-4 grid grid-cols-12 gap-6">
+          <div className="col-span-6 w-full">
             <h4 className="text-base font-medium mb-2">Loại</h4>
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-5">
@@ -699,10 +673,10 @@ function DivisionData() {
               )}
             </div>
           </div>
-          <div className="col-span-1 w-full">
+          <div className="col-span-3 w-full">
             <h4 className="text-base font-medium mb-2">Phân quyền</h4>
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-5">
+              <div className="col-span-9">
                 <Autocomplete
                   aria-labelledby="province-label"
                   placeholder=""
@@ -726,6 +700,30 @@ function DivisionData() {
                   <AutocompleteItem key={"doing"} value={"doing"}>
                     Chưa phân quyền
                   </AutocompleteItem>
+                </Autocomplete>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-3 w-full">
+            <h4 className="text-base font-medium mb-2">Nhà mạng</h4>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-7">
+                <Autocomplete
+                  isClearable={false}
+                  allowsEmptyCollection={false}
+                  aria-labelledby="province-label"
+                  placeholder="Chọn nhà mạng"
+                  selectedKey={phoneCodeSelected}
+                  onSelectionChange={(value) => setPhoneCodeSelected(value)}
+                  variant="bordered"
+                  size="sm"
+                >
+                  {prefixPhone.map((job) => (
+                    <AutocompleteItem key={job.value} value={job.value}>
+                      {job.label}
+                    </AutocompleteItem>
+                  ))}
                 </Autocomplete>
               </div>
             </div>
