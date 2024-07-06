@@ -166,7 +166,9 @@ function StatisticalThematic() {
           background: "#fff",
           borderRadius: "10px",
         }}
+        className="shadow-lg"
       >
+        <h1 className='font-bold text-lg mb-2'>Thống kê chuyên đề</h1>
         <Tabs
           aria-label="Options"
           selectedKey={selected}
@@ -289,6 +291,7 @@ function StatisticalThematic() {
             }}
           />
         </div>
+        <h1 className="text-center font-medium text-[17px]">Thống kê chuyên đề</h1>
       </div>
     </>
   );

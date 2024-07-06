@@ -156,8 +156,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-          error?.message?.[0] ||
-          "Lỗi không xác định. Vui lòng thử lại."
+        error?.message?.[0] ||
+        "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -195,8 +195,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-          error?.message?.[0] ||
-          "Lỗi không xác định. Vui lòng thử lại."
+        error?.message?.[0] ||
+        "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -215,8 +215,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-          error?.message?.[0] ||
-          "Lỗi không xác định. Vui lòng thử lại."
+        error?.message?.[0] ||
+        "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -242,8 +242,8 @@ function DivisionData() {
 
       toast.error(
         error?.message ||
-          error?.message?.[0] ||
-          "Lỗi không xác định. Vui lòng thử lại."
+        error?.message?.[0] ||
+        "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -326,19 +326,19 @@ function DivisionData() {
   const dataJobAuto = useMemo(() => {
     let temp = Array.isArray(dataJob)
       ? dataJob
-          ?.map((d) => ({
-            label: d.TENNGANH,
-            value: d.MANGANH,
-            ...d,
-          }))
-          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
+        ?.map((d) => ({
+          label: d.TENNGANH,
+          value: d.MANGANH,
+          ...d,
+        }))
+        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
       : dataJob?.data
-          ?.map((d) => ({
-            label: d.TENNGANH,
-            value: d.MANGANH,
-            ...d,
-          }))
-          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
+        ?.map((d) => ({
+          label: d.TENNGANH,
+          value: d.MANGANH,
+          ...d,
+        }))
+        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
 
     return temp;
   }, [dataJob]);
@@ -501,7 +501,7 @@ function DivisionData() {
 
             <Tooltip content="Xem danh sách">
               <Link
-                href={`/admin/segment/${segment?.madoan}`}
+                href={`/admin/division/${segment?.madoan}`}
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
               >
                 <EyeIcon />

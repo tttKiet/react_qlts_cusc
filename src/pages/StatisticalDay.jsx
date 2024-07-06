@@ -87,7 +87,7 @@ function StatisticalDay() {
       minHeight: 425,
       background: "#fff",
       borderRadius: "10px"
-    }}>
+    }} className="shadow-lg">
       <h1 className='font-bold text-lg mb-2'>Thống kê dữ liệu theo ngày</h1>
       <div>
         <RangePicker format={"DD-MM-YYYY"} onChange={onChangeDate} />
@@ -95,6 +95,7 @@ function StatisticalDay() {
       <div className="max-w-[1000px] max-h-[500px] flex m-auto mt-1">
         <Bar data={data} />
       </div>
+      <h1 className="text-center font-medium text-[17px]">Thống kê số lần gọi theo ngày</h1>
     </div>
   );
 }
