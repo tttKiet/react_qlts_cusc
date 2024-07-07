@@ -35,6 +35,7 @@ import { useEffect } from "react";
 import ManagerFile from "./pages/ManagerFile";
 import UM_ManagerFile from "./pages/UM_ManagerFile";
 import authService from "./service/AuthService";
+import { API_AUTH } from "./constants";
 const LayoutOnly = () => {
   return (
     <div>
@@ -47,20 +48,21 @@ const LayoutOnly = () => {
 function App() {
   useEffect(() => {
     const handleBeforeUnload = async () => {
-      console.log("remove");
-      await authService.logout();
+      navigator.sendBeacon(`${API_AUTH}/logout`);
+      authService.logout();
     };
 
-    const handleTabClosing = async () => {
-      await authService.logout();
+    const handleUnload = async () => {
+      navigator.sendBeacon(`${API_AUTH}/logout`);
+      authService.logout();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleTabClosing);
+    window.addEventListener("unload", handleUnload);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleTabClosing);
+      window.removeEventListener("unload", handleBeforeUnload);
     };
   });
 

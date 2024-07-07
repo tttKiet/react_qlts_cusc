@@ -6,7 +6,7 @@ const login = (data) => {
 };
 
 const logout = async () => {
-  return await axios.post(`${API_AUTH}/logout`);
+  return await axios.get(`${API_AUTH}/logout`);
 };
 
 export default {

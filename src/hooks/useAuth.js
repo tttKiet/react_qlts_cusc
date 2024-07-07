@@ -14,7 +14,7 @@ function useAuth() {
   const profileSelector = useSelector(getProfileLoginStore);
 
   const { data, error, mutate, isLoading } = useSWR("/api/v1/auth/profile", {
-    dedupingInterval: 5000,
+    dedupingInterval: 100,
     revalidateOnFocus: false,
     fallbackData: profileSelector,
     onSuccess(data, key, config) {
@@ -66,7 +66,7 @@ function useAuth() {
         // lưu accessToken vô local
         localStorage.setItem("access_token", res.data.token);
         //lưu data vô redux
-        // cho này chỉnh lại 3 người dùng 
+        // cho này chỉnh lại 3 người dùng
         let dataAccount = {};
         if (res.data.account?.MAADMIN) {
           dataAccount = {
@@ -89,9 +89,7 @@ function useAuth() {
             DIACHI: res.data.account?.khachhang?.DIACHI,
             CCCD: res.data.account?.khachhang?.CCCD,
           };
-        }
-
-        else {
+        } else {
           dataAccount = {
             MAADMIN: res.data?.account?.MAADMIN,
             TENDANGNHAP: res.data?.account?.TENDANGNHAP,
@@ -124,6 +122,7 @@ function useAuth() {
   }
 
   async function logout() {
+    await AuthService.logout();
     dispatch(doLogoutAction());
     toast.success("Đăng xuất thành công");
     navigate("/login");
