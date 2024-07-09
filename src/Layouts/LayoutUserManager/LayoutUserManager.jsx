@@ -52,6 +52,11 @@ const items = [
     "/usermanager/file",
     <IconFile size={16} />
   ),
+  getItem(
+    <Link to={"/usermanager/themaic"}>Quản lí chuyên đề</Link>,
+    "/usermanager/themaic",
+    <IconFile size={16} />
+  ),
 ];
 
 const LayoutUserManager = () => {

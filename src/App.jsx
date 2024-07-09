@@ -34,6 +34,7 @@ import UserManagerHomePage from "./pages/UserManagerHomePage";
 import { useEffect } from "react";
 import ManagerFile from "./pages/ManagerFile";
 import UM_ManagerFile from "./pages/UM_ManagerFile";
+import UM_ManagerThematic from "./pages/UM_ManagerThematic";
 import authService from "./service/AuthService";
 const LayoutOnly = () => {
   return (
@@ -193,6 +194,11 @@ function App() {
           path: "file",
           element: <UM_ManagerFile />,
         },
+        {
+          path: "themaic",
+          element: <UM_ManagerThematic />, 
+        },
+
         {
           path: "thematic",
           element: <ManagerThematicUsermanager />,
