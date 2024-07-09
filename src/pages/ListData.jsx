@@ -504,8 +504,6 @@ function ListData() {
       },
     ];
 
-    console.log("cus", dataCustomer);
-
     const data = dataCustomer?.map((item, index) => {
       return {
         STT: index + 1,
@@ -521,7 +519,7 @@ function ListData() {
       };
     });
 
-    excel.EX_Excel({ header, data });
+    excel.EX_Excel({ header, data, nameFile: "Danh sách khách hàng" });
   };
 
   return (
@@ -645,7 +643,12 @@ function ListData() {
           <div className="flex items-center my-2">
             <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
             <div className="ms-auto">
-              <Button size="sm" className="p-4" color="primary" onClick={handleEXcel}>
+              <Button
+                size="sm"
+                className="p-4"
+                color="primary"
+                onClick={handleEXcel}
+              >
                 <FontAwesomeIcon icon={faFile} /> Xuất file
               </Button>
             </div>

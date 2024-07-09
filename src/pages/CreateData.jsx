@@ -49,7 +49,7 @@ function CreateData() {
 
       worksheet.columns = [
         { header: "SDT bị trùng", key: "SDT", width: 20 },
-        { header: "Số lần trùng", key: "count", width: 10 },
+        { header: "Số lần xuất hiện", key: "count", width: 10 },
       ];
 
       data?.forEach((item) => {
@@ -183,10 +183,12 @@ function CreateData() {
       const newCustomers = numbersKH[0] - numbersKH[1];
       const duplicateCustomers = numbersKH[1];
 
+      const numberDeleteTableCusNew = res?.data?.numberDeleteTableCusNew;
+
       if (res && res.statusCode === 200) {
         toast.success(
           <>
-            Số khách hàng cũ được thêm vào db là : {newCustomers}
+            Đã xóa {numberDeleteTableCusNew} khách hàng.
             <br />
             Số khách hàng bị trùng SDT trong file Excel: {excel?.length}
           </>,

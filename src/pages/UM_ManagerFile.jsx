@@ -219,10 +219,9 @@ function UM_ManagerFile() {
 
                 console.log("item?.MAHOSO", item?.MAHOSO);
                 return (
-                  <a
+                  <div
                     key={item?.MAHOSO}
                     className="flex items-center my-2"
-                    href={`/api/v1/file/downLoadFile?MAHOSO=${item?.MAHOSO}`}
                     style={{
                       cursor: "pointer",
                       color: "blue",
@@ -232,7 +231,7 @@ function UM_ManagerFile() {
                       <IconFile size={17} />
                     </div>
                     <div> {fileName}</div>
-                  </a>
+                  </div>
                 );
               })}
             </div>
