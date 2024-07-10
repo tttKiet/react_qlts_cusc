@@ -50,7 +50,7 @@ function ManagerThematic() {
                 machuyende: thematic?.MACHUYENDE,
                 tenchuyende: thematic?.TENCHUYENDE,
                 tentruong: thematic?.MATRUONG,
-                usermanager: thematic?.usermanager?.HOTEN || 'Trống',
+                usermanager: thematic?.usermanager?.HOTEN,
                 ngaythongbao: thematic?.THOIGIANTHONGBAO,
                 ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
                 noidung: thematic?.NOIDUNG,
@@ -136,6 +136,18 @@ function ManagerThematic() {
                 return (
                     <div className="flex flex-col justify-center">
                         <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "ngaythongbao":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{moment(cellValue).format("DD-MM-YYYY")}</span>
+                    </div>
+                );
+            case "ngaytochuc":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{moment(cellValue).format("DD-MM-YYYY")}</span>
                     </div>
                 );
             case "actions":

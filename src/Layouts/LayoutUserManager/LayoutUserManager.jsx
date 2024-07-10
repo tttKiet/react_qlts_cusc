@@ -24,6 +24,7 @@ import Breadcrumbs from "../../components/Breadcrumb/Breadcrumb";
 import { useSelector } from "react-redux";
 import useAuth from "../../hooks/useAuth";
 import { Avatar } from "@nextui-org/react";
+import { IconFile } from "@tabler/icons-react";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -49,7 +50,7 @@ const items = [
   getItem(
     <Link to={"/usermanager/file"}>Danh sách hồ sơ</Link>,
     "/usermanager/file",
-    <DatabaseOutlined />
+    <IconFile size={16} />
   ),
 ];
 

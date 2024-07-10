@@ -20,7 +20,12 @@ import {
     Select, SelectItem,
     RadioGroup,
     Radio,
-    Tooltip
+    Tooltip,
+    ModalContent,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
 } from "@nextui-org/react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
@@ -42,6 +47,7 @@ import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 const INITIAL_VISIBLE_COLUMNS = ["name", "phone", "email", "gender", "role",
     "status", "actions"];
 function ManagerUser() {
@@ -52,7 +58,7 @@ function ManagerUser() {
     // Call API
     const { data: dataPagination, error, isLoading, mutate } = useSWR(`${API_USER}?name=${filterSearchName}&take=${pagination.take}&skip=${pagination.skip}`)
     const { isOpen, onOpen, onClose } = useDisclosure();
-    // console.log(dataPagination)
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
 
     const [record, setRecord] = useState({})
     const [isEditUser, setIsEditUser] = useState(false)
@@ -85,6 +91,43 @@ function ManagerUser() {
 
     }
 
+    const [recordDelete, setRecordDelete] = useState("")
+
+    const handleShowDelete = (data) => {
+        if (data) {
+            setRecordDelete(data)
+            onOpenDelete()
+            console.log(data)
+        }
+    }
+
+    const handleCloseDelete = () => {
+        setRecordDelete("");
+        onCloseDelete();
+    }
+
+    const handleDelete = async () => {
+        try {
+            let dataSendToDelete = {};
+            if (recordDelete.role === "usermanager") {
+                dataSendToDelete = {
+                    SDT: recordDelete.username
+                }
+            } else if (recordDelete.role === "admin") {
+                dataSendToDelete = {
+                    MAADMIN: recordDelete.username
+                }
+            }
+            const res = await UserService.deleteProfile(dataSendToDelete)
+            console.log(res)
+            toast.success(res.message)
+            handleCloseDelete()
+            mutate()
+        } catch (e) {
+            toast.error(e.message)
+        }
+
+    }
 
     const columns = [
         { name: "ID", uid: "id", sortable: true },
@@ -110,6 +153,7 @@ function ManagerUser() {
                 address: user?.usermanager?.DIACHI || user?.admin?.DIACHI || '',
                 status: user?.usermanager?.TRANGTHAIUM || user?.admin?.TRANGTHAIADMIN || 0,
                 avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+                username: user?.usermanager?.SDT || user?.admin?.MAADMIN,
             }
         }) || []
     }, [dataPagination])
@@ -205,9 +249,11 @@ function ManagerUser() {
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="Details">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <EyeIcon />
-                            </span>
+                            <Link to={`/admin/user/${user.role === "admin" ? `MAADMIN=${user.username}` : `SDT=${user.username}`}`}>
+                                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                    <EyeIcon />
+                                </span>
+                            </Link>
                         </Tooltip>
                         <Tooltip content="Edit user">
                             <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => hanldeShowEdit(user)}>
@@ -215,7 +261,7 @@ function ManagerUser() {
                             </span>
                         </Tooltip>
                         <Tooltip color="danger" content="Delete user">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => handleShowDelete(user)} >
                                 <DeleteIcon />
                             </span>
                         </Tooltip>
@@ -434,23 +480,13 @@ function ManagerUser() {
                 <h1 className="titlePage">Danh sách người dùng</h1>
                 <div className="listUser mt-2">
                     <Table
-                        // isCompact
                         removeWrapper
                         aria-label="Example table with custom cells, pagination and sorting"
                         bottomContent={bottomContent}
                         bottomContentPlacement="outside"
-                        checkboxesProps={{
-                            classNames: {
-                                wrapper: "after:bg-foreground after:text-background text-background",
-                            },
-                        }}
-                        classNames={classNames}
-                        selectedKeys={selectedKeys}
-                        selectionMode="multiple"
                         sortDescriptor={sortDescriptor}
                         topContent={topContent}
                         topContentPlacement="outside"
-                        onSelectionChange={setSelectedKeys}
                         onSortChange={setSortDescriptor}
                     >
                         <TableHeader columns={headerColumns}>
@@ -477,6 +513,24 @@ function ManagerUser() {
             <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={closeModal} size="2xl" title={isEditUser ? 'Chỉnh sửa thông tin' : 'Thêm người dùng'} okModal="Thêm người dùng" cancelModal="Đóng"  >
                 <FormUser onClose={closeModal} onSubmit={onSubmit} record={record} isEditUser={isEditUser} />
             </ModalComponent>
+            <Modal isOpen={isOpenDelete}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Xóa người dùng</ModalHeader>
+                    <ModalBody>
+                        <p>
+                            Bạn chắc chắn muốn xóa người dùng {recordDelete?.name}
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={() => handleCloseDelete()}>
+                            Đóng
+                        </Button>
+                        <Button color="danger" onPress={() => handleDelete()}>
+                            Xóa
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </>
     );
 }

@@ -2,13 +2,15 @@ import useSWR from "swr";
 import { API_DATA } from "../constants";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import debounce from "lodash.debounce";
-import { Autocomplete, AutocompleteItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Pagination, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Pagination, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
 import { Link } from "react-router-dom";
 import { EyeIcon } from "../components/icons/EyeIcon";
 import { EditIcon } from "../components/icons/EditIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhone } from "@fortawesome/free-solid-svg-icons";
 const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "actions"];
 function ManagerDataUsermanager() {
     const contacts = [
@@ -27,13 +29,19 @@ function ManagerDataUsermanager() {
     useEffect(() => {
         if (dataSegmentUsermanager && dataSegmentUsermanager.length > 0) {
             setSegmentSelected([dataSegmentUsermanager[0].MaPQ])
+            setContactSelected(`${dataSegmentUsermanager[0].TRANGTHAILIENHE}`)
+
         }
     }, [dataSegmentUsermanager])
 
     const handleSelectionChange = (e) => {
         setSegmentSelected([e.currentKey]);
+        const segment = dataSegmentUsermanager.find(seg => seg.MaPQ === e.currentKey);
+        console.log("segment", segment)
+        if (segment) {
+            setContactSelected(`${segment.TRANGTHAILIENHE}`)
+        }
     }
-
 
     const { data: detailSegment, mutate: fetchDetailSegment } = useSWR(`${API_DATA}/segment/${segmentSelected}?lan=${contactSelected}`)
     // console.log("detailSegment", detailSegment)
@@ -59,10 +67,10 @@ function ManagerDataUsermanager() {
                 id: index + 1,
                 sdt: customer?.SDT || '',
                 hoten: customer?.HOTEN || '',
-                email: (customer?.EMAIL === 'Không có' ? 'Trống' : customer?.EMAIL) || 'Trống',
-                sdtba: (customer?.SDTBA === 'Không có' ? 'Trống' : customer?.SDTBA) || 'Trống',
-                sdtme: (customer?.SDTME === 'Không có' ? 'Trống' : customer?.SDTME) || 'Trống',
-                zalo: (customer?.ZALO === 'Không có' ? 'Trống' : customer?.ZALO) || 'Trống',
+                email: (customer?.EMAIL === 'Không có' ? '' : customer?.EMAIL) || '',
+                sdtba: (customer?.SDTBA === 'Không có' ? '' : customer?.SDTBA) || '',
+                sdtme: (customer?.SDTME === 'Không có' ? '' : customer?.SDTME) || '',
+                zalo: (customer?.ZALO === 'Không có' ? '' : customer?.ZALO) || '',
                 tentruong: customer?.TENTRUONG || '',
                 nganh: customer?.MANGHENGHIEP,
 
@@ -71,7 +79,7 @@ function ManagerDataUsermanager() {
     }, [detailSegment])
 
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(40);
     const [sortDescriptor, setSortDescriptor] = useState({
 
     });
@@ -320,6 +328,7 @@ function ManagerDataUsermanager() {
                         <select
                             className="bg-transparent outline-none text-default-400 text-small"
                             onChange={onRowsPerPageChange}
+                            defaultValue={40}
                         >
                             <option value="5">5</option>
                             <option value="10">10</option>
@@ -346,7 +355,16 @@ function ManagerDataUsermanager() {
                     borderRadius: "10px"
                 }}>
                 <div className="headerContent flex mb-2">
-                    <h1 className="titlePage">Danh sách dữ liệu</h1>
+                    <div className="flex">
+                        <h1 className="titlePage">Danh sách dữ liệu {segmentSelected && segmentSelected}</h1>
+                        {/* <Chip
+                            variant="flat"
+                            color="success"
+                            className="ms-5"
+                        >
+                            Trạng thái liên hệ: {contactSelected}
+                        </Chip> */}
+                    </div>
                     <div className="ms-auto flex gap-2">
                         <Select
                             items={dataSegmentUsermanager || []}
