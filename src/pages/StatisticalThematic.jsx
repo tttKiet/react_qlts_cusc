@@ -168,7 +168,7 @@ function StatisticalThematic() {
         }}
         className="shadow-lg"
       >
-        <h1 className='font-bold text-lg mb-2'>Thống kê chuyên đề</h1>
+        <h1 className="font-bold text-lg mb-2">Thống kê chuyên đề</h1>
         <Tabs
           aria-label="Options"
           selectedKey={selected}
@@ -182,7 +182,7 @@ function StatisticalThematic() {
                 width: 300,
               }}
               onChange={handleChangeSelectThematic}
-              options={thematics?.map((item) => {
+              options={thematics?.results?.map((item) => {
                 return {
                   label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                   value: item?.MACHUYENDE,
@@ -211,7 +211,7 @@ function StatisticalThematic() {
                   width: 300,
                 }}
                 onChange={handleChangeSelectThematic}
-                options={thematics?.map((item) => {
+                options={thematics?.results?.map((item) => {
                   return {
                     label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                     value: item?.MACHUYENDE,
@@ -254,7 +254,7 @@ function StatisticalThematic() {
                   width: 300,
                 }}
                 onChange={handleChangeSelectThematic}
-                options={thematics?.map((item) => {
+                options={thematics?.results?.map((item) => {
                   return {
                     label: `${item?.TENCHUYENDE} - được quản lý bởi ${item?.usermanager?.HOTEN}`,
                     value: item?.MACHUYENDE,
@@ -291,7 +291,9 @@ function StatisticalThematic() {
             }}
           />
         </div>
-        <h1 className="text-center font-medium text-[17px]">Thống kê chuyên đề</h1>
+        <h1 className="text-center font-medium text-[17px]">
+          Thống kê chuyên đề
+        </h1>
       </div>
     </>
   );

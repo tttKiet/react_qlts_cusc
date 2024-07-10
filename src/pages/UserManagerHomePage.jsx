@@ -69,7 +69,7 @@ function UserManagerHomePage() {
   const [filterSearchName, setFillterSearchName] = useState("");
   const data = useMemo(() => {
     return (
-      dataThematic?.map((thematic, index) => {
+      dataThematic?.data?.map((thematic, index) => {
         return {
           id: index + 1,
           tenchuyende: thematic?.TENCHUYENDE,
@@ -431,8 +431,6 @@ function UserManagerHomePage() {
               </div>
             </div>
           </div>
-
-
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pb-5">
           <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
