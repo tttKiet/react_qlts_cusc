@@ -105,7 +105,7 @@ function App() {
           element: <ManagerUser />,
         },
         {
-          path: "detail",
+          path: "user/:id",
           element: <ProfileUser />,
         },
         {

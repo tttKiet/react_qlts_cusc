@@ -115,9 +115,9 @@ function ManagerThematic() {
         data.tenchuyende.toLowerCase().includes(filterSearchName.toLowerCase())
       );
     }
-
     return filteredUsers;
   }, [data, filterSearchName]);
+ 
 
   const items = useMemo(() => {
     return filteredItems;
@@ -141,6 +141,7 @@ function ManagerThematic() {
 
   const renderCell = useCallback((thematic, columnKey) => {
     const cellValue = thematic[columnKey];
+
 
     switch (columnKey) {
       case "thoigianphan":

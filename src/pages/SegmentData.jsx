@@ -110,10 +110,8 @@ function SegmentData() {
   );
 
   const { data: dataAvailable, mutate: mutateDataAvailable } = useSWR(
-    `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${
-      jobSelected || ""
-    }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}&DAUSO=${
-      phoneCodeSelected || ""
+    `${API_DATA}/data-available?MATINH=${provinceSelected || ""}&MANGANH=${jobSelected || ""
+    }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}&DAUSO=${phoneCodeSelected || ""
     }`
   );
 
@@ -157,13 +155,13 @@ function SegmentData() {
         EMAIL: item?.EMAIL,
         JOBLIKE: item.nganhyeuthich?.[0]?.nhomnganh
           ? item.nganhyeuthich?.[0]?.nhomnganh?.TENNHOMNGANH +
-            ": " +
-            item.nganhyeuthich?.[0]?.CHITIET
+          ": " +
+          item.nganhyeuthich?.[0]?.CHITIET
           : item?.nganhyeuthich?.reduce((init, item, index, arr) => {
-              return init + item?.nganh?.TENNGANH + index != arr.length
-                ? ", "
-                : "";
-            }, ""),
+            return init + item?.nganh?.TENNGANH + index != arr.length
+              ? ", "
+              : "";
+          }, ""),
       };
     });
 
@@ -230,10 +228,10 @@ function SegmentData() {
           id: index + 1,
           sdt: d?.SDT || "",
           hoten: d?.HOTEN || "",
-          email: (d?.EMAIL === "Không có" ? "Trống" : d?.EMAIL) || "Trống",
-          sdtba: (d?.SDTBA === "Không có" ? "Trống" : d?.SDTBA) || "Trống",
-          sdtme: (d?.SDTME === "Không có" ? "Trống" : d?.SDTME) || "Trống",
-          zalo: (d?.ZALO === "Không có" ? "Trống" : d?.ZALO) || "Trống",
+          email: (d?.EMAIL === "Không có" ? "" : d?.EMAIL) || "",
+          sdtba: (d?.SDTBA === "Không có" ? "" : d?.SDTBA) || "",
+          sdtme: (d?.SDTME === "Không có" ? "" : d?.SDTME) || "",
+          zalo: (d?.ZALO === "Không có" ? "" : d?.ZALO) || "",
           tentruong: d?.truong?.TENTRUONG || "",
           nganh: d?.nganhyeuthich,
         };

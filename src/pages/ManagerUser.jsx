@@ -1,27 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
-  User,
-  Pagination,
-  useDisclosure,
-  Select,
-  SelectItem,
-  RadioGroup,
-  Radio,
-  Tooltip,
+
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Input,
+    Button,
+    DropdownTrigger,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
+    Chip,
+    User,
+    Pagination,
+    useDisclosure,
+    Select, SelectItem,
+    RadioGroup,
+    Radio,
+    Tooltip,
+    ModalContent,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
+
 } from "@nextui-org/react";
 import { PlusIcon } from "../components/icons/PlusIcon";
 import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
@@ -43,6 +49,7 @@ import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
 import { toast } from "react-toastify";
+ 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 const INITIAL_VISIBLE_COLUMNS = [
@@ -55,6 +62,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 import excel from "../components/ExportFile/ExportFile";
+ 
 
 function ManagerUser() {
   const [filterSearchName, setFillterSearchName] = useState("");
@@ -158,25 +166,64 @@ function ManagerUser() {
     );
   }, [visibleColumns]);
 
-  const filteredItems = useMemo(() => {
-    let filteredUsers = [...users];
-    return filteredUsers;
-  }, [users, filterSearchName]);
+ 
+    const [recordDelete, setRecordDelete] = useState("")
+
+    const handleShowDelete = (data) => {
+        if (data) {
+            setRecordDelete(data)
+            onOpenDelete()
+            console.log(data)
+        }
+    }
+
+    const handleCloseDelete = () => {
+        setRecordDelete("");
+        onCloseDelete();
+    }
+
+    const handleDelete = async () => {
+        try {
+            let dataSendToDelete = {};
+            if (recordDelete.role === "usermanager") {
+                dataSendToDelete = {
+                    SDT: recordDelete.username
+                }
+            } else if (recordDelete.role === "admin") {
+                dataSendToDelete = {
+                    MAADMIN: recordDelete.username
+                }
+            }
+            const res = await UserService.deleteProfile(dataSendToDelete)
+            console.log(res)
+            toast.success(res.message)
+            handleCloseDelete()
+            mutate()
+        } catch (e) {
+            toast.error(e.message)
+        }
+
+    }
+ 
 
   const items = useMemo(() => {
     setPanigation({ skip: (page - 1) * rowsPerPage, take: rowsPerPage });
     return filteredItems;
   }, [page, filteredItems, rowsPerPage]);
 
+ 
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
+ 
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
+ 
   }, [sortDescriptor, items]);
+ 
 
   const renderCell = useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
@@ -286,6 +333,7 @@ function ManagerUser() {
 
   const topContent = useMemo(() => {
     return (
+  
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
           <Input
@@ -355,7 +403,7 @@ function ManagerUser() {
             </select>
           </label>
         </div>
-      </div>
+      </div> 
     );
   }, [
     filterSearchName,
@@ -522,95 +570,69 @@ function ManagerUser() {
   };
 
   return (
-    <>
-      <div
-        className="contentPage"
-        style={{
-          padding: 24,
-          minHeight: 500,
-          background: "#fff",
-          borderRadius: "10px",
-        }}
-      >
-        <div className="flex justify-between">
-          <h1 className="titlePage">Danh sách người dùng</h1>
-          <div>
-            <Button
-              size="sm"
-              className="p-4"
-              color="primary"
-              onClick={handleEXcel}
-            >
-              <FontAwesomeIcon icon={faFile} /> Xuất file
-            </Button>
-          </div>
-        </div>
-        <div className="listUser mt-2">
-          <Table
-            // isCompact
-            removeWrapper
-            aria-label="Example table with custom cells, pagination and sorting"
-            bottomContent={bottomContent}
-            bottomContentPlacement="outside"
-            checkboxesProps={{
-              classNames: {
-                wrapper:
-                  "after:bg-foreground after:text-background text-background",
-              },
-            }}
-            classNames={classNames}
-            selectedKeys={selectedKeys}
-            selectionMode="multiple"
-            sortDescriptor={sortDescriptor}
-            topContent={topContent}
-            topContentPlacement="outside"
-            onSelectionChange={setSelectedKeys}
-            onSortChange={setSortDescriptor}
-          >
-            <TableHeader columns={headerColumns}>
-              {(column) => (
-                <TableColumn
-                  key={column.uid}
-                  align={column.uid === "actions" ? "center" : "start"}
-                  allowsSorting={column.sortable}
-                >
-                  {column.name}
-                </TableColumn>
-              )}
-            </TableHeader>
-            <TableBody
-              emptyContent={"Không tìm thấy người dùng"}
-              items={sortedItems}
-            >
-              {(item) => (
-                <TableRow key={item.id}>
-                  {(columnKey) => (
-                    <TableCell>{renderCell(item, columnKey)}</TableCell>
-                  )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-      <ModalComponent
-        footer={false}
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={closeModal}
-        size="2xl"
-        title={isEditUser ? "Chỉnh sửa thông tin" : "Thêm người dùng"}
-        okModal="Thêm người dùng"
-        cancelModal="Đóng"
-      >
-        <FormUser
-          onClose={closeModal}
-          onSubmit={onSubmit}
-          record={record}
-          isEditUser={isEditUser}
-        />
-      </ModalComponent>
-    </>
+       <>
+            <div className="contentPage"
+                style={{
+                    padding: 24,
+                    minHeight: 500,
+                    background: "#fff",
+                    borderRadius: "10px"
+                }}>
+                <h1 className="titlePage">Danh sách người dùng</h1>
+                <div className="listUser mt-2">
+                    <Table
+                        removeWrapper
+                        aria-label="Example table with custom cells, pagination and sorting"
+                        bottomContent={bottomContent}
+                        bottomContentPlacement="outside"
+                        sortDescriptor={sortDescriptor}
+                        topContent={topContent}
+                        topContentPlacement="outside"
+                        onSortChange={setSortDescriptor}
+                    >
+                        <TableHeader columns={headerColumns}>
+                            {(column) => (
+                                <TableColumn
+                                    key={column.uid}
+                                    align={column.uid === "actions" ? "center" : "start"}
+                                    allowsSorting={column.sortable}
+                                >
+                                    {column.name}
+                                </TableColumn>
+                            )}
+                        </TableHeader>
+                        <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                            {(item) => (
+                                <TableRow key={item.id}>
+                                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+            <ModalComponent footer={false} isOpen={isOpen} onOpen={onOpen} onClose={closeModal} size="2xl" title={isEditUser ? 'Chỉnh sửa thông tin' : 'Thêm người dùng'} okModal="Thêm người dùng" cancelModal="Đóng"  >
+                <FormUser onClose={closeModal} onSubmit={onSubmit} record={record} isEditUser={isEditUser} />
+            </ModalComponent>
+            <Modal isOpen={isOpenDelete}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Xóa người dùng</ModalHeader>
+                    <ModalBody>
+                        <p>
+                            Bạn chắc chắn muốn xóa người dùng {recordDelete?.name}
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={() => handleCloseDelete()}>
+                            Đóng
+                        </Button>
+                        <Button color="danger" onPress={() => handleDelete()}>
+                            Xóa
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
   );
 }
 

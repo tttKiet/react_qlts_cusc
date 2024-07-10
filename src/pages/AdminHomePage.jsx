@@ -32,15 +32,15 @@ function AdminHomePage() {
         return dataSegment?.map((segment, index) => {
             return {
                 id: index + 1,
-                usermanager: segment?.segment || 'Trống',
-                segment: segment.segment.MaPQ || 'Trống',
-                contact_1: segment || 'Trống',
-                contact_2: segment || 'Trống',
-                contact_3: segment || 'Trống',
-                contact_4: segment || 'Trống',
-                contact_5: segment || 'Trống',
-                contact_6: segment || 'Trống',
-                contact_7: segment || 'Trống',
+                usermanager: segment?.segment,
+                segment: segment.segment.MaPQ,
+                contact_1: segment,
+                contact_2: segment,
+                contact_3: segment,
+                contact_4: segment,
+                contact_5: segment,
+                contact_6: segment,
+                contact_7: segment,
             }
         }) || []
     }, [dataSegment])
@@ -92,7 +92,6 @@ function AdminHomePage() {
 
     const renderCell = useCallback((thematic, columnKey) => {
         const cellValue = thematic[columnKey];
-
         switch (columnKey) {
             case "id":
                 return (

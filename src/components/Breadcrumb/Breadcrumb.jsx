@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 const breadcrumbNameMap = {
     '/admin': 'Trang chủ',
     '/admin/user': 'Danh sách người dùng',
+    '/admin/user/:id': 'Thông tin người dùng',
     '/admin/data': 'Danh sách dữ liệu',
     '/admin/data/:id': 'Thông tin khách hàng',
     '/admin/data/edit/:id': 'Chỉnh sửa thông tin',

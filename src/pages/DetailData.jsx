@@ -2,14 +2,21 @@ import { faBullseye, faAddressCard, faClipboard, faUser, faArrowUpRightFromSquar
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image, Chip } from "@nextui-org/react";
 import { Tag } from "antd";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 function DetailData() {
-
+    const navigate = useNavigate();
     const { id } = useParams();
+
+    useEffect(() => {
+        if (id === undefined || id === "edit") {
+            navigate("/admin/data");
+        }
+    }, [id, navigate]);
 
     const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`)
     console.log(detailData)
@@ -18,10 +25,10 @@ function DetailData() {
         const contact = detailData?.lienhe.find(c => c.LAN == lan);
         return {
             LAN: lan,
-            THOIGIAN: contact ? contact.THOIGIAN : 'Trống',
-            TRANGTHAI: contact ? contact.trangthai.TENTRANGTHAI : 'Trống',
-            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : 'Trống',
-            KETQUA: contact ? contact.KETQUA : 'Trống',
+            THOIGIAN: contact ? contact.THOIGIAN : '',
+            TRANGTHAI: contact ? contact.trangthai.TENTRANGTHAI : '',
+            CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : '',
+            KETQUA: contact ? contact.KETQUA : '',
         };
     });
 
@@ -112,23 +119,23 @@ function DetailData() {
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Điện thoại ba</p>
-                                    <p>{detailData?.dulieukhachhang?.SDTBA || 'Trống'}</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTBA || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Điện thoại mẹ</p>
-                                    <p>{detailData?.dulieukhachhang?.SDTME || 'Trống'}</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTME || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Zalo</p>
-                                    <p>{detailData?.dulieukhachhang?.SDTZALO || 'Trống'}</p>
+                                    <p>{detailData?.dulieukhachhang?.SDTZALO || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>FaceBook</p>
-                                    <p>{detailData?.dulieukhachhang?.FACEBOOK || 'Trống'}</p>
+                                    <p>{detailData?.dulieukhachhang?.FACEBOOK || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Email</p>
-                                    <p>{detailData?.EMAIL || 'Trống'}</p>
+                                    <p>{detailData?.EMAIL || ''}</p>
                                 </div>
                             </CardBody>
                         </Card>
@@ -145,11 +152,11 @@ function DetailData() {
                             <CardBody className='px-6 gap-4'>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Nghề nghiệp</p>
-                                    <p>{detailData?.nghenghiep?.TENNGHENGHIEP || 'Trống'}</p>
+                                    <p>{detailData?.nghenghiep?.TENNGHENGHIEP || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Hình thức thu thập</p>
-                                    <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || 'Trống'}</p>
+                                    <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || ''}</p>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
                                     <p className="font-bold flex items-center">Ngành yêu thích</p>
@@ -158,13 +165,13 @@ function DetailData() {
                                             <Tag key={index} bordered={false} color="processing">
                                                 {job?.nganh?.TENNGANH}
                                             </Tag>
-                                        )) : 'Trống'}
+                                        )) : ''}
 
                                     </div>
                                 </div>
                                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                                     <p className='font-bold'>Ngành đăng ký</p>
-                                    <p>{detailData?.phieudkxettuyen?.nganh?.TENNGANH || "Trống"}</p>
+                                    <p>{detailData?.phieudkxettuyen?.nganh?.TENNGANH || ""}</p>
                                 </div>
                             </CardBody>
                             <Divider />

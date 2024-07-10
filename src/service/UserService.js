@@ -15,10 +15,16 @@ const deleteUser = async (data) => {
     return axios.delete(`${API_USER}/account`, { data })
 }
 
+const deleteProfile = async (data) => {
+    // console.log(data)
+    return axios.delete(`${API_USER}/delete`, { data })
+}
+
 export default {
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    deleteProfile
 };
 
 
