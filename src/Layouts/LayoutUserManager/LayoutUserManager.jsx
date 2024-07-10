@@ -52,6 +52,11 @@ const items = [
     "/usermanager/file",
     <IconFile size={16} />
   ),
+  getItem(
+    <Link to={"/usermanager/themaic"}>Quản lí chuyên đề</Link>,
+    "/usermanager/themaic",
+    <IconFile size={16} />
+  ),
 ];
 
 const LayoutUserManager = () => {
@@ -103,7 +108,10 @@ const LayoutUserManager = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical mb-1 flex justify-center">
-          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
+          <img
+            src="/image/CUSC_No_Background.png"
+            className={`${collapsed ? "w-10" : "w-20 ms-5"}`}
+          />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu

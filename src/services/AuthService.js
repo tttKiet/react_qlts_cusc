@@ -6,7 +6,7 @@ const login = (data) => {
 };
 
 const logout = () => {
-  return axios.post(`${API_AUTH}/logout`);
+  return axios.get(`${API_AUTH}/logout`);
 };
 
 export default {
