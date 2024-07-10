@@ -44,7 +44,7 @@ function ManagerThematicUsermanager() {
 
     const [filterSearchName, setFillterSearchName] = useState('')
     const data = useMemo(() => {
-        return dataThematic?.map((thematic, index) => {
+        return dataThematic?.data?.map((thematic, index) => {
             return {
                 id: index + 1,
                 machuyende: thematic?.MACHUYENDE,

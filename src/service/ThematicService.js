@@ -14,7 +14,7 @@ const deleteThematic = async (data) => {
 };
 
 const readAllThematic = async (data) => {
-  return axios.delete(`${API_THEMATIC}/readAll?${data}`);
+  return axios.get(`${API_THEMATIC}/readAll?${data}`);
 };
 
 export default {
