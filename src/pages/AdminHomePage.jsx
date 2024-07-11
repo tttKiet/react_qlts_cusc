@@ -425,6 +425,15 @@ function AdminHomePage() {
                                     className="max-w-md"
                                     formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
                                 />
+                                <Progress
+                                    label={dataAdmission && dataAdmission[5]?.TENTRANGTHAI}
+                                    value={dataAdmission && dataAdmission[5]?.count}
+                                    maxValue={dataStatic?.data.dulieu}
+                                    color="danger"
+                                    showValueLabel={true}
+                                    className="max-w-md"
+                                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                                />
                             </div>
                         </div>
                         <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
