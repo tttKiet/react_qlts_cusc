@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import useSWR, { useSWRConfig } from "swr";
 import { API_USER } from "../constants";
-function ProfileAdmin() {
+function ProfileUserManager() {
     const tabs = [
         {
             id: '1', label: 'Hoạt động', content:
@@ -228,4 +228,4 @@ function ProfileAdmin() {
     );
 }
 
-export default ProfileAdmin;
+export default ProfileUserManager;

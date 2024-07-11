@@ -53,9 +53,9 @@ const items = [
     <IconFile size={16} />
   ),
   getItem(
-    <Link to={"/usermanager/themaic"}>Quản lí chuyên đề</Link>,
-    "/usermanager/themaic",
-    <IconFile size={16} />
+    <Link to={"/usermanager/thematic"}>Quản lí chuyên đề</Link>,
+    "/usermanager/thematic",
+    <FontAwesomeIcon icon={faClipboard} />
   ),
 ];
 
@@ -138,9 +138,9 @@ const LayoutUserManager = () => {
               items: [
                 {
                   label: (
-                    <div>
+                    <Link to={"/usermanager/profile"}>
                       <UserOutlined /> Profile
-                    </div>
+                    </Link>
                   ),
                   key: "0",
                 },
@@ -160,7 +160,8 @@ const LayoutUserManager = () => {
               <Avatar
                 isBordered
                 color="primary"
-                src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
               />
               <div className="font-medium">
                 <p className="text-sm">{user && user.HOTEN}</p>
