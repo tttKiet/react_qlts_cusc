@@ -75,11 +75,11 @@ const items = [
       "/admin/statistical/thematic"
     ),
   ]),
-  // getItem(
-  //   <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
-  //   "/admin/time",
-  //   <ClockCircleOutlined />
-  // ),
+  getItem(
+    <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
+    "/admin/time",
+    <ClockCircleOutlined />
+  ),
   getItem(
     <Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>,
     "/admin/thematic",
@@ -179,9 +179,9 @@ const LayoutAdmin = () => {
               items: [
                 {
                   label: (
-                    <div>
+                    <Link to={"/admin/profile"}>
                       <UserOutlined /> Profile
-                    </div>
+                    </Link>
                   ),
                   key: "0",
                 },
@@ -201,7 +201,8 @@ const LayoutAdmin = () => {
               <Avatar
                 isBordered
                 color="primary"
-                src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
               />
               <div className="font-medium">
                 <p className="text-sm">{user && user.HOTEN}</p>

@@ -296,6 +296,7 @@ function UM_ManagerThematic() {
           width={600}
         >
           <Table
+            rowKey={dataDrawer?.chitietchuyende}
             dataSource={dataDrawer?.chitietchuyende}
             columns={columnsThematicDetail}
             bordered

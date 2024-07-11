@@ -12,9 +12,6 @@ function FormUser({ onClose, onSubmit, record, isEditUser }) {
     const [isVisible, setIsVisible] = useState(false);
     const [isVisibleOther, setIsVisibleOther] = useState(false);
 
-    console.log(record)
-
-
     const roleUser = [
         { label: "Admin", value: "admin" },
         { label: "User Manager", value: "usermanager" },

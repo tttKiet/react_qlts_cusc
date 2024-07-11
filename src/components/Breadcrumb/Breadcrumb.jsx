@@ -21,12 +21,14 @@ const breadcrumbNameMap = {
     '/admin/statistical/contact': 'Liên hệ',
     '/admin/statistical/thematic': 'Chuyên đề',
     '/admin/file': 'Quản lý hồ sơ',
+    '/admin/time': 'Thời gian đăng nhập',
     '/usermanager': 'Trang chủ',
     '/usermanager/data': 'Danh sách dữ liệu',
     '/usermanager/data/:id': 'Chi tiết dữ liệu',
     '/usermanager/data/edit/:id': 'Chỉnh sửa thông tin',
     '/usermanager/thematic': 'Quản lý chuyên đề',
     '/usermanager/file': 'Quản lý hồ sơ',
+    '/usermanager/profile': 'Thông tin cá nhân',
 };
 
 const getBreadcrumbName = (pathname) => {
