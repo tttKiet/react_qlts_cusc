@@ -317,11 +317,11 @@ function ManagerUser() {
                 <EditIcon />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete user">
+            {/* <Tooltip color="danger" content="Delete user">
               <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => handleShowDelete(user)} >
                 <DeleteIcon />
               </span>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         );
       default:

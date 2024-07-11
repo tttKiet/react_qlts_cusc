@@ -412,15 +412,6 @@ function TimeLogin() {
                         </TableBody>
                     </Table>
                 </div>
-                <div style={{
-                    padding: 24,
-                    minHeight: 450,
-                    background: "#fff",
-                    borderRadius: "10px"
-                }} className="mt-4"  >
-                    <h1 className="mb-2 text-lg font-medium">Tiến trình liên hệ</h1>
-
-                </div>
             </div >
 
         </>
