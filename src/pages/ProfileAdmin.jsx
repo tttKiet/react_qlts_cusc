@@ -1,96 +1,13 @@
 import { faCircleUser, faEnvelope, faMarsAndVenus, faPersonHalfDress, faPhone, faUser, faUserGear, faVenusMars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Tabs, Tab, Card, CardBody, CardHeader, Divider, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, RadioGroup, Radio, Textarea, Button, Chip } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useSWR, { useSWRConfig } from "swr";
 import { API_USER } from "../constants";
+import { toast } from "react-toastify";
+import UserService from "../service/UserService";
 function ProfileAdmin() {
-    const tabs = [
-        {
-            id: '1', label: 'Hoạt động', content:
-                <Table aria-label="Example static collection table">
-                    <TableHeader>
-                        <TableColumn>NAME</TableColumn>
-                        <TableColumn>ROLE</TableColumn>
-                        <TableColumn>STATUS</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow key="1">
-                            <TableCell>Tony Reichert</TableCell>
-                            <TableCell>CEO</TableCell>
-                            <TableCell>Active</TableCell>
-                        </TableRow>
-                        <TableRow key="2">
-                            <TableCell>Zoey Lang</TableCell>
-                            <TableCell>Technical Lead</TableCell>
-                            <TableCell>Paused</TableCell>
-                        </TableRow>
-                        <TableRow key="3">
-                            <TableCell>Jane Fisher</TableCell>
-                            <TableCell>Senior Developer</TableCell>
-                            <TableCell>Active</TableCell>
-                        </TableRow>
-                        <TableRow key="4">
-                            <TableCell>William Howard</TableCell>
-                            <TableCell>Community Manager</TableCell>
-                            <TableCell>Vacation</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-        },
-        {
-            id: '2', label: 'Cập nhật', content:
-                <div className="flex flex-col gap-y-3">
-                    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                        <Input type="text" label="Họ tên" />
-                        <Input type="email" label="Email" />
-                    </div>
-                    <div className="grid grid-cols-2">
-                        <Input type="text" className="pe-2" label="Số điện thoại" isDisabled />
-                        <RadioGroup className="ms-2"
-
-                            label="Giới tính"
-                            orientation="horizontal"
-                        >
-                            <Radio value="buenos-aires">Nam</Radio>
-                            <Radio value="sydney">Nữ</Radio>
-
-                        </RadioGroup>
-                    </div>
-                    <div>
-                        <Textarea
-                            label="Địa chỉ"
-                            className="w-full"
-                        />
-                    </div>
-                    <Button color="primary" className="flex ms-auto">
-                        Button
-                    </Button>
-                </div>
-
-
-        },
-        {
-            id: '3', label: 'Mật khẩu', content:
-                <div className="flex flex-col gap-y-3">
-                    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                        <Input type="email" label="Email" />
-                        <Input type="email" label="Email" placeholder="Enter your email" />
-                    </div>
-                    <div className="grid grid-cols-2">
-                        <Input className="pe-2" type="email" label="Email" />
-                    </div>
-                    <div className="flex justify-end">
-                        <Button color="primary">Xác nhận</Button>
-                    </div>
-
-                </div>
-        },
-    ];
-
-    const [activeTab, setActiveTab] = useState(tabs[0].id);
-
     const user = useSelector((state) => state.account.user);
 
     let queryProfile = "";
@@ -102,6 +19,106 @@ function ProfileAdmin() {
     }
 
     const { data: dataProfile, mutate } = useSWR(`${API_USER}/read?${queryProfile}`)
+    // console.log("dataProfile", dataProfile)
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [gender, setGender] = useState("");
+    const [address, setAddress] = useState("");
+    const [phone, setPhone] = useState("")
+    const [password, setPassWord] = useState("")
+
+    useEffect(() => {
+        setFullName(dataProfile?.admin?.HOTEN || "")
+        setEmail(dataProfile?.admin?.EMAIL || "")
+        setGender(dataProfile?.admin?.GIOITINH || "")
+        setAddress(dataProfile?.admin?.DIACHI || "")
+        setPhone(dataProfile?.admin?.SDT || "")
+    }, [dataProfile])
+
+
+    const tabs = [
+        {
+            id: '1', label: 'Cập nhật', content:
+                <div className="flex flex-col gap-y-3">
+                    <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                        <Input type="text" label="Họ tên" value={fullName} onValueChange={setFullName} />
+                        <Input type="email" label="Email" value={email} onValueChange={setEmail} />
+                    </div>
+                    <div className="grid grid-cols-2">
+                        <Input type="text" className="pe-2" label="Số điện thoại" isDisabled value={phone} onValueChange={setPhone} />
+                        <RadioGroup className="ms-2"
+                            label="Giới tính"
+                            orientation="horizontal"
+                            value={gender}
+                            onValueChange={setGender}
+                        >
+                            <Radio value="Nam">Nam</Radio>
+                            <Radio value="Nữ">Nữ</Radio>
+
+                        </RadioGroup>
+                    </div>
+                    <div>
+                        <Input type="text" className="pe-2" label="Địa chỉ" value={address} onValueChange={setAddress} />
+                    </div>
+                    <Button color="primary" className="flex ms-auto" onClick={() => handleUpdateProfile()}>
+                        Cập nhật
+                    </Button>
+                </div>
+
+
+        },
+        // {
+        //     id: '2', label: 'Mật khẩu', content:
+        //         <div className="flex flex-col gap-y-3">
+        //             <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        //                 <Input type="password" label="Mật khẩu" value={password} onValueChange={setPassWord} />
+        //                 <Input type="email" label="Nhập lại mật khẩu" placeholder="Enter your email" />
+        //             </div>
+        //             <div className="flex justify-end">
+        //                 <Button color="primary" onClick={() => handleUpdatePassword()}>Xác nhận</Button>
+        //             </div>
+
+        //         </div>
+        // },
+    ];
+
+    const [activeTab, setActiveTab] = useState(tabs[0].id);
+
+    const handleUpdateProfile = async () => {
+        try {
+            const roleFormat = user?.ROLE.toLowerCase();
+
+            const data = {
+                TENDANGNHAP: user?.TENDANGNHAP,
+                HOVATEN: fullName,
+                EMAIL: email,
+                GIOITINH: gender,
+                DIACHI: address,
+                ROLE: roleFormat
+            }
+            const res = await UserService.updateUser(data);
+            toast.success(res.message);
+            mutate();
+        } catch (e) {
+            toast.error(e.message);
+        }
+    }
+
+    const handleUpdatePassword = async () => {
+        try {
+            const roleFormat = user?.ROLE.toLowerCase();
+            const data = {
+                TENDANGNHAP: user?.TENDANGNHAP,
+                MATKHAU: password,
+                ROLE: roleFormat
+            }
+            const res = await UserService.updateUser(data);
+            toast.success(res.message);
+            mutate();
+        } catch (e) {
+            toast.error(e.message);
+        }
+    }
 
     return (
         <>

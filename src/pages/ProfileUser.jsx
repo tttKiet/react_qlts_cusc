@@ -18,6 +18,7 @@ import {
     CardBody,
     Card,
     Tooltip,
+    Avatar,
 } from "@nextui-org/react";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
@@ -323,18 +324,23 @@ function ProfileUser() {
     return (
         <>
             <div className="grid grid-cols-3">
-                <div className="leftContent col-span-3 md:col-span-1 px-2">
-                    <Card className="p-2">
+                <div className="leftContent col-span-3 md:col-span-1 px-2 flex">
+                    <Card className="p-2 w-full">
                         <CardHeader className="py-1">
-                            <h1 className="titlePage">Thống kê</h1>
                         </CardHeader>
                         <CardBody className="overflow-visible py-1 gap-y-4">
-
+                            <Avatar
+                                isBordered
+                                color="primary"
+                                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
+                                className="w-[200px] h-[200px] m-auto"
+                            />
                         </CardBody>
                     </Card>
                 </div>
-                <div className="rightContent col-span-3 md:col-span-2 px-2 mt-3 md:mt-0">
-                    <Card className="p-2">
+                <div className="rightContent col-span-3 md:col-span-2 px-2 mt-3 md:mt-0 flex">
+                    <Card className="p-2 w-full">
                         <CardHeader className="py-1">
                             <h1 className="titlePage">Thông tin khách hàng</h1>
                         </CardHeader>

@@ -60,8 +60,8 @@ function TimeLogin() {
                     hoten: time?.admin?.HOTEN || time?.usermanager?.HOTEN,
                     sdt: time?.admin?.SDT || time?.usermanager?.SDT,
                     role: time?.usermanager ? "usermanager" : time?.admin ? "admin" : "other",
-                    dangnhap: moment(time?.dangnhap, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY"),
-                    dangxuat: moment(time?.dangxuat, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY"),
+                    dangnhap: moment(time?.dangnhap, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY HH:mm:ss"),
+                    dangxuat: moment(time?.dangxuat, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY HH:mm:ss"),
                     tongthoigian: convertSecondsToHMS(time?.tongthoigian),
                 };
             }) || []
@@ -215,25 +215,32 @@ function TimeLogin() {
         return (
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between gap-3 items-end">
-                    <Input
-                        isClearable
-                        classNames={{
-                            base: "w-full sm:max-w-[30%]",
-                            inputWrapper: "border-1",
-                        }}
-                        placeholder="Tìm kiếm bằng tên"
-                        size="sm"
-                        startContent={<SearchIcon className="text-default-300" />}
-                        // value={filterSearchName}
-                        variant="bordered"
-                        onClear={() => setFillterSearchName("")}
-                        onValueChange={debounce(onSearchChange, 300)}
-                    />
-                    <div className="flex gap-3">
+                    <div>
+                        <Input
+                            isClearable
+                            classNames={{
+                                base: "w-full sm:max-w-[250px]",
+                                inputWrapper: "border-1",
+                            }}
+                            placeholder="Tìm kiếm bằng tên"
+                            size="sm"
+                            startContent={<SearchIcon className="text-default-300" />}
+                            // value={filterSearchName}
+                            variant="bordered"
+                            onClear={() => setFillterSearchName("")}
+                            onValueChange={debounce(onSearchChange, 300)}
+                        />
+                        <div className={infoUser ? '' : 'hidden'}>
+                            <p className="font-medium mt-2">Tổng thời gian: {convertSecondsToDHMS(dataTime?.totalTime)}</p>
+                        </div>
+
+                    </div>
+                    <div className="flex gap-3 mb-auto">
+
                         <Autocomplete
                             aria-labelledby="user-label"
                             placeholder="Chọn người dùng"
-                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                            className="max-w-xs mt-2 md:mt-0"
                             variant="bordered"
                             size="sm"
                             value={infoUser}
@@ -266,8 +273,9 @@ function TimeLogin() {
         visibleColumns,
         onSearchChange,
         onRowsPerPageChange,
-        data.length,
+        items.length,
         hasSearchFilter,
+        listUser
     ]);
 
 
@@ -403,15 +411,6 @@ function TimeLogin() {
                             )}
                         </TableBody>
                     </Table>
-                </div>
-                <div style={{
-                    padding: 24,
-                    minHeight: 450,
-                    background: "#fff",
-                    borderRadius: "10px"
-                }} className="mt-4"  >
-                    <h1 className="mb-2 text-lg font-medium">Tiến trình liên hệ</h1>
-
                 </div>
             </div >
 
