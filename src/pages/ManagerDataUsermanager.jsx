@@ -14,6 +14,7 @@ import { faPhone } from "@fortawesome/free-solid-svg-icons";
 const INITIAL_VISIBLE_COLUMNS = ["id", "sdt", "hoten", "email", "sdtba", "sdtme", "zalo", "tentruong", "actions"];
 function ManagerDataUsermanager() {
     const contacts = [
+        { value: "", lable: "Tất cả" },
         { value: 1, lable: "Chưa liên hệ 1" },
         { value: 2, lable: "Chưa liên hệ 2" },
         { value: 3, lable: "Chưa liên hệ 3" },
@@ -37,7 +38,6 @@ function ManagerDataUsermanager() {
     const handleSelectionChange = (e) => {
         setSegmentSelected([e.currentKey]);
         const segment = dataSegmentUsermanager.find(seg => seg.MaPQ === e.currentKey);
-        console.log("segment", segment)
         if (segment) {
             setContactSelected(`${segment.TRANGTHAILIENHE}`)
         }

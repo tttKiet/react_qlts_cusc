@@ -46,7 +46,6 @@ function ManagerThematic() {
     `${API_THEMATIC}/readAll`
   );
   const [record, setRecord] = useState();
-  // console.log(dataThematic)
 
   // Modal
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -114,10 +113,13 @@ function ManagerThematic() {
       filteredUsers = filteredUsers.filter((data) =>
         data.tenchuyende.toLowerCase().includes(filterSearchName.toLowerCase())
       );
+      setRowsPerPage(100);
+    } else {
+      setRowsPerPage(5);
     }
     return filteredUsers;
   }, [data, filterSearchName]);
- 
+
 
   const items = useMemo(() => {
     return filteredItems;
@@ -132,7 +134,6 @@ function ManagerThematic() {
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-
   const paginatedItems = useMemo(() => {
     const startIdx = (page - 1) * rowsPerPage;
     const endIdx = startIdx + rowsPerPage;
@@ -189,13 +190,6 @@ function ManagerThematic() {
     }
   }, []);
 
-  useEffect(() => {
-    if (dataThematic) {
-      const totalPages = Math.ceil(dataThematic.length / rowsPerPage);
-      setTotal(totalPages > 0 ? totalPages : 1);
-    }
-  }, [dataThematic, rowsPerPage]);
-
   const onRowsPerPageChange = useCallback((e) => {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
@@ -210,6 +204,14 @@ function ManagerThematic() {
     }
   }, []);
 
+  useEffect(() => {
+    if (dataThematic) {
+      const totalPages = Math.ceil(dataThematic.totalRows / rowsPerPage);
+      setTotal(totalPages > 0 ? totalPages : 1);
+    }
+  }, [dataThematic, rowsPerPage]);
+
+
   const bottomContent = useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
@@ -219,6 +221,7 @@ function ManagerThematic() {
             cursor: "bg-foreground text-background",
           }}
           color="default"
+          isDisabled={hasSearchFilter}
           page={page}
           total={total}
           variant="light"
@@ -226,20 +229,22 @@ function ManagerThematic() {
             setPage(e);
           }}
         />
-        <div className="flex justify-between items-center mb-2 gap-5">
+        <div className="flex justify-between items-center gap-5">
           <span className="text-default-400 text-small">
-            Total {data.length} data
+            Total {data.length} users
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
               className="bg-transparent outline-none text-default-400 text-small"
               onChange={onRowsPerPageChange}
-              value={rowsPerPage}
             >
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
             </select>
           </label>
         </div>

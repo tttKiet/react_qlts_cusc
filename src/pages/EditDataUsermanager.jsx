@@ -159,16 +159,6 @@ function EditDataUsermanager() {
       setStatusContact(detailData?.segment.TRANGTHAILIENHE);
     }
   }, [detailData]);
-
-  console.log("statusContact", statusContact);
-
-  const classDisable = "pointer-events-none opacity-50";
-
-  // useEffect(() => {
-  //     console.log("detailData.chitietchuyende[0].MACHUYENDE", detailData.chitietchuyende)
-  // }, [detailData])
-
-  // console.log("contactDetails", contactDetails)
   const itemClasses = {
     base: "py-0 w-full",
     title: "font-normal text-medium",
@@ -459,10 +449,10 @@ function EditDataUsermanager() {
             <div className="mt-2">
               {detailData?.nganhyeuthich.length != 0
                 ? detailData?.nganhyeuthich.map((job, index) => (
-                    <Tag key={index} bordered={false} color="processing">
-                      {job?.nganh?.TENNGANH}
-                    </Tag>
-                  ))
+                  <Tag key={index} bordered={false} color="processing">
+                    {job?.nganh?.TENNGANH}
+                  </Tag>
+                ))
                 : "Trống"}
             </div>
           </div>
@@ -723,7 +713,7 @@ function EditDataUsermanager() {
                   onSelectionChange={setSelectedTimes}
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((lan) => (
-                    <Tab key={lan} title={`Liên hệ lần ${lan}`}>
+                    <Tab key={lan} title={`Liên hệ lần ${lan}`} >
                       <FormContact
                         onSubmit={onSubmit}
                         lan={lan}

@@ -1,24 +1,316 @@
 import { faClipboardList, faDatabase, faEllipsisVertical, faPencil, faPlus, faSchool, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Chip, Progress, Tooltip, User } from "@nextui-org/react";
-import { Button, Dropdown, message, Popconfirm, Space } from 'antd';
-
+import { Tooltip, Dropdown, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Input, DropdownTrigger, DropdownMenu, Button, DropdownItem, Chip, Autocomplete, AutocompleteItem, DateRangePicker } from "@nextui-org/react";
+import { API_AUTH, API_USER } from "../constants";
+import useSWR from "swr";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import moment from "moment";
+import { SearchIcon } from "../components/icons/SearchIcon";
+import debounce from "lodash.debounce";
+const INITIAL_VISIBLE_COLUMNS = ["id", "hoten", "sdt", "role", "dangnhap", "dangxuat", "tongthoigian"];
 function TimeLogin() {
+    const [infoUser, setInfoUser] = useState();
+    const [dateSelected, setDateSelected] = useState();
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
 
-    const confirm = (e) => {
-        console.log(e);
-        message.success('Click on Yes');
-    };
-    const cancel = (e) => {
-        console.log(e);
-        message.error('Click on No');
-    };
-    const items = [
-        {
-            label: <p className="font-medium text-red-500">Xóa</p>,
-            key: '0',
-        },
+    const hanldeSetInfor = (value) => {
+        let formatInfor = "";
+        if (value && value.startsWith("AD")) {
+            formatInfor = `maadmin=${value}`;
+        } else if (value) {
+            formatInfor = `sdt=${value}`;
+        }
+        setInfoUser(formatInfor);
+
+    }
+
+    const handleSetDate = (value) => {
+        setStartDate(value.start)
+        setEndDate(value.end)
+    }
+
+    const { data: dataTime, mutate: fetchDataTime } = useSWR(`${API_AUTH}/time-login?${infoUser || ""}&startDate=${startDate || ""}&endDate=${endDate || ""}`);
+    const { data: dataTimeDashBoard, mutate: fetchDataTimeDashBoard } = useSWR(`${API_AUTH}/time-login-dashboard`);
+    const { data: listUser, mutate: fetchUser } = useSWR(`${API_USER}`)
+
+    function convertSecondsToDHMS(seconds) {
+        const duration = moment.duration(seconds, 'seconds');
+        const days = Math.floor(duration.asDays());
+        const hours = duration.hours();
+        const minutes = duration.minutes();
+        const secs = duration.seconds();
+        return `${days} ngày ${hours} giờ ${minutes} phút ${secs} giây`;
+    }
+
+    function convertSecondsToHMS(seconds) {
+        const duration = moment.duration(seconds, 'seconds');
+        const hours = Math.floor(duration.asHours());
+        const minutes = duration.minutes();
+        const secs = duration.seconds();
+        return `${hours} giờ ${minutes} phút ${secs} giây`;
+    }
+
+    const [filterSearchName, setFillterSearchName] = useState("");
+    const data = useMemo(() => {
+        return (
+            dataTime?.result?.map((time, index) => {
+                return {
+                    id: index + 1,
+                    hoten: time?.admin?.HOTEN || time?.usermanager?.HOTEN,
+                    sdt: time?.admin?.SDT || time?.usermanager?.SDT,
+                    role: time?.usermanager ? "usermanager" : time?.admin ? "admin" : "other",
+                    dangnhap: moment(time?.dangnhap, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY"),
+                    dangxuat: moment(time?.dangxuat, "YYYY-MM-DD HH:mm:ss").format("DD-MM-YYYY"),
+                    tongthoigian: convertSecondsToHMS(time?.tongthoigian),
+                };
+            }) || []
+        );
+    }, [dataTime]);
+
+    const columns = [
+        { name: "STT", uid: "id", sortable: true },
+        { name: "Họ và tên", uid: "hoten", sortable: true },
+        { name: "Số điện thoại", uid: "sdt" },
+        { name: "Loại người dùng", uid: "role", sortable: true },
+        { name: "Thời gian đăng nhập", uid: "dangnhap" },
+        { name: "Thời gian đăng xuất", uid: "dangxuat" },
+        { name: "Tổng thời gian", uid: "tongthoigian" },
     ];
+
+    const [visibleColumns, setVisibleColumns] = useState(
+        new Set(INITIAL_VISIBLE_COLUMNS)
+    );
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [total, setTotal] = useState(1);
+    const [sortDescriptor, setSortDescriptor] = useState({
+        column: "age",
+        direction: "ascending",
+    });
+    const [page, setPage] = useState(1);
+
+    const hasSearchFilter = Boolean(filterSearchName);
+
+    const headerColumns = useMemo(() => {
+        if (visibleColumns === "all") return columns;
+
+        return columns.filter((column) =>
+            Array.from(visibleColumns).includes(column.uid)
+        );
+    }, [visibleColumns]);
+
+    const filteredItems = useMemo(() => {
+        let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.hoten.toLowerCase().includes(filterSearchName.toLowerCase())
+            );
+            setRowsPerPage(100);
+        } else {
+            setRowsPerPage(5);
+        }
+        return filteredUsers;
+    }, [data, filterSearchName]);
+
+
+    const items = useMemo(() => {
+        return filteredItems;
+    }, [page, filteredItems, rowsPerPage]);
+
+    const sortedItems = useMemo(() => {
+        return [...items].sort((a, b) => {
+            const first = a[sortDescriptor.column];
+            const second = b[sortDescriptor.column];
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+    }, [sortDescriptor, items]);
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
+    const renderCell = useCallback((time, columnKey) => {
+        const cellValue = time[columnKey];
+        switch (columnKey) {
+            case "hoten":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "sdt":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "role":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">
+                            {cellValue === "admin" ? (
+                                <Chip color="primary" variant="flat">
+                                    Admin
+                                </Chip>
+                            ) : cellValue === "usermanager" ? (
+                                <Chip color="success" variant="flat">
+                                    Usermanager
+                                </Chip>
+                            ) : (
+                                <Chip color="danger" variant="flat">
+                                    Khác
+                                </Chip>
+                            )}
+                        </span>
+                    </div>
+                );
+            case "dangnhap":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "dangxuat":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            case "tongthoigian":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                    </div>
+                );
+            default:
+                return cellValue;
+        }
+    }, []);
+
+    const onRowsPerPageChange = useCallback((e) => {
+        setRowsPerPage(Number(e.target.value));
+        setPage(1);
+    }, []);
+
+    const onSearchChange = useCallback((value) => {
+        if (value) {
+            setFillterSearchName(value);
+            setPage(1);
+        } else {
+            setFillterSearchName("");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (dataTime) {
+            const totalPages = Math.ceil(dataTime.totalRows / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataTime, rowsPerPage]);
+
+    const topContent = useMemo(() => {
+        return (
+            <div className="flex flex-col gap-4">
+                <div className="flex justify-between gap-3 items-end">
+                    <Input
+                        isClearable
+                        classNames={{
+                            base: "w-full sm:max-w-[30%]",
+                            inputWrapper: "border-1",
+                        }}
+                        placeholder="Tìm kiếm bằng tên"
+                        size="sm"
+                        startContent={<SearchIcon className="text-default-300" />}
+                        // value={filterSearchName}
+                        variant="bordered"
+                        onClear={() => setFillterSearchName("")}
+                        onValueChange={debounce(onSearchChange, 300)}
+                    />
+                    <div className="flex gap-3">
+                        <Autocomplete
+                            aria-labelledby="user-label"
+                            placeholder="Chọn người dùng"
+                            className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                            variant="bordered"
+                            size="sm"
+                            value={infoUser}
+                            onSelectionChange={(value) => hanldeSetInfor(value)}
+                        >
+                            {listUser?.data?.map((user) => (
+                                <AutocompleteItem
+                                    key={user?.admin?.MAADMIN || user?.usermanager?.SDT}
+                                    value={user?.TENDANGNHAP}
+                                >
+                                    {user?.admin?.HOTEN || user?.usermanager?.HOTEN}
+                                </AutocompleteItem>
+                            ))}
+                        </Autocomplete>
+
+                        <DateRangePicker
+                            aria-labelledby="date-label"
+                            variant="bordered"
+                            size="sm"
+                            value={dateSelected}
+                            onChange={(value) => handleSetDate(value)}
+                        />
+
+                    </div>
+                </div>
+            </div>
+        );
+    }, [
+        filterSearchName,
+        visibleColumns,
+        onSearchChange,
+        onRowsPerPageChange,
+        data.length,
+        hasSearchFilter,
+    ]);
+
+
+    const bottomContent = useMemo(() => {
+        return (
+            <div className="py-2 px-2 flex justify-between items-center">
+                <Pagination
+                    showControls
+                    classNames={{
+                        cursor: "bg-foreground text-background",
+                    }}
+                    color="default"
+                    isDisabled={hasSearchFilter}
+                    page={page}
+                    total={total}
+                    variant="light"
+                    onChange={(e) => {
+                        setPage(e);
+                    }}
+                />
+                <div className="flex justify-between items-center gap-5">
+                    <span className="text-default-400 text-small">
+                        Total {data.length} data
+                    </span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        );
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
+
     return (
         <>
             <div>
@@ -31,11 +323,11 @@ function TimeLogin() {
                                 </div>
                                 <div className="text-3xl dark:text-gray-100 flex">
                                     <Tooltip showArrow={true} className="capitalize" color="foreground" placement="right" content="Lượt truy cập" closeDelay={100}>
-                                        1340
+                                        {dataTimeDashBoard?.totalAccess}
                                     </Tooltip>
                                 </div>
                                 <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-green-600">
-                                    <span> 837 ngày 7 giờ 3 phút 7 giây</span>
+                                    <span>{convertSecondsToDHMS(dataTimeDashBoard?.totalTime)}</span>
 
                                 </div>
                             </div>
@@ -47,11 +339,11 @@ function TimeLogin() {
                                 </div>
                                 <div className="text-3xl dark:text-gray-100 flex">
                                     <Tooltip showArrow={true} className="capitalize" color="foreground" placement="right" content="Lượt truy cập" closeDelay={100}>
-                                        1340
+                                        {dataTimeDashBoard?.totalTimeAllADMIN_Access}
                                     </Tooltip>
                                 </div>
                                 <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-green-600">
-                                    <span>346 ngày 17 giờ 30 phút 42 giây</span>
+                                    <span>{convertSecondsToDHMS(dataTimeDashBoard?.totalTimeAllADMIN)}</span>
 
                                 </div>
                             </div>
@@ -63,11 +355,11 @@ function TimeLogin() {
                                 </div>
                                 <div className="text-3xl dark:text-gray-100 flex">
                                     <Tooltip showArrow={true} className="capitalize" color="foreground" placement="right" content="Lượt truy cập" closeDelay={100}>
-                                        1340
+                                        {dataTimeDashBoard?.totalTimeAllUM_Access}
                                     </Tooltip>
                                 </div>
                                 <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm font-medium text-green-600">
-                                    <span>490 ngày 13 giờ 32 phút 25 giây</span>
+                                    <span>{convertSecondsToDHMS(dataTimeDashBoard?.totalTimeAllUM)}</span>
                                 </div>
                             </div>
                         </div>
@@ -81,206 +373,36 @@ function TimeLogin() {
                     background: "#fff",
                     borderRadius: "10px"
                 }}  >
-                    <h1 className="mb-2 text-lg font-medium">Ghi chú</h1>
-                    <div className="grid grid-cols-3">
-                        <div className="col-span-3 md:col-span-1 px-0 md:px-5">
-                            <h2 className="mb-2 text-medium font-medium text-center">Số phiếu</h2>
-                            <div className="content">
-                                <Progress
-                                    label="Hẹn nộp phiếu ĐKXT"
-                                    value={7}
-                                    maxValue={10}
-                                    color="primary"
-                                    showValueLabel={true}
-                                    className="max-w-md"
-                                />
-                                <Progress
-                                    label="Quan tâm"
-                                    value={2}
-                                    maxValue={10}
-                                    color="success"
-                                    showValueLabel={true}
-                                    className="max-w-md"
-                                />
-                                <Progress
-                                    label="Theo dõi"
-                                    value={4}
-                                    maxValue={10}
-                                    color="secondary"
-                                    showValueLabel={true}
-                                    className="max-w-md"
-                                />
-                                <Progress
-                                    label="Chưa gặp"
-                                    value={8}
-                                    maxValue={10}
-                                    color="warning"
-                                    showValueLabel={true}
-                                    className="max-w-md"
-                                />
-                                <Progress
-                                    label="Đóng"
-                                    value={3}
-                                    maxValue={10}
-                                    color="danger"
-                                    showValueLabel={true}
-                                    className="max-w-md"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-                            <div className="border-double border-5 border-gray-100 rounded-xl">
-                                <div className="title w-full bg-green-400 rounded-t-lg text-white">
-                                    <h2 className="mb-2 text-medium font-medium text-center py-2">Gọi điện</h2>
-                                </div>
-                                <div className="content min-h-64">
-
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>0971144587 (Nguyễn Minh Tùng)</p>
-
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items,
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>0971144587 (Nguyễn Minh Tùng)</p>
-
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items,
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="createNote">
-                                    <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
-                                        <input type="text" className="outline-none h-10" placeholder="Nhập số điện thoại" />
-                                        <input type="date" className="outline-none h-10" />
-                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-green-400 m-auto p-2 rounded-full text-white ms-2 w-4" icon={faPlus} /></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-                            <div className="border-double border-5 border-gray-100 rounded-xl ">
-                                <div className="title w-full bg-yellow-400 rounded-t-lg text-white">
-                                    <h2 className="mb-2 text-medium font-medium text-center py-2">Ghi chú</h2>
-                                </div>
-                                <div className="content min-h-64">
-
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
-
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items,
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                    <div className="note my-2">
-                                        <div className="grid grid-cols-12">
-                                            <User className="col-span-2"
-                                                avatarProps={{
-                                                    src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                                                }}
-                                            />
-                                            <div className="bg-gray-100 col-span-9 h-10 rounded-t-xl rounded-ee-xl px-2">
-                                                <p className="font-medium">Nguyễn Thị Lan</p>
-                                                <p>Lorem ipsum dolor sit amet.</p>
-
-                                            </div>
-                                            <Dropdown className="col-span-1 m-auto"
-                                                menu={{
-                                                    items,
-                                                }}
-                                                trigger={['click']}
-                                            >
-                                                <a onClick={(e) => e.preventDefault()}>
-                                                    <Space>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} />
-                                                    </Space>
-                                                </a>
-                                            </Dropdown>
-                                        </div>
-                                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                                            15-02-2023 7:59
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="createNote">
-                                    <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
-                                        <input type="text" className="outline-none  h-10 px-2" placeholder="Viết ghi chú" />
-                                        <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-yellow-400 m-auto p-2 rounded-full text-white" icon={faPencil} /></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <h1 className="mb-2 text-lg font-medium">Danh sách đăng nhập</h1>
+                    <Table
+                        removeWrapper
+                        aria-label="Example table with custom cells, pagination and sorting"
+                        bottomContent={bottomContent}
+                        bottomContentPlacement="outside"
+                        sortDescriptor={sortDescriptor}
+                        topContent={topContent}
+                        topContentPlacement="outside"
+                        onSortChange={setSortDescriptor}
+                    >
+                        <TableHeader columns={headerColumns}>
+                            {(column) => (
+                                <TableColumn
+                                    key={column.uid}
+                                    align={column.uid === "actions" ? "center" : "start"}
+                                    allowsSorting={column.sortable}
+                                >
+                                    {column.name}
+                                </TableColumn>
+                            )}
+                        </TableHeader>
+                        <TableBody emptyContent={"Không tìm thấy dữ liệu"} items={paginatedItems}>
+                            {(item) => (
+                                <TableRow key={item.id}>
+                                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
                 <div style={{
                     padding: 24,
