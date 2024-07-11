@@ -290,7 +290,7 @@ function UM_ManagerThematic() {
         />
 
         <Drawer
-          title="Basic Drawer"
+          title="Chi tiết chuyên đề"
           onClose={() => setIsShowDrawer(false)}
           open={isshowDrawer}
           width={600}

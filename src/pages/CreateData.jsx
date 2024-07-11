@@ -176,16 +176,18 @@ function CreateData() {
         formData,
         config
       );
+
+      console.log(res);
       const tableOld = res?.data?.tableCusOld?.info;
       const excel = res?.data?.excel;
-      const numbersKH = tableOld.match(/\d+/g).map(Number);
+      const numbersKH = tableOld?.match(/\d+/g)?.map(Number);
 
       const newCustomers = numbersKH[0] - numbersKH[1];
       const duplicateCustomers = numbersKH[1];
 
       const numberDeleteTableCusNew = res?.data?.numberDeleteTableCusNew;
 
-      if (res && res.statusCode === 200) {
+      if (res && res.statusCode == 200) {
         toast.success(
           <>
             Đã xóa {numberDeleteTableCusNew} khách hàng.
