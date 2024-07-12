@@ -4,7 +4,7 @@ import {
   faClipboard,
   faUser,
   faPenToSquare,
-  faFloppyDisk
+  faFloppyDisk,
 } from "@fortawesome/free-regular-svg-icons";
 import { faBullseye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,6 +35,7 @@ import { useAuth } from "../hooks";
 
 import SegmentService from "../service/SegmentService";
 import CustomerService from "../service/CustomerService";
+import { IconFile } from "@tabler/icons-react";
 
 function DetailCustomer() {
   const navigate = useNavigate();
@@ -117,16 +118,16 @@ function DetailCustomer() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    setFullName(data?.HOTEN)
-    setProvince(data?.tinh.TENTINH)
-    setSchool(data?.truong.TENTRUONG)
-    setPhone(data?.SDT)
-    setPhoneFather(data?.dulieukhachhang.SDTBA || "")
-    setPhoneMother(data?.dulieukhachhang.SDTME || "")
-    setZalo(data?.dulieukhachhang.SDTZALO || "")
-    setFaceBook(data?.dulieukhachhang.FACEBOOK || "")
-    setEmail(data?.EMAIL || "")
-  }, [data])
+    setFullName(data?.HOTEN);
+    setProvince(data?.tinh.TENTINH);
+    setSchool(data?.truong.TENTRUONG);
+    setPhone(data?.SDT);
+    setPhoneFather(data?.dulieukhachhang.SDTBA || "");
+    setPhoneMother(data?.dulieukhachhang.SDTME || "");
+    setZalo(data?.dulieukhachhang.SDTZALO || "");
+    setFaceBook(data?.dulieukhachhang.FACEBOOK || "");
+    setEmail(data?.EMAIL || "");
+  }, [data]);
 
   const handleEditToggle = () => {
     setIsEdit(!isEdit);
@@ -138,64 +139,20 @@ function DetailCustomer() {
         customer: {
           SDT: phone,
           HOTEN: fullName,
-          EMAIL: email
+          EMAIL: email,
         },
         data: {
           SDTBA: phoneFather,
           SDTME: phoneMother,
           SDTZALO: zalo,
-          FACEBOOK: faceBook
-        }
-      }
+          FACEBOOK: faceBook,
+        },
+      };
       const res = await CustomerService.updateCustomer(dataInfo);
       mutate();
-      toast.success(res.message)
+      toast.success(res.message);
     } catch (e) {
-      toast.error(e.message)
-    }
-  }
-
-  const handleDownloadFile = async (data) => {
-    const MAHOSO = data?.MAHOSO;
-    if (!MAHOSO) {
-      return toast.warning("MAHOSO chưa có nhé");
-    }
-    try {
-      const response = await SegmentService.downLoadFile({
-        MAHOSO: MAHOSO,
-      });
-
-      console.log("response", response);
-
-      // Kiểm tra xem response có dữ liệu file không
-      if (!response || !response.data) {
-        return toast.error("Không có dữ liệu tệp để tải xuống.");
-      }
-
-      // Chuyển đổi dữ liệu nhận được thành một đối tượng Blob
-      const blob = new Blob([response.data]);
-
-      // Tạo URL để hiển thị hoặc tải xuống file
-      const url = window.URL.createObjectURL(blob);
-
-      // Tạo một phần tử <a> ẩn để khởi tạo việc tải xuống file
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = response.filename || "downloaded_file"; // Tên file để tải về
-
-      // Thêm phần tử <a> vào DOM và kích hoạt sự kiện click để tải xuống file
-      document.body.appendChild(a);
-      a.click();
-
-      // Sau khi hoàn tất, loại bỏ phần tử <a> đã tạo
-      document.body.removeChild(a);
-
-      // Giải phóng URL đã tạo
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading file:", { error: error?.message });
-      toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
+      toast.error(e.message);
     }
   };
 
@@ -239,13 +196,26 @@ function DetailCustomer() {
                       <FontAwesomeIcon icon={faUser} />
                       <div className="flex">
                         <h1 className="font-bold">Thông tin cá nhân</h1>
-                        <div onClick={handleEditToggle} className="absolute right-5 cursor-pointer">
+                        <div
+                          onClick={handleEditToggle}
+                          className="absolute right-5 cursor-pointer"
+                        >
                           {isEdit ? (
                             <Tooltip content="Lưu" color="primary">
-                              <FontAwesomeIcon onClick={handleUpdateInfo} className="text-blue-600" size="lg" icon={faFloppyDisk} />
-                            </Tooltip>) : (
+                              <FontAwesomeIcon
+                                onClick={handleUpdateInfo}
+                                className="text-blue-600"
+                                size="lg"
+                                icon={faFloppyDisk}
+                              />
+                            </Tooltip>
+                          ) : (
                             <Tooltip content="Chỉnh sửa" color="primary">
-                              <FontAwesomeIcon size="lg" className="text-blue-600" icon={faPenToSquare} />
+                              <FontAwesomeIcon
+                                size="lg"
+                                className="text-blue-600"
+                                icon={faPenToSquare}
+                              />
                             </Tooltip>
                           )}
                         </div>
@@ -280,17 +250,38 @@ function DetailCustomer() {
                         <p>{data?.dulieukhachhang?.SDT}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold flex items-center">Điện thoại ba</p>
+                        <p className="font-bold flex items-center">
+                          Điện thoại ba
+                        </p>
                         {isEdit ? (
-                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" size="sm" className="w-32" variant="underlined" value={phoneFather} onValueChange={setPhoneFather} />
+                          <Input
+                            type="text"
+                            style={{ textAlign: "right", fontSize: "16px" }}
+                            aria-placeholder="fullName"
+                            size="sm"
+                            className="w-32"
+                            variant="underlined"
+                            value={phoneFather}
+                            onValueChange={setPhoneFather}
+                          />
                         ) : (
                           <p>{data?.dulieukhachhang?.SDTBA || ""}</p>
                         )}
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold flex items-center">Điện thoại mẹ</p>
+                        <p className="font-bold flex items-center">
+                          Điện thoại mẹ
+                        </p>
                         {isEdit ? (
-                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={phoneMother} onValueChange={setPhoneMother} />
+                          <Input
+                            type="text"
+                            style={{ textAlign: "right", fontSize: "16px" }}
+                            aria-placeholder="fullName"
+                            className="w-32"
+                            variant="underlined"
+                            value={phoneMother}
+                            onValueChange={setPhoneMother}
+                          />
                         ) : (
                           <p>{data?.dulieukhachhang?.SDTME || ""}</p>
                         )}
@@ -298,7 +289,15 @@ function DetailCustomer() {
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold flex items-center">Zalo</p>
                         {isEdit ? (
-                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={zalo} onValueChange={setZalo} />
+                          <Input
+                            type="text"
+                            style={{ textAlign: "right", fontSize: "16px" }}
+                            aria-placeholder="fullName"
+                            className="w-32"
+                            variant="underlined"
+                            value={zalo}
+                            onValueChange={setZalo}
+                          />
                         ) : (
                           <p>{data?.dulieukhachhang?.SDTZALO || ""}</p>
                         )}
@@ -306,7 +305,15 @@ function DetailCustomer() {
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold flex items-center">FaceBook</p>
                         {isEdit ? (
-                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-32" variant="underlined" value={faceBook} onValueChange={setFaceBook} />
+                          <Input
+                            type="text"
+                            style={{ textAlign: "right", fontSize: "16px" }}
+                            aria-placeholder="fullName"
+                            className="w-32"
+                            variant="underlined"
+                            value={faceBook}
+                            onValueChange={setFaceBook}
+                          />
                         ) : (
                           <p>{data?.dulieukhachhang?.FACEBOOK || ""}</p>
                         )}
@@ -314,7 +321,15 @@ function DetailCustomer() {
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold flex items-center">Email</p>
                         {isEdit ? (
-                          <Input type="text" style={{ textAlign: "right", fontSize: "16px" }} aria-placeholder="fullName" className="w-40" variant="underlined" value={email} onValueChange={setEmail} />
+                          <Input
+                            type="text"
+                            style={{ textAlign: "right", fontSize: "16px" }}
+                            aria-placeholder="fullName"
+                            className="w-40"
+                            variant="underlined"
+                            value={email}
+                            onValueChange={setEmail}
+                          />
                         ) : (
                           <p>{data?.EMAIL || ""}</p>
                         )}
@@ -341,26 +356,26 @@ function DetailCustomer() {
                         <p>{data?.hinhthucthuthap?.TENHINHTHUC || ""}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
-                        <p className="font-bold flex items-center">Ngành yêu thích</p>
+                        <p className="font-bold flex items-center">
+                          Ngành yêu thích
+                        </p>
                         <div className="text-right w-72">
                           {data?.nganhyeuthich.length != 0
                             ? data?.nganhyeuthich.map((job, index) => (
-                              <Tag
-                                key={index}
-                                bordered={false}
-                                color="processing"
-                              >
-                                {job?.nganh?.TENNGANH}
-                              </Tag>
-                            ))
+                                <Tag
+                                  key={index}
+                                  bordered={false}
+                                  color="processing"
+                                >
+                                  {job?.nganh?.TENNGANH}
+                                </Tag>
+                              ))
                             : ""}
                         </div>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Ngành đăng ký</p>
-                        <p>
-                          {data?.phieudkxettuyen?.nganh?.TENNGANH || ""}
-                        </p>
+                        <p>{data?.phieudkxettuyen?.nganh?.TENNGANH || ""}</p>
                       </div>
                     </CardBody>
                     <Divider />
@@ -388,47 +403,38 @@ function DetailCustomer() {
                             const parts = fullPath.split("\\");
                             const fileName = parts[parts.length - 1];
                             return (
-                              <div className="flex" key={index}>
-                                <FontAwesomeIcon icon={faTrash} style={{ color: "#d60000", }} className="mt-1 me-2 cursor-pointer" />
-                                <p
-                                  onClick={() => handleDownloadFile(item)}
-                                  className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
-                                >
-                                  {fileName}
-                                </p>
-                              </div>
-
+                              <a
+                                key={item?.MAHOSO}
+                                href={`/api/v1/file/downLoadFile?MAHOSO=${item?.MAHOSO}`}
+                                className="flex items-center my-2 cursor-pointer text-blue-600"
+                              >
+                                <div>
+                                  <IconFile size={17} />
+                                </div>
+                                <div className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap">
+                                  {item?.HOSO}
+                                </div>
+                              </a>
                             );
                           })}
                         </div>
-
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Kết quả Cao đẳng/Đại học</p>
-                        {data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 1 ? (
-                          <Chip
-                            variant="flat"
-                            color="success"
-                          >
+                        {data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA ==
+                        1 ? (
+                          <Chip variant="flat" color="success">
+                            {data?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
+                          </Chip>
+                        ) : data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA ==
+                          3 ? (
+                          <Chip variant="flat" color="warning">
                             {data?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
                           </Chip>
                         ) : (
-                          data?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA == 3 ? (
-                            <Chip
-                              variant="flat"
-                              color="warning"
-                            >
-                              {data?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
-                            </Chip>
-                          ) : (
-                            <Chip
-                              variant="flat"
-                              color="default"
-                            >
-                              Chưa có thông tin
-                            </Chip>
-                          )
-
+                          <Chip variant="flat" color="default">
+                            Chưa có thông tin
+                          </Chip>
                         )}
                       </div>
                     </CardBody>
