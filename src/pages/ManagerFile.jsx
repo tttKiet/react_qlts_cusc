@@ -19,6 +19,7 @@ function UM_ManagerFile() {
   const [pageSize, setPageSize] = useState(5);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(20);
+  const [totalFile, setTotalFile] = useState(0);
   const [dataFile, setDataFile] = useState([]);
   const [showFile, setShowFile] = useState(null);
 
@@ -42,6 +43,7 @@ function UM_ManagerFile() {
 
       setDataFile(cus);
       setTotal(res?.data?.totalRows);
+      setTotalFile(res?.data?.totalRows);
     }
   };
 
@@ -233,6 +235,18 @@ function UM_ManagerFile() {
       width: 700,
     },
     {
+      title: "Năm",
+      dataIndex: "",
+      key: "nam",
+      render: (data) => (
+        <div>
+          {data?.phieudkxettuyen?.dottuyendung?.map((n) => {
+            return n?.NAM;
+          })}
+        </div>
+      ),
+    },
+    {
       title: "Hành động",
       //   dataIndex: "",
       key: "action",
@@ -266,7 +280,7 @@ function UM_ManagerFile() {
       }}
     >
       <div className="flex justify-between">
-        <h1 className="font-bold text-lg">Danh sách hồ sơ</h1>
+        <h1 className="font-bold text-lg">Danh sách hồ sơ : {totalFile}</h1>
         <div>
           <IconRefresh
             className="cursor-pointer text-blue-900"
