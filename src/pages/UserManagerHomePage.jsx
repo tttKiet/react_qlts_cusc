@@ -630,6 +630,8 @@ function UserManagerHomePage() {
       const res = await MisscallService.update({
         MAMISSCALL: dataModalEditMisscall?.misscall?.MAMISSCALL,
         TRANGTHAI: 1,
+        UPDATECONTACT: 1,
+        MALIENHE: dataModalEditMisscall?.misscall?.MALIENHE,
       });
 
       if (res && res.statusCode == 200) {
