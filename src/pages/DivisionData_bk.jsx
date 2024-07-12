@@ -477,7 +477,7 @@ function DivisionData() {
                       key={school.MATRUONG}
                       value={school.MATRUONG}
                     >
-                      {school.TENTRUONG || "Trống"}
+                      {school.TENTRUONG || ""}
                     </AutocompleteItem>
                   ))}
                 </Autocomplete>

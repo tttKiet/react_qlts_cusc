@@ -19,23 +19,33 @@ import {
   Chip,
 } from "@nextui-org/react";
 import { Tag } from "antd";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { API_CUSTOMER } from "../constants";
+import { useEffect } from "react";
 
 function DetailDataUsermanager() {
+  const navigate = useNavigate();
   const { id } = useParams();
 
+  useEffect(() => {
+    if (id === undefined || id === "edit") {
+      navigate("/usermanager/data");
+    }
+  }, [id, navigate]);
+
   const { data: detailData, mutate } = useSWR(`${API_CUSTOMER}/${id}`);
+
+  console.log("detailData", detailData)
 
   const contactDetails = [1, 2, 3, 4, 5, 6, 7].map((lan) => {
     const contact = detailData?.lienhe.find((c) => c.LAN == lan);
     return {
       LAN: lan,
-      THOIGIAN: contact ? contact.THOIGIAN : "Trống",
-      TRANGTHAI: contact ? contact.trangthai.TENTRANGTHAI : "Trống",
-      CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : "Trống",
-      KETQUA: contact ? contact.KETQUA : "Trống",
+      THOIGIAN: contact ? contact.THOIGIAN : "",
+      TRANGTHAI: contact ? contact.trangthai.TENTRANGTHAI : "",
+      CHITIETTRANGTHAI: contact ? contact.CHITIETTRANGTHAI : "",
+      KETQUA: contact ? contact.KETQUA : "",
     };
   });
 
@@ -81,23 +91,23 @@ function DetailDataUsermanager() {
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Điện thoại ba</p>
-                  <p>{detailData?.dulieukhachhang?.SDTBA || "Trống"}</p>
+                  <p>{detailData?.dulieukhachhang?.SDTBA || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Điện thoại mẹ</p>
-                  <p>{detailData?.dulieukhachhang?.SDTME || "Trống"}</p>
+                  <p>{detailData?.dulieukhachhang?.SDTME || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Zalo</p>
-                  <p>{detailData?.dulieukhachhang?.SDTZALO || "Trống"}</p>
+                  <p>{detailData?.dulieukhachhang?.SDTZALO || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">FaceBook</p>
-                  <p>{detailData?.dulieukhachhang?.FACEBOOK || "Trống"}</p>
+                  <p>{detailData?.dulieukhachhang?.FACEBOOK || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Email</p>
-                  <p>{detailData?.EMAIL || "Trống"}</p>
+                  <p>{detailData?.EMAIL || ""}</p>
                 </div>
               </CardBody>
             </Card>
@@ -114,28 +124,28 @@ function DetailDataUsermanager() {
               <CardBody className="px-6 gap-4">
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Nghề nghiệp</p>
-                  <p>{detailData?.nghenghiep?.TENNGHENGHIEP || "Trống"}</p>
+                  <p>{detailData?.nghenghiep?.TENNGHENGHIEP || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Hình thức thu thập</p>
-                  <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || "Trống"}</p>
+                  <p>{detailData?.hinhthucthuthap?.TENHINHTHUC || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
                   <p className="font-bold">Ngành yêu thích</p>
                   <div className="text-right">
                     {detailData?.nganhyeuthich.length != 0
                       ? detailData?.nganhyeuthich.map((job, index) => (
-                          <Tag key={index} bordered={false} color="processing">
-                            {job?.nganh?.TENNGANH}
-                          </Tag>
-                        ))
-                      : "Trống"}
+                        <Tag key={index} bordered={false} color="processing">
+                          {job?.nganh?.TENNGANH}
+                        </Tag>
+                      ))
+                      : ""}
                   </div>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Ngành đăng ký</p>
                   <p>
-                    {detailData?.phieudkxettuyen?.nganh?.TENNGANH || "Trống"}
+                    {detailData?.phieudkxettuyen?.nganh?.TENNGANH || ""}
                   </p>
                 </div>
               </CardBody>
@@ -150,11 +160,11 @@ function DetailDataUsermanager() {
               <CardBody className="px-6 gap-4">
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Kênh nhận thông báo</p>
-                  <p>Email</p>
+                  <p>{detailData?.phieudkxettuyen?.kenhnhanthongbao?.TENKENH || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold">Khóa học quan tâm</p>
-                  <p>Dài hạn</p>
+                  <p>{detailData?.phieudkxettuyen?.khoahocquantam?.TENLOAIKHOAHOC || ""}</p>
                 </div>
                 <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                   <p className="font-bold flex items-center">Hồ sơ</p>
@@ -186,7 +196,7 @@ function DetailDataUsermanager() {
                   <p className="font-bold">Kết quả Cao đẳng/Đại học</p>
 
                   {detailData?.phieudkxettuyen?.ketquatotnghiep?.MAKETQUA ==
-                  1 ? (
+                    1 ? (
                     <Chip variant="flat" color="success">
                       {detailData?.phieudkxettuyen?.ketquatotnghiep?.KETQUA}
                     </Chip>

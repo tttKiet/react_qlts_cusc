@@ -374,11 +374,11 @@ function DetailCustomer() {
                     <CardBody className="px-6 gap-4">
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Kênh nhận thông báo</p>
-                        <p>Email</p>
+                        <p>{data?.phieudkxettuyen?.khoahocquantam?.TENLOAIKHOAHOC || ""}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_auto] gap-0">
                         <p className="font-bold">Khóa học quan tâm</p>
-                        <p>Dài hạn</p>
+                        <p>{data?.phieudkxettuyen?.khoahocquantam?.TENLOAIKHOAHOC || ""}</p>
                       </div>
                       <div className="groupInput grid grid-cols-[1fr_1fr] gap-0">
                         <p className="font-bold flex items-center">Hồ sơ</p>
