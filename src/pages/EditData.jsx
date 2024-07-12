@@ -165,11 +165,13 @@ function EditData() {
 
     const handleUpdateObject = async () => {
         try {
+            const SDTUM = dataThematic?.find((item) => item.MACHUYENDE == thematic).SDT;
             const data = {
                 chuyendethamgia: {
                     SDT: phone,
                     TRANGTHAI: option,
-                    MACHUYENDE: thematic
+                    MACHUYENDE: thematic,
+                    SDT_UM: SDTUM
                 },
                 nganhyeuthich: {
 

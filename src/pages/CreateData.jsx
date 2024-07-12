@@ -273,7 +273,7 @@ function CreateData() {
                     ))
                   ) : (
                     <div>
-                      <p className="text-center font-medium">Trống</p>
+                      <p className="text-center font-medium"></p>
                     </div>
                   )}
                 </ul>
@@ -342,7 +342,7 @@ function CreateData() {
                     ))
                   ) : (
                     <div>
-                      <p className="text-center font-medium">Trống</p>
+                      <p className="text-center font-medium"></p>
                     </div>
                   )}
                 </ul>

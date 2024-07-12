@@ -65,7 +65,7 @@ function ManagerThematic() {
           machuyende: thematic?.MACHUYENDE,
           tenchuyende: thematic?.TENCHUYENDE,
           tentruong: thematic?.MATRUONG,
-          usermanager: thematic?.usermanager?.HOTEN || "Trống",
+          usermanager: thematic?.usermanager?.HOTEN || "",
           ngaythongbao: thematic?.THOIGIANTHONGBAO,
           ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
           noidung: thematic?.NOIDUNG,

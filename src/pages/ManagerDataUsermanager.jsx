@@ -192,7 +192,7 @@ function ManagerDataUsermanager() {
                                 {cellValue.length > 2 && <span>...</span>}
                             </>
                         ) : (
-                            'Trống'
+                            ''
                         )} */}
                     </div>
                 );
