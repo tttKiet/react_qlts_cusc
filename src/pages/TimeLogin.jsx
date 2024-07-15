@@ -267,7 +267,7 @@ function TimeLogin() {
       };
     });
 
-    // excel.EX_Excel({ header, data, nameFile: nameExcel });
+    excel.EX_Excel({ header, data, nameFile: nameExcel });
   };
   return (
     <div>
