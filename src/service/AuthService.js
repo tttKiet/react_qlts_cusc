@@ -9,7 +9,12 @@ const logout = async () => {
   return await axios.get(`${API_AUTH}/logout`);
 };
 
+const timeLogin = async (data) => {
+  return await axios.get(`${API_AUTH}/time-login?${data}`);
+};
+
 export default {
   login,
   logout,
+  timeLogin,
 };

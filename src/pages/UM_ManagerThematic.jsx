@@ -272,7 +272,7 @@ function UM_ManagerThematic() {
             className="cursor-pointer text-blue-900"
             onClick={handleF5}
           />
-        </div>
+        </div> 
       </div>
       <div className="p-5">
         <Table
