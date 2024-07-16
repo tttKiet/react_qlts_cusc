@@ -520,11 +520,13 @@ function AdminHomePage() {
                           {moment(call.thoigian).format("DD-MM-YYYY HH:mm")}
                         </div>
                       </div>
-
-                    ))) : <div className="text-center text-gray-500">Không có gọi nhỡ</div>}
-
-                  </div>
-
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      Không có gọi nhỡ
+                    </div>
+                  )}
+                </div>
 
                   {/* <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
