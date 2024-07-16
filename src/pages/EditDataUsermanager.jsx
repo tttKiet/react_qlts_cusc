@@ -56,6 +56,7 @@ function EditDataUsermanager() {
 
   const detailStatus = [
     { value: "Chưa liên hệ", label: "Chưa liên hệ" },
+    { value: "Đã liên hệ", label: "Đã liên hệ" },
     { value: "Tài chính", label: "Tài chính" },
     { value: "Cá nhân", label: "Cá nhân" },
     { value: "Bằng cấp", label: "Bằng cấp" },
@@ -121,9 +122,9 @@ function EditDataUsermanager() {
   const [faceBook, setFaceBook] = useState("");
   const [zalo, setZalo] = useState("");
   const [email, setEmail] = useState("");
-  const [thematic, setThematic] = useState([]);
+  const [thematic, setThematic] = useState(new Set([]))
   const [job, setJob] = useState("");
-  const [option, setOption] = useState([]);
+  const [option, setOption] = useState(new Set([]))
   const [channel, setChannel] = useState("");
   const [course, setCourse] = useState();
   const [graduation, setGraduation] = useState("");
@@ -132,6 +133,8 @@ function EditDataUsermanager() {
   const [jobInput, setJobInput] = useState("");
 
   const [statusContact, setStatusContact] = useState("");
+
+  console.log("detailData", detailData)
 
   useEffect(() => {
     if (detailData) {
@@ -159,16 +162,6 @@ function EditDataUsermanager() {
       setStatusContact(detailData?.segment.TRANGTHAILIENHE);
     }
   }, [detailData]);
-
-  console.log("statusContact", statusContact);
-
-  const classDisable = "pointer-events-none opacity-50";
-
-  // useEffect(() => {
-  //     console.log("detailData.chitietchuyende[0].MACHUYENDE", detailData.chitietchuyende)
-  // }, [detailData])
-
-  // console.log("contactDetails", contactDetails)
   const itemClasses = {
     base: "py-0 w-full",
     title: "font-normal text-medium",
@@ -204,34 +197,42 @@ function EditDataUsermanager() {
 
   const handleUpdateObject = async () => {
     try {
+      const SDTUM = dataThematic?.find((item) => item.MACHUYENDE == thematic).SDT;
       const data = {
         chuyendethamgia: {
           SDT: phone,
           TRANGTHAI: option,
+          MACHUYENDE: thematic,
+          SDT_UM: SDTUM
         },
-        nganhyeuthich: {},
-      };
+        nganhyeuthich: {
+
+        }
+      }
 
       const dataInfo = {
         customer: {
           SDT: phone,
           MANGHENGHIEP: job,
         },
-        data: {},
-      };
+        data: {
+
+        }
+      }
 
       const res = await CustomerService.updateObject(data);
       const resCustomer = await CustomerService.updateCustomer(dataInfo);
       if (res.statusCode === 200 && resCustomer.statusCode === 200) {
         mutate();
-        toast.success("Cập nhật thông tin thành công");
+        toast.success("Cập nhật thông tin thành công")
       } else {
-        toast.error("Cập nhật thất bại");
+        toast.error("Cập nhật thất bại")
       }
+
     } catch (e) {
-      toast.error(e.message);
+      toast.error(e.message)
     }
-  };
+  }
 
   const handleUpdateRegister = async () => {
     try {
@@ -306,7 +307,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Số điện thoại ba"
-                value={phoneFather || "Trống"}
+                value={phoneFather}
                 variant="bordered"
                 onValueChange={setPhoneFather}
               />
@@ -315,7 +316,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Số điện thoại mẹ"
-                value={phoneMother || "Trống"}
+                value={phoneMother}
                 variant="bordered"
                 onValueChange={setPhoneMother}
               />
@@ -326,7 +327,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Facebook"
-                value={faceBook || "Trống"}
+                value={faceBook}
                 variant="bordered"
                 onValueChange={setFaceBook}
               />
@@ -335,7 +336,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Zalo"
-                value={zalo || "Trống"}
+                value={zalo}
                 variant="bordered"
                 onValueChange={setZalo}
               />
@@ -373,41 +374,27 @@ function EditDataUsermanager() {
                 variant="bordered"
                 labelPlacement="inside"
                 selectedKeys={thematic}
-                onChange={(e) => setThematic([e.target.value])}
+                onChange={(e) => setThematic(e.target.value)}
+                // onSelectionChange={setThematic}
+
                 classNames={{
                   trigger: "h-12",
                 }}
                 renderValue={(items) => {
                   return items.map((item) => (
-                    <div
-                      key={item.data.MACHUYENDE}
-                      className="flex items-center gap-2"
-                    >
+                    <div key={item.data.MACHUYENDE} className="flex items-center gap-2">
                       <div className="flex flex-col">
-                        <span className="text-default-500">
-                          {item.data.TENCHUYENDE} - Được quản lý bởi:{" "}
-                          {item.data.usermanager != null
-                            ? item.data.usermanager.HOTEN
-                            : "Trống"}
-                        </span>
+                        <span className="text-default-500">{item.data.TENCHUYENDE} - Được quản lý bởi: {item.data.usermanager != null ? item.data.usermanager.HOTEN : ''}</span>
                       </div>
                     </div>
                   ));
                 }}
               >
                 {(thematic) => (
-                  <SelectItem
-                    key={thematic.MACHUYENDE}
-                    textValue={thematic.MACHUYENDE}
-                  >
+                  <SelectItem key={thematic.MACHUYENDE} textValue={thematic.MACHUYENDE}>
                     <div className="flex gap-2 items-center">
                       <div className="flex flex-col">
-                        <span className="text-tiny text-default-400">
-                          {thematic.TENCHUYENDE} - Được quản lý bởi:{" "}
-                          {thematic.usermanager != null
-                            ? thematic.usermanager.HOTEN
-                            : "Trống"}
-                        </span>
+                        <span className="text-sm text-default-400">{thematic.TENCHUYENDE} - Được quản lý bởi:  {thematic.usermanager != null ? thematic.usermanager.HOTEN : ''}</span>
                       </div>
                     </div>
                   </SelectItem>
@@ -419,10 +406,13 @@ function EditDataUsermanager() {
                 label="Lựa chọn"
                 variant="bordered"
                 selectedKeys={option}
+
                 onChange={(e) => setOption([e.target.value])}
               >
                 {options.map((option) => (
-                  <SelectItem key={option.value}>{option.label}</SelectItem>
+                  <SelectItem key={option.value}>
+                    {option.label}
+                  </SelectItem>
                 ))}
               </Select>
             </div>
@@ -459,11 +449,11 @@ function EditDataUsermanager() {
             <div className="mt-2">
               {detailData?.nganhyeuthich.length != 0
                 ? detailData?.nganhyeuthich.map((job, index) => (
-                    <Tag key={index} bordered={false} color="processing">
-                      {job?.nganh?.TENNGANH}
-                    </Tag>
-                  ))
-                : "Trống"}
+                  <Tag key={index} bordered={false} color="processing">
+                    {job?.nganh?.TENNGANH}
+                  </Tag>
+                ))
+                : ""}
             </div>
           </div>
           <Button color="primary" onClick={handleUpdateObject}>
@@ -556,7 +546,6 @@ function EditDataUsermanager() {
                           />
                           <p
                             key={index}
-                            onClick={() => handleDownloadFile(item)}
                             className="cursor-pointer text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap"
                           >
                             {fileName}
@@ -638,7 +627,7 @@ function EditDataUsermanager() {
     try {
       const res = await CustomerService.updateContact(data);
 
-      if (res && res?.data?.MATRANGTHAI == "tt6") {
+      if (res && res?.data?.MATRANGTHAI == "tt06") {
         await MisscallService.create({
           SDT: res?.data?.SDT_KH,
           MALIENHE: res?.data?.MALIENHE,
@@ -649,50 +638,6 @@ function EditDataUsermanager() {
     } catch (e) {
       console.log(e);
       toast.error(e.message);
-    }
-  };
-
-  const handleDownloadFile = async (data) => {
-    const MAHOSO = data?.MAHOSO;
-    if (!MAHOSO) {
-      return toast.warning("MAHOSO chưa có nhé");
-    }
-    try {
-      const response = await SegmentService.downLoadFile({
-        MAHOSO: MAHOSO,
-      });
-
-      console.log("response", response);
-
-      // Kiểm tra xem response có dữ liệu file không
-      if (!response || !response.data) {
-        return toast.error("Không có dữ liệu tệp để tải xuống.");
-      }
-
-      // Chuyển đổi dữ liệu nhận được thành một đối tượng Blob
-      const blob = new Blob([response.data]);
-
-      // Tạo URL để hiển thị hoặc tải xuống file
-      const url = window.URL.createObjectURL(blob);
-
-      // Tạo một phần tử <a> ẩn để khởi tạo việc tải xuống file
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = response.filename || "downloaded_file"; // Tên file để tải về
-
-      // Thêm phần tử <a> vào DOM và kích hoạt sự kiện click để tải xuống file
-      document.body.appendChild(a);
-      a.click();
-
-      // Sau khi hoàn tất, loại bỏ phần tử <a> đã tạo
-      document.body.removeChild(a);
-
-      // Giải phóng URL đã tạo
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading file:", { error: error?.message });
-      toast.error("Đã xảy ra lỗi khi tải xuống file.", error);
     }
   };
 
@@ -713,6 +658,7 @@ function EditDataUsermanager() {
               </CardBody>
             </Card>
           </div>
+          
           <div className="col-span-5 md:col-span-2">
             <Card>
               <CardBody>
@@ -723,7 +669,7 @@ function EditDataUsermanager() {
                   onSelectionChange={setSelectedTimes}
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((lan) => (
-                    <Tab key={lan} title={`Liên hệ lần ${lan}`}>
+                    <Tab key={lan} title={`Liên hệ lần ${lan}`} >
                       <FormContact
                         onSubmit={onSubmit}
                         lan={lan}

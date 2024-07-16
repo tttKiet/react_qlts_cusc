@@ -49,7 +49,7 @@ function CreateData() {
 
       worksheet.columns = [
         { header: "SDT bị trùng", key: "SDT", width: 20 },
-        { header: "Số lần trùng", key: "count", width: 10 },
+        { header: "Số lần xuất hiện", key: "count", width: 10 },
       ];
 
       data?.forEach((item) => {
@@ -116,7 +116,10 @@ function CreateData() {
               Số khách hàng bị trùng nhau: {duplicateCustomers}
               <br />
               Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
-            </>
+            </>,
+            {
+              autoClose: 10000,
+            }
           );
         } else {
           toast.success(
@@ -124,7 +127,10 @@ function CreateData() {
               Số khách hàng mới được thêm vào: {newCustomers}
               <br />
               Số khách hàng bị trùng SDT trong file Excel: {kh_Ex?.length}
-            </>
+            </>,
+            {
+              autoClose: 10000,
+            }
           );
         }
 
@@ -170,20 +176,27 @@ function CreateData() {
         formData,
         config
       );
+
+      console.log(res);
       const tableOld = res?.data?.tableCusOld?.info;
       const excel = res?.data?.excel;
-      const numbersKH = tableOld.match(/\d+/g).map(Number);
+      const numbersKH = tableOld?.match(/\d+/g)?.map(Number);
 
       const newCustomers = numbersKH[0] - numbersKH[1];
       const duplicateCustomers = numbersKH[1];
 
-      if (res && res.statusCode === 200) {
+      const numberDeleteTableCusNew = res?.data?.numberDeleteTableCusNew;
+
+      if (res && res.statusCode == 200) {
         toast.success(
           <>
-            Số khách hàng cũ được thêm vào db là : {newCustomers}
+            Đã xóa {numberDeleteTableCusNew} khách hàng.
             <br />
             Số khách hàng bị trùng SDT trong file Excel: {excel?.length}
-          </>
+          </>,
+          {
+            autoClose: 10000,
+          }
         );
 
         if (res?.data?.excel?.length > 0) {
@@ -260,7 +273,7 @@ function CreateData() {
                     ))
                   ) : (
                     <div>
-                      <p className="text-center font-medium">Trống</p>
+                      <p className="text-center font-medium"></p>
                     </div>
                   )}
                 </ul>
@@ -329,7 +342,7 @@ function CreateData() {
                     ))
                   ) : (
                     <div>
-                      <p className="text-center font-medium">Trống</p>
+                      <p className="text-center font-medium"></p>
                     </div>
                   )}
                 </ul>

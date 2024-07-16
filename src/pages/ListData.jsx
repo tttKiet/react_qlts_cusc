@@ -133,17 +133,17 @@ function ListData() {
           sdt: customer?.dulieukhachhang?.SDT || "",
           hoten: customer?.HOTEN || "",
           email:
-            (customer?.EMAIL === "Không có" ? "Trống" : customer?.EMAIL) ||
-            "Trống",
+            (customer?.EMAIL === "Không có" ? "" : customer?.EMAIL) ||
+            "",
           sdtba:
-            (customer?.SDTBA === "Không có" ? "Trống" : customer?.SDTBA) ||
-            "Trống",
+            (customer?.SDTBA === "Không có" ? "" : customer?.SDTBA) ||
+            "",
           sdtme:
-            (customer?.SDTME === "Không có" ? "Trống" : customer?.SDTME) ||
-            "Trống",
+            (customer?.SDTME === "Không có" ? "" : customer?.SDTME) ||
+            "",
           zalo:
-            (customer?.ZALO === "Không có" ? "Trống" : customer?.ZALO) ||
-            "Trống",
+            (customer?.ZALO === "Không có" ? "" : customer?.ZALO) ||
+            "",
           tentruong: customer?.truong?.TENTRUONG || "",
           nganh: customer?.nganhyeuthich,
         };
@@ -260,7 +260,7 @@ function ListData() {
                 {cellValue.length > 2 && <span>...</span>}
               </>
             ) : (
-              "Trống"
+              ""
             )}
           </div>
         );
@@ -504,8 +504,6 @@ function ListData() {
       },
     ];
 
-    console.log("cus", dataCustomer);
-
     const data = dataCustomer?.map((item, index) => {
       return {
         STT: index + 1,
@@ -521,7 +519,7 @@ function ListData() {
       };
     });
 
-    excel.EX_Excel({ header, data });
+    excel.EX_Excel({ header, data, nameFile: "Danh sách khách hàng" });
   };
 
   return (
@@ -566,7 +564,7 @@ function ListData() {
             >
               {dataSchool?.map((school) => (
                 <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                  {school.TENTRUONG || "Trống"}
+                  {school.TENTRUONG || ""}
                 </AutocompleteItem>
               ))}
             </Autocomplete>
@@ -645,7 +643,12 @@ function ListData() {
           <div className="flex items-center my-2">
             <h1 className="mb-2 text-lg font-medium">Danh sách dữ liệu</h1>
             <div className="ms-auto">
-              <Button size="sm" className="p-4" color="primary" onClick={handleEXcel}>
+              <Button
+                size="sm"
+                className="p-4"
+                color="primary"
+                onClick={handleEXcel}
+              >
                 <FontAwesomeIcon icon={faFile} /> Xuất file
               </Button>
             </div>

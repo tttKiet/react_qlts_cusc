@@ -7,7 +7,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { API_USER } from "../constants";
 import { toast } from "react-toastify";
 import UserService from "../service/UserService";
-function ProfileAdmin() {
+function ProfileUserManager() {
     const user = useSelector((state) => state.account.user);
 
     let queryProfile = "";
@@ -28,11 +28,11 @@ function ProfileAdmin() {
     const [password, setPassWord] = useState("")
 
     useEffect(() => {
-        setFullName(dataProfile?.admin?.HOTEN || "")
-        setEmail(dataProfile?.admin?.EMAIL || "")
-        setGender(dataProfile?.admin?.GIOITINH || "")
-        setAddress(dataProfile?.admin?.DIACHI || "")
-        setPhone(dataProfile?.admin?.SDT || "")
+        setFullName(dataProfile?.usermanager?.HOTEN || "")
+        setEmail(dataProfile?.usermanager?.EMAIL || "")
+        setGender(dataProfile?.usermanager?.GIOITINH || "")
+        setAddress(dataProfile?.usermanager?.DIACHI || "")
+        setPhone(dataProfile?.usermanager?.SDT || "")
     }, [dataProfile])
 
 
@@ -67,34 +67,19 @@ function ProfileAdmin() {
 
 
         },
-        // {
-        //     id: '2', label: 'Mật khẩu', content:
-        //         <div className="flex flex-col gap-y-3">
-        //             <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-        //                 <Input type="password" label="Mật khẩu" value={password} onValueChange={setPassWord} />
-        //                 <Input type="email" label="Nhập lại mật khẩu" placeholder="Enter your email" />
-        //             </div>
-        //             <div className="flex justify-end">
-        //                 <Button color="primary" onClick={() => handleUpdatePassword()}>Xác nhận</Button>
-        //             </div>
-
-        //         </div>
-        // },
     ];
 
     const [activeTab, setActiveTab] = useState(tabs[0].id);
 
     const handleUpdateProfile = async () => {
         try {
-            const roleFormat = user?.ROLE.toLowerCase();
-
             const data = {
                 TENDANGNHAP: user?.TENDANGNHAP,
                 HOVATEN: fullName,
                 EMAIL: email,
                 GIOITINH: gender,
                 DIACHI: address,
-                ROLE: roleFormat
+                ROLE: "usermanager"
             }
             const res = await UserService.updateUser(data);
             toast.success(res.message);
@@ -245,4 +230,4 @@ function ProfileAdmin() {
     );
 }
 
-export default ProfileAdmin;
+export default ProfileUserManager;

@@ -19,6 +19,7 @@ function UM_ManagerFile() {
   const [pageSize, setPageSize] = useState(5);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(20);
+  const [totalFile, setTotalFile] = useState(0);
   const [dataFile, setDataFile] = useState([]);
   const [showFile, setShowFile] = useState(null);
 
@@ -42,6 +43,7 @@ function UM_ManagerFile() {
 
       setDataFile(cus);
       setTotal(res?.data?.totalRows);
+      setTotalFile(res?.data?.totalRows);
     }
   };
 
@@ -212,16 +214,16 @@ function UM_ManagerFile() {
             <div>
               {data?.phieudkxettuyen?.hoso.map((item) => {
                 return (
-                  <div
+                  <a
                     key={item?.MAHOSO}
+                    href={`/api/v1/file/downLoadFile?MAHOSO=${item?.MAHOSO}`}
                     className="flex items-center my-2 cursor-pointer text-blue-600"
-                    onClick={() => handleDownloadFile(item)}
                   >
                     <div>
                       <IconFile size={17} />
                     </div>
                     <div> {item?.HOSO}</div>
-                  </div>
+                  </a>
                 );
               })}
             </div>
@@ -231,6 +233,18 @@ function UM_ManagerFile() {
         </div>
       ),
       width: 700,
+    },
+    {
+      title: "Năm",
+      dataIndex: "",
+      key: "nam",
+      render: (data) => (
+        <div>
+          {data?.phieudkxettuyen?.dottuyendung?.map((n) => {
+            return n?.NAM;
+          })}
+        </div>
+      ),
     },
     {
       title: "Hành động",
@@ -256,29 +270,17 @@ function UM_ManagerFile() {
     location.reload();
   };
 
-  const handleDownloadFile = async (data) => {
-    const { MAHOSO } = data;
-    try {
-      const res = await FileService.downloadFile(`MAHOSO=${MAHOSO}`);
-      if (res && res.statusCode == 200) {
-        toast.success("Tải file thành công");
-      } else {
-        toast.error(res.message);
-      }
-    } catch (err) {
-      toast.error(err?.message);
-    }
-  };
-
   return (
-    <div style={{
-      padding: 24,
-      minHeight: 360,
-      background: "#fff",
-      borderRadius: "10px",
-    }}>
+    <div
+      style={{
+        padding: 24,
+        minHeight: 360,
+        background: "#fff",
+        borderRadius: "10px",
+      }}
+    >
       <div className="flex justify-between">
-        <h1 className='font-bold text-lg'>Danh sách hồ sơ</h1>
+        <h1 className="font-bold text-lg">Danh sách hồ sơ : {totalFile}</h1>
         <div>
           <IconRefresh
             className="cursor-pointer text-blue-900"
@@ -332,7 +334,7 @@ function UM_ManagerFile() {
       setIsShowModalDeleteFile(false);
     };
     return (
-      <div >
+      <div>
         <Modal
           title="Xóa hồ sơ"
           open={isShowModalDeleteFile}

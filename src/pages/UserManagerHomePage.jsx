@@ -69,12 +69,12 @@ function UserManagerHomePage() {
   const [filterSearchName, setFillterSearchName] = useState("");
   const data = useMemo(() => {
     return (
-      dataThematic?.map((thematic, index) => {
+      dataThematic?.data?.map((thematic, index) => {
         return {
           id: index + 1,
           tenchuyende: thematic?.TENCHUYENDE,
           tentruong: thematic?.MATRUONG,
-          usermanager: thematic?.usermanager?.HOTEN || "Trống",
+          usermanager: thematic?.usermanager?.HOTEN || "",
           ngaythongbao: thematic?.THOIGIANTHONGBAO,
           ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
           noidung: thematic?.NOIDUNG,
@@ -431,8 +431,6 @@ function UserManagerHomePage() {
               </div>
             </div>
           </div>
-
-
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pb-5">
           <div className="relative p-4 rounded-2xl bg-white shadow dark:bg-gray-800">
@@ -632,6 +630,8 @@ function UserManagerHomePage() {
       const res = await MisscallService.update({
         MAMISSCALL: dataModalEditMisscall?.misscall?.MAMISSCALL,
         TRANGTHAI: 1,
+        UPDATECONTACT: 1,
+        MALIENHE: dataModalEditMisscall?.misscall?.MALIENHE,
       });
 
       if (res && res.statusCode == 200) {

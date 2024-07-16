@@ -1,7 +1,8 @@
 import { Table, Space, Button, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
-import FileService from "../service/FileService";
+import ThematicService from "../service/ThematicService";
 import Highlighter from "react-highlight-words";
+import { useNavigate } from "react-router-dom";
 import {
   IconEdit,
   IconPencilMinus,
@@ -9,40 +10,35 @@ import {
   IconTrash,
   IconRefresh,
   IconFile,
+  IconListDetails,
 } from "@tabler/icons-react";
 import { Select } from "antd";
 import { Input } from "antd";
 import { toast } from "react-toastify";
 import { SearchOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+import moment from "moment";
+import { Drawer } from "antd";
 
-function UM_ManagerFile() {
-  const [pageSize, setPageSize] = useState(5);
+function UM_ManagerThematic() {
+  const navigate = useNavigate();
+  const [pageSize, setPageSize] = useState(50);
   const [current, setCurrent] = useState(1);
-  const [total, setTotal] = useState(20);
-  const [dataFile, setDataFile] = useState([]);
-  const [showFile, setShowFile] = useState(null);
+  const [total, setTotal] = useState(100);
+  const [dataThematic, setDataThematic] = useState([]);
+
   const user = useSelector((state) => state.account.user);
 
-  const [isShowModalDeleteFile, setIsShowModalDeleteFile] = useState(false);
-  const [dataModalDeleteFile, setDataModalDeleteFile] = useState([]);
-
-  const handleModalDeleteFile = (data) => {
-    setIsShowModalDeleteFile(true);
-    setDataModalDeleteFile(data?.phieudkxettuyen?.hoso);
-  };
-
-  const readAllFile = async () => {
-    const res = await FileService.readAll_UM(
+  const readAllThematic = async () => {
+    const res = await ThematicService.readAllThematic(
       `page=${current}&pageSize=${pageSize}&SDT_UM=${user?.SDT}`
     );
     if (res && res.statusCode == 200) {
       let cus = res?.data?.results?.map((item) => ({
         ...item,
-        key: item?.SDT,
+        key: item?.MACHUYENDE,
       }));
-
-      setDataFile(cus);
+      setDataThematic(cus);
       setTotal(res?.data?.totalRows);
     }
   };
@@ -53,16 +49,8 @@ function UM_ManagerFile() {
     setTotal(data.total);
   };
 
-  const handlesShowFile = (data) => {
-    setShowFile(
-      data?.phieudkxettuyen?.MAPHIEUDK === showFile
-        ? null
-        : data?.phieudkxettuyen?.MAPHIEUDK
-    );
-  };
-
   useEffect(() => {
-    readAllFile();
+    readAllThematic();
   }, [pageSize, current]);
 
   // search ant table
@@ -181,77 +169,75 @@ function UM_ManagerFile() {
       ),
   });
 
-  const columnsFile = [
+  const columnsThematic = [
     {
-      title: "SDT",
+      title: "Tên chuyên đề",
+      dataIndex: "TENCHUYENDE",
+      key: "TENCHUYENDE",
+      ...getColumnSearchProps("TENCHUYENDE"),
+    },
+    {
+      title: "Thời gian tổ chức",
+      dataIndex: "THOIGIANTOCHUCCHUYENDE",
+      key: "THOIGIANTOCHUCCHUYENDE",
+      render: (THOIGIANTOCHUCCHUYENDE) => (
+        <div>{moment(THOIGIANTOCHUCCHUYENDE).format("DD-MM-YYYY")}</div>
+      ),
+    },
+
+    {
+      title: "Số khách hàng",
+      dataIndex: "",
+      key: "",
+      render: (data) => <div>{data?.chitietchuyende?.length}</div>,
+    },
+
+    {
+      title: "Chi tiết",
+      key: "action",
+      render: (record) => {
+        return (
+          <div>
+            <IconListDetails
+              onClick={() => {
+                setDataDrawer(record);
+                setIsShowDrawer(true);
+              }}
+              color="orange"
+              width={20}
+              className="cursor-pointer"
+            />
+          </div>
+        );
+      },
+      width: 150,
+    },
+  ];
+
+  const columnsThematicDetail = [
+    {
+      title: "Số điện thoại",
       dataIndex: "SDT",
       key: "SDT",
       ...getColumnSearchProps("SDT"),
     },
     {
-      title: "Họ tên",
-      dataIndex: "HOTEN",
-      key: "Hoten",
-      render: (data) => <div>{HOTEN}</div>,
-      ...getColumnSearchProps("HOTEN"),
+      title: "Trạng thái",
+      dataIndex: "TRANGTHAI",
+      key: "TRANGTHAI",
+      ...getColumnSearchProps("TRANGTHAI"),
     },
     {
-      title: "Hồ sơ",
-      dataIndex: "",
-      key: "file",
-      render: (data) => (
-        <div>
-          <Button
-            onClick={() => handlesShowFile(data)}
-            type="primary"
-            icon={<IconFile />}
-            size="middle"
-            className="flex items-center justify-center transition-colors duration-300 ease-in-out bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-2"
-          >
-            Hồ sơ
-          </Button>
-          {data?.phieudkxettuyen?.MAPHIEUDK == showFile ? (
-            <div>
-              {data?.phieudkxettuyen?.hoso.map((item) => {
-                const fullPath = item?.HOSO;
-                const parts = fullPath.split("\\");
-                const fileName = parts[parts.length - 1];
-
-                console.log("item?.MAHOSO", item?.MAHOSO);
-                return (
-                  <div
-                    key={item?.MAHOSO}
-                    className="flex items-center my-2"
-                    style={{
-                      cursor: "pointer",
-                      color: "blue",
-                    }}
-                  >
-                    <div>
-                      <IconFile size={17} />
-                    </div>
-                    <div> {fileName}</div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div></div>
-          )}
-        </div>
-      ),
-      width: 700,
-    },
-    {
-      title: "Hành động",
-      //   dataIndex: "",
+      title: "Cập nhật",
       key: "action",
       render: (record) => {
         return (
           <div>
-            <IconTrash
-              onClick={() => handleModalDeleteFile(record)}
-              color="red"
+            <IconEdit
+              onClick={() => {
+                navigate(`/usermanager/data/edit/${record?.SDT}`);
+              }}
+              color="orange"
               width={20}
               className="cursor-pointer"
             />
@@ -265,6 +251,10 @@ function UM_ManagerFile() {
   const handleF5 = () => {
     location.reload();
   };
+
+  // Drawer
+  const [isshowDrawer, setIsShowDrawer] = useState(false);
+  const [dataDrawer, setDataDrawer] = useState([]);
 
   return (
     <div
@@ -286,8 +276,8 @@ function UM_ManagerFile() {
       </div>
       <div className="p-5">
         <Table
-          dataSource={dataFile}
-          columns={columnsFile}
+          dataSource={dataThematic}
+          columns={columnsThematic}
           bordered
           onChange={handleTableChange}
           pagination={{
@@ -298,52 +288,23 @@ function UM_ManagerFile() {
             pageSizeOptions: ["5", "10", "15", "20", "1000"],
           }}
         />
+
+        <Drawer
+          title="Chi tiết chuyên đề"
+          onClose={() => setIsShowDrawer(false)}
+          open={isshowDrawer}
+          width={600}
+        >
+          <Table
+            rowKey={dataDrawer?.chitietchuyende}
+            dataSource={dataDrawer?.chitietchuyende}
+            columns={columnsThematicDetail}
+            bordered
+          />
+        </Drawer>
       </div>
-      <ModalDeleteFile
-        isShowModalDeleteFile={isShowModalDeleteFile}
-        setIsShowModalDeleteFile={setIsShowModalDeleteFile}
-        dataModalDeleteFile={dataModalDeleteFile}
-      />
     </div>
   );
-
-  function ModalDeleteFile(props) {
-    const {
-      isShowModalDeleteFile,
-      setIsShowModalDeleteFile,
-      dataModalDeleteFile,
-    } = props;
-    const [confirmLoading, setConfirmLoading] = useState(false);
-    const handleOk = () => {
-      dataModalDeleteFile?.map(async (item) => {
-        const res = await FileService.deleted(item?.MAHOSO);
-        if (res && res.statusCode == 200) {
-          toast.success(res.message);
-          readAllFile();
-          handleCancel();
-        } else {
-          toast.error(res.message);
-        }
-      });
-    };
-    const handleCancel = () => {
-      setIsShowModalDeleteFile(false);
-    };
-    return (
-      <div>
-        <Modal
-          title="Xóa hồ sơ"
-          open={isShowModalDeleteFile}
-          onOk={handleOk}
-          confirmLoading={confirmLoading}
-          onCancel={handleCancel}
-        >
-          <div>Bạn có chắc chắn muốn xóa hồ sơ</div>
-          <div>Lưu ý hành động này không thể hoàn tác</div>
-        </Modal>
-      </div>
-    );
-  }
 }
 
-export default UM_ManagerFile;
+export default UM_ManagerThematic;

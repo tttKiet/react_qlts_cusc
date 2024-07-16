@@ -24,6 +24,7 @@ import Breadcrumbs from "../../components/Breadcrumb/Breadcrumb";
 import { useSelector } from "react-redux";
 import useAuth from "../../hooks/useAuth";
 import { Avatar } from "@nextui-org/react";
+import { IconFile } from "@tabler/icons-react";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -49,7 +50,12 @@ const items = [
   getItem(
     <Link to={"/usermanager/file"}>Danh sách hồ sơ</Link>,
     "/usermanager/file",
-    <DatabaseOutlined />
+    <IconFile size={16} />
+  ),
+  getItem(
+    <Link to={"/usermanager/thematic"}>Quản lí chuyên đề</Link>,
+    "/usermanager/thematic",
+    <FontAwesomeIcon icon={faClipboard} />
   ),
 ];
 
@@ -102,7 +108,10 @@ const LayoutUserManager = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical mb-1 flex justify-center">
-          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
+          <img
+            src="/image/CUSC_No_Background.png"
+            className={`${collapsed ? "w-10" : "w-20 ms-5"}`}
+          />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu
@@ -129,9 +138,9 @@ const LayoutUserManager = () => {
               items: [
                 {
                   label: (
-                    <div>
+                    <Link to={"/usermanager/profile"}>
                       <UserOutlined /> Profile
-                    </div>
+                    </Link>
                   ),
                   key: "0",
                 },
@@ -151,7 +160,8 @@ const LayoutUserManager = () => {
               <Avatar
                 isBordered
                 color="primary"
-                src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
               />
               <div className="font-medium">
                 <p className="text-sm">{user && user.HOTEN}</p>

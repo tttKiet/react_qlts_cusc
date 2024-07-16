@@ -74,7 +74,7 @@ function EditData() {
     const [faceBook, setFaceBook] = useState("")
     const [zalo, setZalo] = useState("")
     const [email, setEmail] = useState("")
-    const [thematic, setThematic] = useState([])
+    const [thematic, setThematic] = useState(new Set([]))
     const [job, setJob] = useState("")
     const [option, setOption] = useState([])
     const [channel, setChannel] = useState("")
@@ -113,6 +113,10 @@ function EditData() {
     // useEffect(() => {
     //     console.log("detailData.chitietchuyende[0].MACHUYENDE", detailData.chitietchuyende)
     // }, [detailData])
+
+    useEffect(() => {
+        console.log("Thematic", thematic)
+    }, [thematic])
 
 
     const contactDetails = [1, 2, 3, 4, 5, 6, 7].map(lan => {
@@ -161,10 +165,13 @@ function EditData() {
 
     const handleUpdateObject = async () => {
         try {
+            const SDTUM = dataThematic?.find((item) => item.MACHUYENDE == thematic).SDT;
             const data = {
                 chuyendethamgia: {
                     SDT: phone,
                     TRANGTHAI: option,
+                    MACHUYENDE: thematic,
+                    SDT_UM: SDTUM
                 },
                 nganhyeuthich: {
 
@@ -291,21 +298,21 @@ function EditData() {
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Số điện thoại ba" value={phoneFather || 'Trống'} variant="bordered"
+                            <Input type="text" label="Số điện thoại ba" value={phoneFather || ''} variant="bordered"
                                 onValueChange={setPhoneFather} />
                         </div>
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Số điện thoại mẹ" value={phoneMother || 'Trống'} variant="bordered"
+                            <Input type="text" label="Số điện thoại mẹ" value={phoneMother || ''} variant="bordered"
                                 onValueChange={setPhoneMother} />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Facebook" value={faceBook || 'Trống'} variant="bordered"
+                            <Input type="text" label="Facebook" value={faceBook || ''} variant="bordered"
                                 onValueChange={setFaceBook} />
                         </div>
                         <div className="col-span-2 md:col-span-1">
-                            <Input type="text" label="Zalo" value={zalo || 'Trống'} variant="bordered"
+                            <Input type="text" label="Zalo" value={zalo || ''} variant="bordered"
                                 onValueChange={setZalo} />
                         </div>
                     </div>
@@ -335,8 +342,8 @@ function EditData() {
                                 label="Chuyên đề tham gia"
                                 variant="bordered"
                                 labelPlacement="inside"
-                                selectedKeys={thematic}
-                                onChange={(e) => setThematic([e.target.value])}
+                                selectedKeys={[thematic]}
+                                onChange={(e) => setThematic(e.target.value)}
                                 classNames={{
                                     trigger: "h-12",
                                 }}
@@ -344,7 +351,7 @@ function EditData() {
                                     return items.map((item) => (
                                         <div key={item.data.MACHUYENDE} className="flex items-center gap-2">
                                             <div className="flex flex-col">
-                                                <span className="text-default-500">{item.data.TENCHUYENDE} - Được quản lý bởi: {item.data.usermanager != null ? item.data.usermanager.HOTEN : 'Trống'}</span>
+                                                <span className="text-default-500">{item.data.TENCHUYENDE} - Được quản lý bởi: {item.data.usermanager != null ? item.data.usermanager.HOTEN : ''}</span>
                                             </div>
                                         </div>
                                     ));
@@ -354,7 +361,7 @@ function EditData() {
                                     <SelectItem key={thematic.MACHUYENDE} textValue={thematic.MACHUYENDE}>
                                         <div className="flex gap-2 items-center">
                                             <div className="flex flex-col">
-                                                <span className="text-tiny text-default-400">{thematic.TENCHUYENDE} - Được quản lý bởi:  {thematic.usermanager != null ? thematic.usermanager.HOTEN : 'Trống'}</span>
+                                                <span className="text-sm text-default-400">{thematic.TENCHUYENDE} - Được quản lý bởi:  {thematic.usermanager != null ? thematic.usermanager.HOTEN : ''}</span>
                                             </div>
                                         </div>
                                     </SelectItem>
@@ -405,7 +412,7 @@ function EditData() {
                                 <Tag key={index} bordered={false} color="processing">
                                     {job?.nganh?.TENNGANH}
                                 </Tag>
-                            )) : 'Trống'}
+                            )) : ''}
                         </div>
 
                     </div>

@@ -34,8 +34,10 @@ import UserManagerHomePage from "./pages/UserManagerHomePage";
 import { useEffect } from "react";
 import ManagerFile from "./pages/ManagerFile";
 import UM_ManagerFile from "./pages/UM_ManagerFile";
+import UM_ManagerThematic from "./pages/UM_ManagerThematic";
 import authService from "./service/AuthService";
 import { API_AUTH } from "./constants";
+import ProfileUserManager from "./pages/ProfileUserManager";
 const LayoutOnly = () => {
   return (
     <div>
@@ -104,7 +106,7 @@ function App() {
           element: <ManagerUser />,
         },
         {
-          path: "detail",
+          path: "user/:id",
           element: <ProfileUser />,
         },
         {
@@ -197,8 +199,17 @@ function App() {
         },
         {
           path: "thematic",
-          element: <ManagerThematicUsermanager />,
+          element: <UM_ManagerThematic />,
         },
+        {
+          path: "profile",
+          element: <ProfileUserManager />,
+        },
+
+        // {
+        //   path: "thematic",
+        //   element: <ManagerThematicUsermanager />,
+        // },
       ],
     },
   ]);

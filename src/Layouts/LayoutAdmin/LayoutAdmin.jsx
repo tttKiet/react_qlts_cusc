@@ -6,7 +6,7 @@ import {
   DatabaseOutlined,
   ClockCircleOutlined,
   LogoutOutlined,
-  AreaChartOutlined
+  AreaChartOutlined,
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -53,7 +53,7 @@ const items = [
     getItem(<Link to={"/admin/data"}>Danh sách dữ liệu</Link>, "/admin/data"),
     getItem(<Link to={"/admin/add"}>Thêm dữ liệu</Link>, "/admin/add"),
     getItem(
-      <Link to={"/admin/segment"}>Danh sách dữ liệu</Link>,
+      <Link to={"/admin/segment"}>Phân đoạn dữ liệu</Link>,
       "/admin/segment"
     ),
     getItem(
@@ -75,11 +75,11 @@ const items = [
       "/admin/statistical/thematic"
     ),
   ]),
-  // getItem(
-  //   <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
-  //   "/admin/time",
-  //   <ClockCircleOutlined />
-  // ),
+  getItem(
+    <Link to={"/admin/time"}>Thời gian đăng nhập</Link>,
+    "/admin/time",
+    <ClockCircleOutlined />
+  ),
   getItem(
     <Link to={"/admin/thematic"}>Quản lý chuyên đề</Link>,
     "/admin/thematic",
@@ -145,7 +145,10 @@ const LayoutAdmin = () => {
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical mb-1 flex justify-center">
-          <img src="/image/CUSC_No_Background.png" className={`${collapsed ? 'w-10' : 'w-20 ms-5'}`} />
+          <img
+            src="/image/CUSC_No_Background.png"
+            className={`${collapsed ? "w-10" : "w-20 ms-5"}`}
+          />
           {/* <h1 className='text-white text-lg font-bold'>HTQL Tuyển sinh</h1> */}
         </div>
         <Menu
@@ -176,9 +179,9 @@ const LayoutAdmin = () => {
               items: [
                 {
                   label: (
-                    <div>
+                    <Link to={"/admin/profile"}>
                       <UserOutlined /> Profile
-                    </div>
+                    </Link>
                   ),
                   key: "0",
                 },
@@ -198,7 +201,8 @@ const LayoutAdmin = () => {
               <Avatar
                 isBordered
                 color="primary"
-                src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
               />
               <div className="font-medium">
                 <p className="text-sm">{user && user.HOTEN}</p>

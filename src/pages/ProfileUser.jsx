@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from 'react-hook-form';
 import {
     Table,
     TableHeader,
@@ -14,93 +13,75 @@ import {
     DropdownMenu,
     DropdownItem,
     Chip,
-    User,
     Pagination,
-    useDisclosure,
-    Select, SelectItem,
-    RadioGroup,
-    Radio,
-    Tooltip,
     CardHeader,
     CardBody,
     Card,
-    Image
+    Tooltip,
+    Avatar,
 } from "@nextui-org/react";
-import { PlusIcon } from "../components/icons/PlusIcon";
-import { VerticalDotsIcon } from "../components/icons/VerticalDotsIcon";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
-import ModalComponent from "../components/Modal/ModalComponent";
-import { EyeFilledIcon } from "../components/icons/EyeFilledIcon ";
-import { EyeIcon } from "../components/icons/EyeIcon";
-import { EditIcon } from "../components/icons/EditIcon";
-import { DeleteIcon } from "../components/icons/DeleteIcon";
-import { EyeSlashFilledIcon } from "../components/icons/EyeSlashFiledIcon";
-const statusColorMap = {
-    1: "success",
-    0: "danger",
-};
 import useSWR from 'swr'
-import { API_USER } from "../constants";
+import { API_USER, API_DATA } from "../constants";
 import debounce from "lodash.debounce";
 import FormUser from "../components/body/FormUser";
 import UserService from "../service/UserService";
-const INITIAL_VISIBLE_COLUMNS = ["id", "thoigianphan", "tentruong", "sodong", "madoan", "lienhe1", "lienhe2", "lienhe3"];
+import { EyeIcon } from "../components/icons/EyeIcon";
+import { Link, useParams } from "react-router-dom";
+import moment from "moment";
+const INITIAL_VISIBLE_COLUMNS = ["id", "madoan", "tentruong", "sodong", "lienhe", "ngayphanquyen", "ngaytaodoan", "actions"];
 function ProfileUser() {
+
+    const { id } = useParams();
+    const [phoneUM, setPhoneUM] = useState("")
+    const { data: dataProfile, mutate } = useSWR(`${API_USER}/read?${id}`)
+    useEffect(() => {
+        if (dataProfile && dataProfile.usermanager) {
+            setPhoneUM(dataProfile.usermanager.SDT)
+        } else {
+            setPhoneUM("")
+        }
+    }, [dataProfile])
+    const { data: dataSegmentUsermanager, mutate: fetchDataSegmentUsermanager } = useSWR(`${API_DATA}/segment?SDT_UM=${phoneUM}`)
+
     const [filterSearchName, setFillterSearchName] = useState('')
-    const data = [{
-        id: 1,
-        thoigianphan: "7:20",
-        tentruong: "Đại học Cần Thơ",
-        sodong: "10",
-        madoan: "MD1",
-        lienhe1: 1,
-        lienhe2: "1",
-        lienhe3: 0
-    },
-    {
-        id: 2,
-        thoigianphan: "8:30",
-        tentruong: "Trường Kinh Tế Quốc Dân",
-        sodong: "5",
-        madoan: "MD2",
-        lienhe1: 1,
-        lienhe2: 1,
-        lienhe3: 1
-    },
-    {
-        id: 3,
-        thoigianphan: "9:00",
-        tentruong: "Trường Cao đẳng Sư Phạm",
-        sodong: "7",
-        madoan: "MD3",
-        lienhe1: 0,
-        lienhe2: 0,
-        lienhe3: 0
-    }
-    ]
+
+    const data = useMemo(() => {
+        return dataSegmentUsermanager?.map((segment, index) => {
+            return {
+                id: index + 1,
+                madoan: segment?.MaPQ,
+                tentruong: segment?.truong?.TENTRUONG,
+                sodong: segment?.Sodong,
+                lienhe: segment?.TRANGTHAILIENHE,
+                ngayphanquyen: segment?.THOIGIANPQ,
+                ngaytaodoan: segment?.createdAt,
+
+            }
+        }) || []
+    }, [dataSegmentUsermanager])
 
     const columns = [
         { name: "STT", uid: "id", sortable: true },
-        { name: "Thời gian phân", uid: "thoigianphan" },
-        { name: "Tên trường", uid: "tentruong", },
         { name: "Mã đoạn", uid: "madoan", sortable: true },
+        { name: "Tên trường", uid: "tentruong" },
         { name: "Số dòng", uid: "sodong", sortable: true },
-        { name: "Liên hệ lần 1", uid: "lienhe1", sortable: true },
-        { name: "Liên hệ lần 2", uid: "lienhe2", sortable: true },
-        { name: "Liên hệ lần 3", uid: "lienhe3", sortable: true },
+        { name: "Lần liên hệ", uid: "lienhe" },
+        { name: "Ngày phân quyền", uid: "ngayphanquyen" },
+        { name: "Ngày tạo đoạn", uid: "ngaytaodoan" },
+        { name: "Actions", uid: "actions" },
 
     ];
 
     const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortDescriptor, setSortDescriptor] = useState({
         column: "age",
         direction: "ascending",
     });
     const [page, setPage] = useState(1);
 
-    const pages = Math.ceil(data.length / rowsPerPage);
     const hasSearchFilter = Boolean(filterSearchName);
 
     const headerColumns = useMemo(() => {
@@ -111,8 +92,20 @@ function ProfileUser() {
 
     const filteredItems = useMemo(() => {
         let filteredUsers = [...data];
+        if (hasSearchFilter) {
+            filteredUsers = filteredUsers.filter((data) =>
+                data.madoan.toLowerCase().includes(filterSearchName.toLowerCase())
+            );
+            setRowsPerPage(100);
+        } else {
+            setRowsPerPage(5);
+        }
+
         return filteredUsers;
     }, [data, filterSearchName]);
+
+
+
 
     const items = useMemo(() => {
 
@@ -129,14 +122,20 @@ function ProfileUser() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = useCallback((user, columnKey) => {
-        const cellValue = user[columnKey];
+    const paginatedItems = useMemo(() => {
+        const startIdx = (page - 1) * rowsPerPage;
+        const endIdx = startIdx + rowsPerPage;
+        return sortedItems.slice(startIdx, endIdx);
+    }, [sortedItems, page, rowsPerPage]);
+
+    const renderCell = useCallback((segment, columnKey) => {
+        const cellValue = segment[columnKey];
 
         switch (columnKey) {
-            case "thoigianphan":
+            case "madoan":
                 return (
                     <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small capitalize">{cellValue}</span>
+                        <span className="text-bold text-small">{cellValue}</span>
 
                     </div>
                 );
@@ -147,13 +146,7 @@ function ProfileUser() {
 
                     </div>
                 );
-            case "madoan":
-                return (
-                    <div className="flex flex-col justify-center">
-                        <span className="text-bold text-small">{cellValue}</span>
 
-                    </div>
-                );
             case "sodong":
                 return (
                     <div className="flex flex-col justify-center">
@@ -161,25 +154,48 @@ function ProfileUser() {
 
                     </div>
                 );
-            case "lienhe1":
+            case "lienhe":
                 return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
+                    <div className="relative flex items-center gap-2">
+                        {!cellValue ? (
+                            <Chip variant="flat" radius="sm" size="md" color="warning">
+                                Đóng
+                            </Chip>
+                        ) : (
+                            <Chip variant="flat" radius="sm" size="md" color="success">
+                                Lần {cellValue}
+                            </Chip>
+                        )}
                     </div>
                 );
-            case "lienhe2":
+            case "ngayphanquyen":
                 return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
-            case "lienhe3":
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-bold text-small">{cellValue === 1 ? <Chip color="primary" size="sm" variant="flat">Hoàn thành</Chip> : <Chip color="warning" size="sm" variant="flat">Chưa</Chip>}</span>
-                    </div>
-                );
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{cellValue ? moment(cellValue).format("DD-MM-YYYY") : ''}</span>
 
+                    </div>
+                );
+            case "ngaytaodoan":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <span className="text-bold text-small">{moment(cellValue).format("DD-MM-YYYY")}</span>
+
+                    </div>
+                );
+            case "actions":
+                return (
+                    <div className="flex flex-col justify-center">
+                        <Tooltip content="xem danh sách">
+                            <Link
+                                to={`/admin/division/${segment.madoan}`}
+                                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                            >
+                                <EyeIcon />
+                            </Link>
+                        </Tooltip>
+
+                    </div>
+                );
             default:
                 return cellValue;
         }
@@ -196,7 +212,6 @@ function ProfileUser() {
                 setPage(1);
             } else {
                 setFillterSearchName("")
-
             }
         }, []);
 
@@ -211,7 +226,7 @@ function ProfileUser() {
                             base: "w-full sm:max-w-[44%]",
                             inputWrapper: "border-1",
                         }}
-                        placeholder="Search by name..."
+                        placeholder="Tìm kiếm theo mã đoạn"
                         size="sm"
                         startContent={<SearchIcon className="text-default-300" />}
                         // value={filterSearchName}
@@ -248,20 +263,6 @@ function ProfileUser() {
                         </Dropdown>
                     </div>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Total {data.length} users</span>
-                    <label className="flex items-center text-default-400 text-small">
-                        Rows per page:
-                        <select
-                            className="bg-transparent outline-none text-default-400 text-small"
-                            onChange={onRowsPerPageChange}
-                        >
-                            <option value="4">4</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                        </select>
-                    </label>
-                </div>
             </div>
         );
     }, [
@@ -272,7 +273,14 @@ function ProfileUser() {
         data.length,
         hasSearchFilter,
     ]);
+    const [total, setTotal] = useState(1);
 
+    useEffect(() => {
+        if (dataSegmentUsermanager) {
+            const totalPages = Math.ceil(dataSegmentUsermanager.length / rowsPerPage);
+            setTotal(totalPages > 0 ? totalPages : 1);
+        }
+    }, [dataSegmentUsermanager, rowsPerPage]);
     const bottomContent = useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
@@ -282,85 +290,94 @@ function ProfileUser() {
                         cursor: "bg-foreground text-background",
                     }}
                     color="default"
-                    // isDisabled={hasSearchFilter}
+                    isDisabled={hasSearchFilter}
                     page={page}
-
-                    total={pages}
-
+                    total={total}
                     variant="light"
                     onChange={(e) => {
-                        setPage(e)
+                        setPage(e);
                     }}
                 />
+                <div className="flex justify-between items-center gap-5">
+                    <span className="text-default-400 text-small">
+                        Total {data.length} segment
+                    </span>
+                    <label className="flex items-center text-default-400 text-small">
+                        Rows per page:
+                        <select
+                            className="bg-transparent outline-none text-default-400 text-small"
+                            onChange={onRowsPerPageChange}
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         );
-    }, [items.length, page, hasSearchFilter]);
+    }, [items.length, page, hasSearchFilter, rowsPerPage, total]);
 
-    const classNames = useMemo(
-        () => ({
-            wrapper: ["max-h-[382px]", "max-w-3xl"],
-            th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
-            td: [
-                // changing the rows border radius
-                // first
-                "group-data-[first=true]:first:before:rounded-none",
-                "group-data-[first=true]:last:before:rounded-none",
-                // middle
-                "group-data-[middle=true]:before:rounded-none",
-                // last
-                "group-data-[last=true]:first:before:rounded-none",
-                "group-data-[last=true]:last:before:rounded-none",
-            ],
-        }),
-        [],
-    );
     return (
-
         <>
             <div className="grid grid-cols-3">
-                <div className="leftContent col-span-3 md:col-span-1 px-2">
-                    <Card className="p-2">
+                <div className="leftContent col-span-3 md:col-span-1 px-2 flex">
+                    <Card className="p-2 w-full">
                         <CardHeader className="py-1">
-                            <h1 className="titlePage">Thống kê</h1>
                         </CardHeader>
                         <CardBody className="overflow-visible py-1 gap-y-4">
-
+                            <Avatar
+                                isBordered
+                                color="primary"
+                                // src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
+                                src="https://i.pinimg.com/564x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg"
+                                className="w-[200px] h-[200px] m-auto"
+                            />
                         </CardBody>
                     </Card>
                 </div>
-                <div className="rightContent col-span-3 md:col-span-2 px-2 mt-3 md:mt-0">
-                    <Card className="p-2">
+                <div className="rightContent col-span-3 md:col-span-2 px-2 mt-3 md:mt-0 flex">
+                    <Card className="p-2 w-full">
                         <CardHeader className="py-1">
                             <h1 className="titlePage">Thông tin khách hàng</h1>
                         </CardHeader>
                         <CardBody className="overflow-visible py-1 gap-y-4">
                             <div className="grid grid-cols-3">
                                 <div className="font-bold">Họ và tên</div>
-                                <div className="col-span-2">Trần Hoàng Trân</div>
+                                <div className="col-span-2">{dataProfile?.admin?.HOTEN || dataProfile?.usermanager?.HOTEN || ""}</div>
                             </div>
                             <div className="grid grid-cols-3">
                                 <p className="font-bold">Email</p>
-                                <p className="col-span-2">tranhoangtran22225@gmail</p>
+                                <p className="col-span-2">{dataProfile?.admin?.EMAIL || dataProfile?.usermanager?.EMAIL}</p>
                             </div>
                             <div className="grid grid-cols-3">
                                 <p className="font-bold">Số điện thoại</p>
-                                <p className="col-span-2">0971144857</p>
+                                <p className="col-span-2">{dataProfile?.admin?.SDT || dataProfile?.usermanager?.SDT}</p>
                             </div>
                             <div className="grid grid-cols-3">
                                 <p className="font-bold">Giới tính</p>
-                                <p className="col-span-2">Nam</p>
+                                <p className="col-span-2">{dataProfile?.admin?.GIOITINH || dataProfile?.usermanager?.GIOITINH}</p>
                             </div>
                             <div className="grid grid-cols-3">
                                 <p className="font-bold">Địa chỉ</p>
-                                <p className="col-span-2">Phường 2, Quận Ninh Kiều, Thành phố Cần Thơ</p>
+                                <p className="col-span-2">{dataProfile?.admin?.DIACHI || dataProfile?.usermanager?.DIACHI}</p>
                             </div>
 
                             <div className="grid grid-cols-3">
                                 <p className="font-bold">Loại người dùng</p>
                                 <div className="col-span-2">
-                                    <Chip variant="flat" color="primary">
-                                        Admin
-                                    </Chip>
+                                    {dataProfile?.admin ? (
+                                        <Chip variant="flat" color="primary">
+                                            Admin
+                                        </Chip>
+                                    ) : (
+                                        <Chip variant="flat" color="warning">
+                                            User manager
+                                        </Chip>
+                                    )}
                                 </div>
                             </div>
                         </CardBody>
@@ -401,7 +418,7 @@ function ProfileUser() {
                                         </TableColumn>
                                     )}
                                 </TableHeader>
-                                <TableBody emptyContent={"Không tìm thấy người dùng"} items={sortedItems}>
+                                <TableBody emptyContent={"Không tìm thấy dữ liệu"} items={paginatedItems}>
                                     {(item) => (
                                         <TableRow key={item.id}>
                                             {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
