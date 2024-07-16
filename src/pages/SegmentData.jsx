@@ -166,13 +166,13 @@ function SegmentData() {
         EMAIL: item?.EMAIL,
         JOBLIKE: item.nganhyeuthich?.[0]?.nhomnganh
           ? item.nganhyeuthich?.[0]?.nhomnganh?.TENNHOMNGANH +
-          ": " +
-          item.nganhyeuthich?.[0]?.CHITIET
+            ": " +
+            item.nganhyeuthich?.[0]?.CHITIET
           : item?.nganhyeuthich?.reduce((init, item, index, arr) => {
-            return init + item?.nganh?.TENNGANH + index != arr.length
-              ? ", "
-              : "";
-          }, ""),
+              return init + item?.nganh?.TENNGANH + index != arr.length
+                ? ", "
+                : "";
+            }, ""),
       };
     });
 
@@ -603,7 +603,7 @@ function SegmentData() {
               </div>
 
               {typeSelected == 2 && (
-                <div className="col-span-4">
+                <div className="col-span-5">
                   <Autocomplete
                     aria-label="Job"
                     placeholder="Chọn ngành"
