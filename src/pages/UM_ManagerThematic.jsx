@@ -22,17 +22,17 @@ import { Drawer } from "antd";
 
 function UM_ManagerThematic() {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.account.user);
   const [pageSize, setPageSize] = useState(50);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(100);
   const [dataThematic, setDataThematic] = useState([]);
 
-  const user = useSelector((state) => state.account.user);
-
   const readAllThematic = async () => {
     const res = await ThematicService.readAllThematic(
       `page=${current}&pageSize=${pageSize}&SDT_UM=${user?.SDT}`
     );
+
     if (res && res.statusCode == 200) {
       let cus = res?.data?.results?.map((item) => ({
         ...item,
@@ -186,10 +186,17 @@ function UM_ManagerThematic() {
     },
 
     {
+      title: "Trường",
+      dataIndex: "",
+      key: "",
+      render: (data) => <div>{data?.truong?.TENTRUONG}</div>,
+    },
+
+    {
       title: "Số khách hàng",
       dataIndex: "",
       key: "",
-      render: (data) => <div>{data?.chitietchuyende?.length}</div>,
+      render: (data) => <div>{data?.truong?.khachhang?.length}</div>,
     },
 
     {
@@ -199,10 +206,7 @@ function UM_ManagerThematic() {
         return (
           <div>
             <IconListDetails
-              onClick={() => {
-                setDataDrawer(record);
-                setIsShowDrawer(true);
-              }}
+              onClick={() => haneleShowModalDetail(record)}
               color="orange"
               width={20}
               className="cursor-pointer"
@@ -223,9 +227,11 @@ function UM_ManagerThematic() {
     },
     {
       title: "Trạng thái",
-      dataIndex: "TRANGTHAI",
-      key: "TRANGTHAI",
-      ...getColumnSearchProps("TRANGTHAI"),
+      dataIndex: "",
+      key: "trangthai",
+      render: (data) => {
+        return <div>{data?.chitietchuyende}</div>;
+      },
     },
     {
       title: "Cập nhật",
@@ -256,6 +262,28 @@ function UM_ManagerThematic() {
   const [isshowDrawer, setIsShowDrawer] = useState(false);
   const [dataDrawer, setDataDrawer] = useState([]);
 
+  function combineData(dataDetail) {
+    const combinedResults = dataDetail?.truong?.khachhang.map((khachhang) => {
+      dataDetail?.chitietchuyende.forEach((cttd) => {
+        if (khachhang.SDT == cttd?.SDT) {
+          khachhang.chitietchuyende = cttd?.TRANGTHAI;
+        }
+      });
+      return {
+        ...khachhang,
+      };
+    });
+
+    return combinedResults;
+  }
+
+  const haneleShowModalDetail = (data) => {
+    const dataTable = combineData(data);
+    console.log("dataTable", dataTable);
+    setDataDrawer(dataTable);
+    setIsShowDrawer(true);
+  };
+
   return (
     <div
       style={{
@@ -272,7 +300,7 @@ function UM_ManagerThematic() {
             className="cursor-pointer text-blue-900"
             onClick={handleF5}
           />
-        </div> 
+        </div>
       </div>
       <div className="p-5">
         <Table
@@ -296,8 +324,7 @@ function UM_ManagerThematic() {
           width={600}
         >
           <Table
-            rowKey={dataDrawer?.chitietchuyende}
-            dataSource={dataDrawer?.chitietchuyende}
+            dataSource={dataDrawer}
             columns={columnsThematicDetail}
             bordered
           />

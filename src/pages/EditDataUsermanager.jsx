@@ -146,18 +146,18 @@ function EditDataUsermanager() {
       setZalo(detailData?.dulieukhachhang?.SDTZALO);
       setEmail(detailData?.EMAIL);
       if (detailData?.chitietchuyende.length > 0) {
-        setThematic([detailData.chitietchuyende[0].MACHUYENDE]);
-        setOption([detailData?.chitietchuyende[0].TRANGTHAI]);
+        setThematic([detailData?.chitietchuyende[0]?.MACHUYENDE]);
+        setOption([detailData?.chitietchuyende[0]?.TRANGTHAI]);
       }
       if (detailData?.nghenghiep != null) {
         setJob(detailData?.nghenghiep.MANGHENGHIEP || "");
       }
 
-      setChannel(detailData?.phieudkxettuyen.MAKENH);
-      setCourse(`${detailData?.phieudkxettuyen.MALOAIKHOAHOC}`);
-      setGraduation(`${detailData?.phieudkxettuyen.MAKETQUA}`);
-      setJobRegister(detailData?.phieudkxettuyen.NGANHDK);
-      setStatusContact(detailData?.segment.TRANGTHAILIENHE);
+      setChannel(detailData?.phieudkxettuyen?.MAKENH);
+      setCourse(`${detailData?.phieudkxettuyen?.MALOAIKHOAHOC}`);
+      setGraduation(`${detailData?.phieudkxettuyen?.MAKETQUA}`);
+      setJobRegister(detailData?.phieudkxettuyen?.NGANHDK);
+      setStatusContact(detailData?.segment?.TRANGTHAILIENHE);
     }
   }, [detailData]);
   const itemClasses = {
@@ -450,10 +450,10 @@ function EditDataUsermanager() {
             <div className="mt-2">
               {detailData?.nganhyeuthich.length != 0
                 ? detailData?.nganhyeuthich.map((job, index) => (
-                  <Tag key={index} bordered={false} color="processing">
-                    {job?.nganh?.TENNGANH}
-                  </Tag>
-                ))
+                    <Tag key={index} bordered={false} color="processing">
+                      {job?.nganh?.TENNGANH}
+                    </Tag>
+                  ))
                 : "Trống"}
             </div>
           </div>
@@ -659,7 +659,7 @@ function EditDataUsermanager() {
               </CardBody>
             </Card>
           </div>
-          
+
           <div className="col-span-5 md:col-span-2">
             <Card>
               <CardBody>
@@ -670,7 +670,7 @@ function EditDataUsermanager() {
                   onSelectionChange={setSelectedTimes}
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((lan) => (
-                    <Tab key={lan} title={`Liên hệ lần ${lan}`} >
+                    <Tab key={lan} title={`Liên hệ lần ${lan}`}>
                       <FormContact
                         onSubmit={onSubmit}
                         lan={lan}
