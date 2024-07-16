@@ -46,6 +46,14 @@ function DivisionData() {
     { value: "3", label: "Học bổng" },
   ];
 
+  const yearOptions = [
+    { value: "", label: "Tất cả" },
+    { value: "2024", label: "Năm 2024" },
+    { value: "2023", label: "Năm 2023" },
+    { value: "2022", label: "Năm 2022" },
+    { value: "2021", label: "Năm 2021" },
+  ];
+
   const columns = [
     { name: "Mã đoạn", uid: "madoan", sortable: true },
     { name: "User manager", uid: "usermanager", sortable: true },
@@ -77,6 +85,7 @@ function DivisionData() {
   ];
 
   // State
+  const [yearSelected, setYearSelected] = useState("");
   const [phoneCodeSelected, setPhoneCodeSelected] = useState("");
   const [schoolSelected, setSchoolSelected] = useState("");
   const [provinceSelected, setProvinceSelected] = useState("");
@@ -136,7 +145,9 @@ function DivisionData() {
       jobSelected || ""
     }&schoolCode=${schoolSelected || ""}&MANHOM=${
       typeCodeSelected || ""
-    }&type=${doneSelected || ""}&DAUSO=${phoneCodeSelected || ""}`
+    }&type=${doneSelected || ""}&DAUSO=${phoneCodeSelected || ""}&YEAR=${
+      yearSelected || ""
+    }`
   );
 
   // Function
@@ -156,8 +167,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-        error?.message?.[0] ||
-        "Lỗi không xác định. Vui lòng thử lại."
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -195,8 +206,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-        error?.message?.[0] ||
-        "Lỗi không xác định. Vui lòng thử lại."
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -215,8 +226,8 @@ function DivisionData() {
       console.log("error ", error);
       toast.error(
         error?.message ||
-        error?.message?.[0] ||
-        "Lỗi không xác định. Vui lòng thử lại."
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -242,8 +253,8 @@ function DivisionData() {
 
       toast.error(
         error?.message ||
-        error?.message?.[0] ||
-        "Lỗi không xác định. Vui lòng thử lại."
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -326,19 +337,19 @@ function DivisionData() {
   const dataJobAuto = useMemo(() => {
     let temp = Array.isArray(dataJob)
       ? dataJob
-        ?.map((d) => ({
-          label: d.TENNGANH,
-          value: d.MANGANH,
-          ...d,
-        }))
-        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
+          ?.map((d) => ({
+            label: d.TENNGANH,
+            value: d.MANGANH,
+            ...d,
+          }))
+          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
       : dataJob?.data
-        ?.map((d) => ({
-          label: d.TENNGANH,
-          value: d.MANGANH,
-          ...d,
-        }))
-        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
+          ?.map((d) => ({
+            label: d.TENNGANH,
+            value: d.MANGANH,
+            ...d,
+          }))
+          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
 
     return temp;
   }, [dataJob]);
@@ -673,10 +684,10 @@ function DivisionData() {
               )}
             </div>
           </div>
-          <div className="col-span-3 w-full">
+          <div className="col-span-2 w-full">
             <h4 className="text-base font-medium mb-2">Phân quyền</h4>
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-9">
+              <div className="col-span-12">
                 <Autocomplete
                   aria-labelledby="province-label"
                   placeholder=""
@@ -705,10 +716,10 @@ function DivisionData() {
             </div>
           </div>
 
-          <div className="col-span-3 w-full">
+          <div className="col-span-2 w-full">
             <h4 className="text-base font-medium mb-2">Nhà mạng</h4>
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-7">
+              <div className="col-span-12">
                 <Autocomplete
                   isClearable={false}
                   allowsEmptyCollection={false}
@@ -720,6 +731,30 @@ function DivisionData() {
                   size="sm"
                 >
                   {prefixPhone.map((job) => (
+                    <AutocompleteItem key={job.value} value={job.value}>
+                      {job.label}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-2 w-full">
+            <h4 className="text-base font-medium mb-2">Năm</h4>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12">
+                <Autocomplete
+                  isClearable={false}
+                  allowsEmptyCollection={false}
+                  aria-labelledby="province-label"
+                  placeholder="Chọn năm"
+                  selectedKey={yearSelected}
+                  onSelectionChange={(value) => setYearSelected(value)}
+                  variant="bordered"
+                  size="sm"
+                >
+                  {yearOptions.map((job) => (
                     <AutocompleteItem key={job.value} value={job.value}>
                       {job.label}
                     </AutocompleteItem>

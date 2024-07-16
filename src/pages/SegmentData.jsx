@@ -42,6 +42,14 @@ function SegmentData() {
     { value: "3", label: "Học bổng" },
   ];
 
+  const yearOptions = [
+    { value: "", label: "Tất cả" },
+    { value: "2024", label: "Năm 2024" },
+    { value: "2023", label: "Năm 2023" },
+    { value: "2022", label: "Năm 2022" },
+    { value: "2021", label: "Năm 2021" },
+  ];
+
   const prefixPhone = [
     { value: "", label: "Tất cả" },
     { value: "viettel", label: "Viettel" },
@@ -76,6 +84,7 @@ function SegmentData() {
 
   // State
   const [schoolSelected, setSchoolSelected] = useState("");
+  const [yearSelected, setYearSelected] = useState("");
   const [provinceSelected, setProvinceSelected] = useState("");
   const [jobSelected, setJobSelected] = useState("");
   const [typeCodeSelected, setTypeCodeSelected] = useState("");
@@ -114,7 +123,7 @@ function SegmentData() {
       jobSelected || ""
     }&MATRUONG=${schoolSelected || ""}&MANHOM=${typeCodeSelected || ""}&DAUSO=${
       phoneCodeSelected || ""
-    }`
+    }&YEAR=${yearSelected || ""}`
   );
 
   // Function
@@ -200,8 +209,8 @@ function SegmentData() {
 
       toast.error(
         error?.message ||
-        error?.message?.[0] ||
-        "Lỗi không xác định. Vui lòng thử lại."
+          error?.message?.[0] ||
+          "Lỗi không xác định. Vui lòng thử lại."
       );
     }
   }
@@ -281,19 +290,19 @@ function SegmentData() {
   const dataJobAuto = useMemo(() => {
     let temp = Array.isArray(dataJob)
       ? dataJob
-        ?.map((d) => ({
-          label: d.TENNGANH,
-          value: d.MANGANH,
-          ...d,
-        }))
-        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
+          ?.map((d) => ({
+            label: d.TENNGANH,
+            value: d.MANGANH,
+            ...d,
+          }))
+          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC")
       : dataJob?.data
-        ?.map((d) => ({
-          label: d.TENNGANH,
-          value: d.MANGANH,
-          ...d,
-        }))
-        ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
+          ?.map((d) => ({
+            label: d.TENNGANH,
+            value: d.MANGANH,
+            ...d,
+          }))
+          ?.filter((d) => d.TENNGANH != "NGÀNH KHÁC");
 
     return temp;
   }, [dataJob]);
@@ -644,10 +653,10 @@ function SegmentData() {
               )}
             </div>
           </div>
-          <div className="mb-4 col-span-6">
+          <div className="mb-4 col-span-2">
             <h4 className="text-base font-medium mb-2 ">Nhà mạng</h4>
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-4">
+              <div className="col-span-12">
                 <Autocomplete
                   isClearable={false}
                   allowsEmptyCollection={false}
@@ -659,6 +668,29 @@ function SegmentData() {
                   size="sm"
                 >
                   {prefixPhone.map((job) => (
+                    <AutocompleteItem key={job.value} value={job.value}>
+                      {job.label}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+              </div>
+            </div>
+          </div>
+          <div className="mb-4 col-span-2">
+            <h4 className="text-base font-medium mb-2 ">Năm</h4>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12">
+                <Autocomplete
+                  isClearable={false}
+                  allowsEmptyCollection={false}
+                  aria-labelledby="province-label"
+                  placeholder="Chọn năm"
+                  selectedKey={yearSelected}
+                  onSelectionChange={(value) => setYearSelected(value)}
+                  variant="bordered"
+                  size="sm"
+                >
+                  {yearOptions.map((job) => (
                     <AutocompleteItem key={job.value} value={job.value}>
                       {job.label}
                     </AutocompleteItem>
@@ -719,13 +751,13 @@ function SegmentData() {
               <span>
                 Chọn:{" "}
                 {selectedKeys.size || (
-                  <span>
-                    <span className="font-medium">
-                      {dataAvailable?.total}
-                    </span>{" "}
-                    (Tất cả)
-                  </span>
-                ) ||
+                    <span>
+                      <span className="font-medium">
+                        {dataAvailable?.total}
+                      </span>{" "}
+                      (Tất cả)
+                    </span>
+                  ) ||
                   0}
               </span>
               <span> | </span>
