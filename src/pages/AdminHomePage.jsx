@@ -42,6 +42,7 @@ import { toast } from "react-toastify";
 import NoteService from "../service/NoteService";
 function AdminHomePage() {
   const user = useSelector((state) => state.account.user);
+  const colors = ["default", "primary", "success", "secondary", "warning", "danger"];
   const { data: dataStatic, mutate: fetchDataStatic } = useSWR(
     `${API_CHART}/admin?page=home&index=1`
   );
@@ -425,254 +426,257 @@ function AdminHomePage() {
             borderRadius: "10px",
           }}
         >
-          <h1 className="mb-2 text-lg font-medium">Ghi chú</h1>
-          <div className="grid grid-cols-3">
-            <div className="col-span-3 md:col-span-1 px-0 md:px-5">
-              <h2 className="mb-2 text-medium font-medium text-center">
-                Số phiếu
-              </h2>
-              <div className="content">
-                <Progress
-                  label={dataAdmission && dataAdmission[0]?.TENTRANGTHAI}
-                  value={dataAdmission && dataAdmission[0]?.count}
-                  maxValue={dataStatic?.data.dulieu}
-                  color="primary"
-                  showValueLabel={true}
-                  className="max-w-md"
-                  formatOptions={{
-                    style: "decimal",
-                    currencyDisplay: "symbol",
-                  }}
-                />
-                <Progress
-                  label={dataAdmission && dataAdmission[1]?.TENTRANGTHAI}
-                  value={dataAdmission && dataAdmission[1]?.count}
-                  maxValue={dataStatic?.data.dulieu}
-                  color="success"
-                  showValueLabel={true}
-                  className="max-w-md"
-                  formatOptions={{
-                    style: "decimal",
-                    currencyDisplay: "symbol",
-                  }}
-                />
-                <Progress
-                  label={dataAdmission && dataAdmission[2]?.TENTRANGTHAI}
-                  value={dataAdmission && dataAdmission[2]?.count}
-                  maxValue={dataStatic?.data.dulieu}
-                  color="secondary"
-                  showValueLabel={true}
-                  className="max-w-md"
-                  formatOptions={{
-                    style: "decimal",
-                    currencyDisplay: "symbol",
-                  }}
-                />
-                <Progress
-                  label={dataAdmission && dataAdmission[3]?.TENTRANGTHAI}
-                  value={dataAdmission && dataAdmission[3]?.count}
-                  maxValue={dataStatic?.data.dulieu}
-                  color="warning"
-                  showValueLabel={true}
-                  className="max-w-md"
-                  formatOptions={{
-                    style: "decimal",
-                    currencyDisplay: "symbol",
-                  }}
-                />
-                <Progress
-                  label={dataAdmission && dataAdmission[4]?.TENTRANGTHAI}
-                  value={dataAdmission && dataAdmission[4]?.count}
-                  maxValue={dataStatic?.data.dulieu}
-                  color="danger"
-                  showValueLabel={true}
-                  className="max-w-md"
-                  formatOptions={{
-                    style: "decimal",
-                    currencyDisplay: "symbol",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-              <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
-                <div className="title w-full bg-green-400 rounded-t-lg text-white">
-                  <h2 className="mb-2 text-medium font-medium text-center py-2">
-                    Gọi điện
-                  </h2>
+
+
+
+          <div style={{
+            padding: 24,
+            minHeight: 450,
+            background: "#fff",
+            borderRadius: "10px"
+          }}  >
+            <h1 className="mb-2 text-lg font-medium">Ghi chú</h1>
+            <div className="grid grid-cols-3">
+              <div className="col-span-3 md:col-span-1 px-0 md:px-5">
+                <h2 className="mb-2 text-medium font-medium text-center">Số phiếu</h2>
+                <div className="content">
+                  {dataAdmission && dataAdmission?.map((adminssion, index) => (
+                    <div key={index}>
+                      <Progress
+                        label={adminssion?.TENTRANGTHAI}
+                        value={adminssion?.count}
+                        maxValue={dataStatic?.data.dulieu}
+                        color={colors[index]}
+                        showValueLabel={true}
+                        className="max-w-md"
+                        formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* <Progress
+                    label={dataAdmission && dataAdmission[1]?.TENTRANGTHAI}
+                    value={dataAdmission && dataAdmission[1]?.count}
+                    maxValue={dataStatic?.data.dulieu}
+                    color="success"
+                    showValueLabel={true}
+                    className="max-w-md"
+                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                  />
+                  <Progress
+                    label={dataAdmission && dataAdmission[2]?.TENTRANGTHAI}
+                    value={dataAdmission && dataAdmission[2]?.count}
+                    maxValue={dataStatic?.data.dulieu}
+                    color="secondary"
+                    showValueLabel={true}
+                    className="max-w-md"
+                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                  />
+                  <Progress
+                    label={dataAdmission && dataAdmission[3]?.TENTRANGTHAI}
+                    value={dataAdmission && dataAdmission[3]?.count}
+                    maxValue={dataStatic?.data.dulieu}
+                    color="warning"
+                    showValueLabel={true}
+                    className="max-w-md"
+                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                  />
+                  <Progress
+                    label={dataAdmission && dataAdmission[4]?.TENTRANGTHAI}
+                    value={dataAdmission && dataAdmission[4]?.count}
+                    maxValue={dataStatic?.data.dulieu}
+                    color="danger"
+                    showValueLabel={true}
+                    className="max-w-md"
+                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                  />
+                  <Progress
+                    label={dataAdmission && dataAdmission[5]?.TENTRANGTHAI}
+                    value={dataAdmission && dataAdmission[5]?.count}
+                    maxValue={dataStatic?.data.dulieu}
+                    color="danger"
+                    showValueLabel={true}
+                    className="max-w-md"
+                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                  /> */}
                 </div>
-                <div className="content min-h-[320px] max-h-[320px] overflow-y-auto">
-                  {dataMisscall?.length > 0 ? (
-                    dataMisscall?.map((call, index) => (
+              </div>
+              <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
+                <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
+                  <div className="title w-full bg-green-400 rounded-t-lg text-white">
+                    <h2 className="mb-2 text-medium font-medium text-center py-2">Gọi điện</h2>
+                  </div>
+                  <div className="content min-h-[320px] max-h-[320px] overflow-y-auto">
+                    {dataMisscall?.length > 0 ? (dataMisscall?.map((call, index) => (
                       <div key={index} className="note my-2">
                         <div className="grid grid-cols-12">
-                          <User
-                            className="col-span-2"
+                          <User className="col-span-2"
                             avatarProps={{
-                              src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                              src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                             }}
                           />
                           <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
                             <p className="font-medium">User manager</p>
-                            <p>
-                              {call.SDT} ({call.khachhang.HOTEN})
-                            </p>
+                            <p>{call.SDT} ({call.khachhang.HOTEN})</p>
+
                           </div>
+
                         </div>
                         <div className="timeCreateNote text-end text-xs text-gray-400">
                           {moment(call.thoigian).format("DD-MM-YYYY HH:mm")}
                         </div>
                       </div>
                     ))
-                  ) : (
-                    <div className="text-center text-gray-500">
-                      Không có gọi nhỡ
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        Không có gọi nhỡ
+                      </div>
+                    )}
+                  </div>
 
-                {/* <div className="createNote">
+                  {/* <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">
                                         <input type="text" className="outline-none h-10" placeholder="Nhập số điện thoại" />
                                         <input type="date" className="outline-none h-10" />
                                         <div className="flex"><FontAwesomeIcon fontSize={16} className="bg-green-400 m-auto p-2 rounded-full text-white ms-2 w-4" icon={faPlus} /></div>
                                     </div>
                                 </div> */}
+                </div>
               </div>
-            </div>
-            <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
-              <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
-                <div className="title w-full bg-yellow-400 rounded-t-lg text-white">
-                  <h2 className="mb-2 text-medium font-medium text-center py-2">
-                    Ghi chú
-                  </h2>
-                </div>
-                <div className="content min-h-64 max-h-64 overflow-y-auto">
-                  {dataNote && dataNote.length > 0 ? (
-                    dataNote.map((note, index) => (
-                      <div key={index} className="note my-2">
-                        <div className="grid grid-cols-12">
-                          <User
-                            className="col-span-2"
-                            avatarProps={{
-                              src: "https://i.pinimg.com/564x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg",
-                            }}
-                          />
-                          <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
-                            <p className="font-medium">{user.HOTEN}</p>
-                            <p>{note.NOIDUNG}</p>
+              <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
+                <div className="border-double border-5 border-gray-100 rounded-xl shadow-lg">
+                  <div className="title w-full bg-yellow-400 rounded-t-lg text-white">
+                    <h2 className="mb-2 text-medium font-medium text-center py-2">
+                      Ghi chú
+                    </h2>
+                  </div>
+                  <div className="content min-h-64 max-h-64 overflow-y-auto">
+                    {dataNote && dataNote.length > 0 ? (
+                      dataNote.map((note, index) => (
+                        <div key={index} className="note my-2">
+                          <div className="grid grid-cols-12">
+                            <User
+                              className="col-span-2"
+                              avatarProps={{
+                                src: "https://i.pinimg.com/564x/89/90/48/899048ab0cc455154006fdb9676964b3.jpg",
+                              }}
+                            />
+                            <div className="bg-gray-100 col-span-9 rounded-t-xl rounded-ee-xl px-2 h-auto">
+                              <p className="font-medium">{user.HOTEN}</p>
+                              <p>{note.NOIDUNG}</p>
+                            </div>
+                            <Dropdown
+                              className="col-span-1 m-auto"
+                              menu={{
+                                items: [
+                                  {
+                                    label: (
+                                      <p
+                                        className="font-medium text-red-500"
+                                        onClick={() => handleDeleteNote(note)}
+                                      >
+                                        Xóa
+                                      </p>
+                                    ),
+                                    key: "0",
+                                  },
+                                ],
+                              }}
+                              trigger={["click"]}
+                            >
+                              <a onClick={(e) => e.preventDefault()}>
+                                <Space>
+                                  <FontAwesomeIcon icon={faEllipsisVertical} />
+                                </Space>
+                              </a>
+                            </Dropdown>
                           </div>
-                          <Dropdown
-                            className="col-span-1 m-auto"
-                            menu={{
-                              items: [
-                                {
-                                  label: (
-                                    <p
-                                      className="font-medium text-red-500"
-                                      onClick={() => handleDeleteNote(note)}
-                                    >
-                                      Xóa
-                                    </p>
-                                  ),
-                                  key: "0",
-                                },
-                              ],
-                            }}
-                            trigger={["click"]}
-                          >
-                            <a onClick={(e) => e.preventDefault()}>
-                              <Space>
-                                <FontAwesomeIcon icon={faEllipsisVertical} />
-                              </Space>
-                            </a>
-                          </Dropdown>
+                          <div className="timeCreateNote text-end text-xs text-gray-400">
+                            {moment(note.THOIGIAN).format("DD-MM-YYYY HH:mm")}
+                          </div>
                         </div>
-                        <div className="timeCreateNote text-end text-xs text-gray-400">
-                          {moment(note.THOIGIAN).format("DD-MM-YYYY HH:mm")}
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        Không có ghi chú nào
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center text-gray-500">
-                      Không có ghi chú nào
-                    </div>
-                  )}
-                </div>
-                <div className="createNote">
-                  <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
-                    <input
-                      type="text"
-                      className="outline-none  h-10 px-2"
-                      placeholder="Viết ghi chú"
-                      value={note}
-                      onChange={(value) => setNote(value.target.value)}
-                      onKeyDown={handleEnter}
-                    />
-                    <div className="flex">
-                      <FontAwesomeIcon
-                        fontSize={16}
-                        className="bg-yellow-400 m-auto p-2 rounded-full text-white"
-                        icon={faPencil}
-                        onClick={handleCreateNote}
+                    )}
+                  </div>
+                  <div className="createNote">
+                    <div className="groupInput mt-5 grid grid-cols-[1fr_auto] gap-0 border-t-1 px-5">
+                      <input
+                        type="text"
+                        className="outline-none  h-10 px-2"
+                        placeholder="Viết ghi chú"
+                        value={note}
+                        onChange={(value) => setNote(value.target.value)}
+                        onKeyDown={handleEnter}
                       />
+                      <div className="flex">
+                        <FontAwesomeIcon
+                          fontSize={16}
+                          className="bg-yellow-400 m-auto p-2 rounded-full text-white"
+                          icon={faPencil}
+                          onClick={handleCreateNote}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          style={{
-            padding: 24,
-            minHeight: 450,
-            background: "#fff",
-            borderRadius: "10px",
-          }}
-          className="mt-4"
-        >
-          <h1 className="mb-2 text-lg font-medium">Tiến trình liên hệ</h1>
-          <Table
-            // isCompact
-            removeWrapper
-            aria-label="Example table with custom cells, pagination and sorting"
-            bottomContent={bottomContent}
-            bottomContentPlacement="outside"
-            checkboxesProps={{
-              classNames: {
-                wrapper:
-                  "after:bg-foreground after:text-background text-background",
-              },
+          <div
+            style={{
+              padding: 24,
+              minHeight: 450,
+              background: "#fff",
+              borderRadius: "10px",
             }}
-            sortDescriptor={sortDescriptor}
-            topContentPlacement="outside"
-            onSortChange={setSortDescriptor}
+            className="mt-4"
           >
-            <TableHeader columns={headerColumns}>
-              {(column) => (
-                <TableColumn
-                  key={column.uid}
-                  align={column.uid === "actions" ? "center" : "start"}
-                  allowsSorting={column.sortable}
-                >
-                  {column.name}
-                </TableColumn>
-              )}
-            </TableHeader>
-            <TableBody
-              emptyContent={"Không tìm thấy người dùng"}
-              items={paginatedItems}
+            <h1 className="mb-2 text-lg font-medium">Tiến trình liên hệ</h1>
+            <Table
+              // isCompact
+              removeWrapper
+              aria-label="Example table with custom cells, pagination and sorting"
+              bottomContent={bottomContent}
+              bottomContentPlacement="outside"
+              checkboxesProps={{
+                classNames: {
+                  wrapper:
+                    "after:bg-foreground after:text-background text-background",
+                },
+              }}
+              sortDescriptor={sortDescriptor}
+              topContentPlacement="outside"
+              onSortChange={setSortDescriptor}
             >
-              {(item) => (
-                <TableRow key={item.madoan}>
-                  {(columnKey) => (
-                    <TableCell>{renderCell(item, columnKey)}</TableCell>
-                  )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              <TableHeader columns={headerColumns}>
+                {(column) => (
+                  <TableColumn
+                    key={column.uid}
+                    align={column.uid === "actions" ? "center" : "start"}
+                    allowsSorting={column.sortable}
+                  >
+                    {column.name}
+                  </TableColumn>
+                )}
+              </TableHeader>
+              <TableBody
+                emptyContent={"Không tìm thấy người dùng"}
+                items={paginatedItems}
+              >
+                {(item) => (
+                  <TableRow key={item.madoan}>
+                    {(columnKey) => (
+                      <TableCell>{renderCell(item, columnKey)}</TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </>

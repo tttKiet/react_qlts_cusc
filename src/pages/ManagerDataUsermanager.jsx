@@ -406,6 +406,7 @@ function ManagerDataUsermanager() {
               placeholder="Chọn phân đoạn"
               selectedKeys={segmentSelected}
               onSelectionChange={handleSelectionChange}
+              disallowEmptySelection
               className="w-40"
               renderValue={(items) => {
                 return items.map((item) => (
