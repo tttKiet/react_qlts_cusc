@@ -68,10 +68,22 @@ import excel from "../components/ExportFile/ExportFile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 function ListData() {
+
+  const contacts = [
+    { value: "", lable: "Tất cả" },
+    { value: 1, lable: "Liên hệ lần 1" },
+    { value: 2, lable: "Liên hệ lần 2" },
+    { value: 3, lable: "Liên hệ lần 3" },
+    { value: 4, lable: "Liên hệ lần 4" },
+    { value: 5, lable: "Liên hệ lần 5" },
+    { value: 6, lable: "Liên hệ lần 6" },
+    { value: 7, lable: "Liên hệ lần 7" },
+  ];
+
   const [provinceSelected, setProvinceSelected] = useState("");
   const [schoolSelected, setSchoolSelected] = useState("");
   const [jobSelected, setJobSelected] = useState("");
-
+  const [contactSelected, setContactSelected] = useState("");
   const [urlCustomer, setUrlCustomer] = useState("");
 
   const [urlSchool, setUrlSchool] = useState(`${API_DATA}/school`);
@@ -82,35 +94,15 @@ function ListData() {
     if (provinceSelected) {
       setSchoolSelected("");
       setUrlSchool(`${API_DATA}/school?provinceCode=${provinceSelected}`);
-      setUrlCustomer(`provinceCode=${provinceSelected}`);
     }
   }, [provinceSelected]);
   const { data: dataSchool } = useSWR(urlSchool);
 
-  useEffect(() => {
-    if (schoolSelected) {
-      setUrlJob(`${API_DATA}/job-like?schoolCode=${schoolSelected}`);
-      setUrlCustomer(
-        `provinceCode=${provinceSelected}&schoolCode=${schoolSelected}`
-      );
-    }
-  }, [schoolSelected]);
-
-  const { data: dataJob } = useSWR(urlJob);
-
-  useEffect(() => {
-    if (jobSelected) {
-      setUrlCustomer(
-        `provinceCode=${provinceSelected}&schoolCode=${schoolSelected}&jobCode=${jobSelected}`
-      );
-    }
-  }, [jobSelected]);
+  const { data: dataJob } = useSWR(`${API_DATA}/job-like?schoolCode=${schoolSelected || ""}`);
 
   const { data: dataCustomer, mutate: fetchDataCusomter } = useSWR(
-    `${API_DATA}/customer?${urlCustomer}`
+    `${API_DATA}/customer?provinceCode=${provinceSelected || ""}&schoolCode=${schoolSelected || ""}&jobCode=${jobSelected || ""}&lan=${contactSelected || ""}`
   );
-  //   console.log("dataCustomer", dataCustomer);
-
   const [filterSearchName, setFillterSearchName] = useState("");
   const columns = [
     { name: "STT", uid: "id", sortable: true },
@@ -535,100 +527,126 @@ function ListData() {
           }}
         >
           <h1 className="mb-2 text-lg font-medium">Lọc dữ liệu</h1>
-          <div className="justify-items-center grid grid-cols-3">
-            <Autocomplete
-              // label="Chọn tỉnh thành"
-              aria-labelledby="province-label"
-              placeholder="Chọn tỉnh"
-              className="max-w-xs col-span-3 md:col-span-1 "
-              variant="bordered"
-              size="sm"
-              onSelectionChange={(value) => setProvinceSelected(value)}
-            >
-              {dataProvince?.map((province) => (
-                <AutocompleteItem key={province.MATINH} value={province.MATINH}>
-                  {province.TENTINH}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-            <Autocomplete
-              // label="Chọn trường"
-              aria-labelledby="province-label"
-              placeholder="Chọn trường"
-              className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
-              variant="bordered"
-              size="sm"
-              value={schoolSelected}
-              isDisabled={provinceSelected != "" ? false : true}
-              onSelectionChange={(value) => setSchoolSelected(value)}
-            >
-              {dataSchool?.map((school) => (
-                <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
-                  {school.TENTRUONG || ""}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-            <Select
-              items={dataJob || []}
-              // label="Chọn ngành"
-              aria-labelledby="province-label"
-              placeholder="Chọn ngành"
-              className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
-              variant="bordered"
-              // selectedKeys={jobSelected}
-              // onSelectionChange={setJobSelected}
-              onChange={(e) => setJobSelected(e.target.value)}
-              size="sm"
-              listboxProps={{
-                itemClasses: {
-                  base: [
-                    "rounded-md",
-                    "text-default-500",
-                    "transition-opacity",
-                    "data-[hover=true]:text-foreground",
-                    "data-[hover=true]:bg-default-100",
-                    "dark:data-[hover=true]:bg-default-50",
-                    "data-[selectable=true]:focus:bg-default-50",
-                    "data-[pressed=true]:opacity-70",
-                    "data-[focus-visible=true]:ring-default-500",
-                  ],
-                },
-              }}
-              popoverProps={{
-                classNames: {
-                  base: "before:bg-default-200",
-                  content: "p-0 border-small border-divider bg-background",
-                },
-              }}
-              renderValue={(items) => {
-                return items.map((item) => (
-                  <div
-                    key={item.data.MANGANH}
-                    className="flex items-center gap-2"
-                  >
-                    <div className="">
-                      <span>{item.data.TENNGANH}</span>
-                      <span className="text-default-500 text-tiny ms-1">
-                        {item.data.count} dòng dữ liệu
-                      </span>
+          <div className="grid grid-cols-3">
+            <div className="col-span-2">
+              <h4 className="text-base font-medium mb-2">Vị trí</h4>
+              <div className="grid grid-cols-2">
+                <Autocomplete
+                  // label="Chọn tỉnh thành"
+                  aria-labelledby="province-label"
+                  placeholder="Chọn tỉnh"
+                  className="max-w-xs col-span-3 md:col-span-1 "
+                  variant="bordered"
+                  size="sm"
+                  onSelectionChange={(value) => setProvinceSelected(value)}
+                >
+                  {dataProvince?.map((province) => (
+                    <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                      {province.TENTINH}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+                <Autocomplete
+                  // label="Chọn trường"
+                  aria-labelledby="province-label"
+                  placeholder="Chọn trường"
+                  className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                  variant="bordered"
+                  size="sm"
+                  value={schoolSelected}
+                  isDisabled={provinceSelected != "" ? false : true}
+                  onSelectionChange={(value) => setSchoolSelected(value)}
+                >
+                  {dataSchool?.map((school) => (
+                    <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                      {school.TENTRUONG || ""}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+              </div>
+            </div>
+            <div className="mb-2">
+              <h4 className="text-base font-medium mb-2">Chọn ngành</h4>
+              <Select
+                items={dataJob || []}
+                // label="Chọn ngành"
+                aria-labelledby="province-label"
+                placeholder="Chọn ngành"
+                className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                variant="bordered"
+                // selectedKeys={jobSelected}
+                // onSelectionChange={setJobSelected}
+                onChange={(e) => setJobSelected(e.target.value)}
+                size="sm"
+                listboxProps={{
+                  itemClasses: {
+                    base: [
+                      "rounded-md",
+                      "text-default-500",
+                      "transition-opacity",
+                      "data-[hover=true]:text-foreground",
+                      "data-[hover=true]:bg-default-100",
+                      "dark:data-[hover=true]:bg-default-50",
+                      "data-[selectable=true]:focus:bg-default-50",
+                      "data-[pressed=true]:opacity-70",
+                      "data-[focus-visible=true]:ring-default-500",
+                    ],
+                  },
+                }}
+                popoverProps={{
+                  classNames: {
+                    base: "before:bg-default-200",
+                    content: "p-0 border-small border-divider bg-background",
+                  },
+                }}
+                renderValue={(items) => {
+                  return items.map((item) => (
+                    <div
+                      key={item.data.MANGANH}
+                      className="flex items-center gap-2"
+                    >
+                      <div className="">
+                        <span>{item.data.TENNGANH}</span>
+                        <span className="text-default-500 text-tiny ms-1">
+                          {item.data.count} dòng dữ liệu
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ));
-              }}
-            >
-              {(job) => (
-                <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
-                  <div className="flex gap-2 items-center">
-                    <div className="">
-                      <span className="text-small">{job.TENNGANH}</span>
-                      <span className="text-tiny text-default-400 ms-1">
-                        {job.count} dòng dữ liệu
-                      </span>
+                  ));
+                }}
+              >
+                {(job) => (
+                  <SelectItem key={job.MANGANH} textValue={job.TENNGANH}>
+                    <div className="flex gap-2 items-center">
+                      <div className="">
+                        <span className="text-small">{job.TENNGANH}</span>
+                        <span className="text-tiny text-default-400 ms-1">
+                          {job.count} dòng dữ liệu
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </SelectItem>
-              )}
-            </Select>
+                  </SelectItem>
+                )}
+              </Select>
+            </div>
+            <div>
+              <h4 className="text-base font-medium mb-2">Tiến trình liên hệ</h4>
+              <Autocomplete
+                aria-labelledby="province-label"
+                placeholder="Chọn lần liên hệ"
+                className="max-w-xs col-span-3 md:col-span-1 mt-2 md:mt-0"
+                variant="bordered"
+                size="sm"
+                selectedKey={contactSelected}
+                onSelectionChange={setContactSelected}
+              >
+                {contacts.map((contact) => (
+                  <AutocompleteItem key={contact.value} value={contact.value}>
+                    {contact.lable}
+                  </AutocompleteItem>
+                ))}
+              </Autocomplete>
+            </div>
           </div>
         </div>
         <div

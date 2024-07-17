@@ -42,6 +42,7 @@ import { toast } from "react-toastify";
 import NoteService from "../service/NoteService";
 function AdminHomePage() {
   const user = useSelector((state) => state.account.user);
+  const colors = ["default", "primary", "success", "secondary", "warning", "danger"];
   const { data: dataStatic, mutate: fetchDataStatic } = useSWR(
     `${API_CHART}/admin?page=home&index=1`
   );
@@ -439,16 +440,21 @@ function AdminHomePage() {
               <div className="col-span-3 md:col-span-1 px-0 md:px-5">
                 <h2 className="mb-2 text-medium font-medium text-center">Số phiếu</h2>
                 <div className="content">
-                  <Progress
-                    label={dataAdmission && dataAdmission[0]?.TENTRANGTHAI}
-                    value={dataAdmission && dataAdmission[0]?.count}
-                    maxValue={dataStatic?.data.dulieu}
-                    color="primary"
-                    showValueLabel={true}
-                    className="max-w-md"
-                    formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
-                  />
-                  <Progress
+                  {dataAdmission && dataAdmission?.map((adminssion, index) => (
+                    <div key={index}>
+                      <Progress
+                        label={adminssion?.TENTRANGTHAI}
+                        value={adminssion?.count}
+                        maxValue={dataStatic?.data.dulieu}
+                        color={colors[index]}
+                        showValueLabel={true}
+                        className="max-w-md"
+                        formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* <Progress
                     label={dataAdmission && dataAdmission[1]?.TENTRANGTHAI}
                     value={dataAdmission && dataAdmission[1]?.count}
                     maxValue={dataStatic?.data.dulieu}
@@ -492,7 +498,7 @@ function AdminHomePage() {
                     showValueLabel={true}
                     className="max-w-md"
                     formatOptions={{ style: "decimal", currencyDisplay: "symbol" }}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="col-span-3 md:col-span-1 px-0 md:px-6 mt-5 md:mt-0">
@@ -521,12 +527,12 @@ function AdminHomePage() {
                         </div>
                       </div>
                     ))
-                  ) : (
-                    <div className="text-center text-gray-500">
-                      Không có gọi nhỡ
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        Không có gọi nhỡ
+                      </div>
+                    )}
+                  </div>
 
                   {/* <div className="createNote">
                                     <div className="groupInput mt-5 grid grid-cols-[1fr_1fr_auto] gap-0 border-t-1 px-2">

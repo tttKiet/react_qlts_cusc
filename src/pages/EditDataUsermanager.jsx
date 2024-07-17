@@ -27,6 +27,7 @@ import {
   Select,
   SelectItem,
   useSwitch,
+  Badge,
 } from "@nextui-org/react";
 import { Tag } from "antd";
 import { useParams } from "react-router-dom";
@@ -162,6 +163,7 @@ function EditDataUsermanager() {
       setStatusContact(detailData?.segment?.TRANGTHAILIENHE);
     }
   }, [detailData]);
+
   const itemClasses = {
     base: "py-0 w-full",
     title: "font-normal text-medium",
@@ -373,7 +375,7 @@ function EditDataUsermanager() {
                 label="Chuyên đề tham gia"
                 variant="bordered"
                 labelPlacement="inside"
-                selectedKeys={thematic}
+                selectedKeys={[thematic]}
                 onChange={(e) => setThematic(e.target.value)}
                 // onSelectionChange={setThematic}
 
@@ -670,7 +672,17 @@ function EditDataUsermanager() {
                   onSelectionChange={setSelectedTimes}
                 >
                   {[1, 2, 3, 4, 5, 6, 7].map((lan) => (
-                    <Tab key={lan} title={`Liên hệ lần ${lan}`}>
+                    <Tab key={lan}
+                      title={
+                        <div className="flex items-center space-x-2">
+                          <p>{`Liên hệ lần ${lan}`}</p>
+                          {lan == statusContact ? (
+                            <Badge content="" size="sm" color="danger" shape="circle">
+                            </Badge>
+                          ) : ""}
+                        </div>
+
+                      } >
                       <FormContact
                         onSubmit={onSubmit}
                         lan={lan}

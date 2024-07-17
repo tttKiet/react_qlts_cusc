@@ -193,8 +193,8 @@ function TimeLogin() {
             {data?.usermanager?.SDT
               ? "UM"
               : "" || data?.admin?.MAADMIN
-              ? "ADMIN"
-              : ""}
+                ? "ADMIN"
+                : ""}
           </div>
         );
       },
@@ -261,8 +261,8 @@ function TimeLogin() {
         TYPE: item?.usermanager?.SDT
           ? "UM"
           : "" || item?.admin?.MAADMIN
-          ? "ADMIN"
-          : "",
+            ? "ADMIN"
+            : "",
         TIME: handleTotalTimeWithItem(item?.thoigiandangnhap),
       };
     });
@@ -270,7 +270,12 @@ function TimeLogin() {
     excel.EX_Excel({ header, data, nameFile: nameExcel });
   };
   return (
-    <div>
+    <div style={{
+      padding: 24,
+      minHeight: 500,
+      background: "#fff",
+      borderRadius: "10px"
+    }}>
       <div>
         <div className="flex   justify-between align-middle  items-center">
           <div className="flex">
