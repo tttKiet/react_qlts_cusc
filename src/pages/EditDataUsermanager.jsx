@@ -123,7 +123,6 @@ function EditDataUsermanager() {
   const [zalo, setZalo] = useState("");
   const [email, setEmail] = useState("");
   const [thematic, setThematic] = useState(new Set([]));
-  const [thematic, setThematic] = useState(new Set([]));
   const [job, setJob] = useState("");
   const [option, setOption] = useState(new Set([]));
   const [channel, setChannel] = useState("");
@@ -376,7 +375,6 @@ function EditDataUsermanager() {
                 onChange={(e) => setThematic(e.target.value)}
                 // onSelectionChange={setThematic}
 
-                onChange={(e) => setThematic(e.target.value)}
                 classNames={{
                   trigger: "h-12",
                 }}
