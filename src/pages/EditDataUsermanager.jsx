@@ -122,7 +122,7 @@ function EditDataUsermanager() {
   const [faceBook, setFaceBook] = useState("");
   const [zalo, setZalo] = useState("");
   const [email, setEmail] = useState("");
-  const [thematic, setThematic] = useState([]);
+  const [thematic, setThematic] = useState(new Set([]));
   const [job, setJob] = useState("");
   const [option, setOption] = useState([]);
   const [channel, setChannel] = useState("");
@@ -195,10 +195,16 @@ function EditDataUsermanager() {
 
   const handleUpdateObject = async () => {
     try {
+      const SDTUM = dataThematic?.find(
+        (item) => item.MACHUYENDE == thematic
+      ).SDT;
+
       const data = {
         chuyendethamgia: {
           SDT: phone,
           TRANGTHAI: option,
+          MACHUYENDE: thematic,
+          SDT_UM: SDTUM,
         },
         nganhyeuthich: {},
       };
@@ -364,7 +370,7 @@ function EditDataUsermanager() {
                 variant="bordered"
                 labelPlacement="inside"
                 selectedKeys={thematic}
-                onChange={(e) => setThematic([e.target.value])}
+                onChange={(e) => setThematic(e.target.value)}
                 classNames={{
                   trigger: "h-12",
                 }}
