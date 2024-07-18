@@ -96,7 +96,7 @@ function EditData() {
             setZalo(detailData?.dulieukhachhang?.SDTZALO)
             setEmail(detailData?.EMAIL)
             if (detailData?.chitietchuyende.length > 0) {
-                setThematic([detailData.chitietchuyende[0].MACHUYENDE])
+                setThematic(detailData.chitietchuyende[0].MACHUYENDE)
                 setOption([detailData?.chitietchuyende[0].TRANGTHAI])
             }
             if (detailData?.nghenghiep != null) {

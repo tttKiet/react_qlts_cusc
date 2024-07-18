@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -22,6 +22,7 @@ import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
 import ModalComponent from "../components/Modal/ModalComponent";
 import { EditIcon } from "../components/icons/EditIcon";
+import { EyeIcon } from "../components/icons/EyeIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
 import useSWR from "swr";
 import { API_THEMATIC, API_DATA, API_USER } from "../constants";
@@ -32,9 +33,10 @@ import ThematicService from "../service/ThematicService";
 import { toast } from "react-toastify";
 import FormThematicEdit from "../components/body/FormThematicEdit";
 import ModalThematic from "../components/Modal/ModalThematic";
-import { Popconfirm } from "antd";
+import { Drawer, Popconfirm } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
+import TableDrawer from "./component/ModalTimekeeping/TableDrawer";
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
   "tenchuyende",
@@ -65,8 +67,6 @@ function ManagerThematic() {
     onClose: onCloseEdit,
   } = useDisclosure();
 
-  console.log("Data thematic", dataThematic)
-
   const [filterSearchName, setFillterSearchName] = useState("");
   const data = useMemo(() => {
     return (
@@ -82,6 +82,8 @@ function ManagerThematic() {
           noidung: thematic?.NOIDUNG,
           soluong: thematic?.truong?.khachhang?.length,
           sdt: thematic?.SDT,
+          truong: thematic?.truong,
+          chitietchuyende: thematic?.chitietchuyende
         };
       }) || []
     );
@@ -156,7 +158,7 @@ function ManagerThematic() {
   const renderCell = useCallback((thematic, columnKey) => {
     const cellValue = thematic[columnKey];
 
-
+    // { console.log("thematic", thematic) }
     switch (columnKey) {
       case "thoigianphan":
         return (
@@ -173,7 +175,15 @@ function ManagerThematic() {
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="edit">
+            <Tooltip content="Chi tiết">
+              <span
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                onClick={() => haneleShowModalDetail(thematic)}
+              >
+                <EyeIcon />
+              </span>
+            </Tooltip>
+            <Tooltip content="Chỉnh sửa">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 onClick={() => hanldeShowEdit(thematic)}
@@ -181,7 +191,7 @@ function ManagerThematic() {
                 <EditIcon />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete">
+            <Tooltip color="danger" content="Xóa">
               <Popconfirm
                 title="Delete the task"
                 description="Are you sure to delete this task?"
@@ -326,7 +336,30 @@ function ManagerThematic() {
     console.log(e);
   };
 
-  console.log("Data", data)
+  // Drawer
+  const [isshowDrawer, setIsShowDrawer] = useState(false);
+  const [dataDrawer, setDataDrawer] = useState([]);
+
+  function combineData(dataDetail) {
+    const combinedResults = dataDetail?.truong?.khachhang.map((khachhang) => {
+      dataDetail?.chitietchuyende.forEach((cttd) => {
+        if (khachhang.SDT == cttd?.SDT) {
+          khachhang.chitietchuyende = cttd?.TRANGTHAI;
+        }
+      });
+      return {
+        ...khachhang,
+      };
+    });
+
+    return combinedResults;
+  }
+
+  const haneleShowModalDetail = (data) => {
+    const dataTable = combineData(data);
+    setIsShowDrawer(true);
+    setDataDrawer(dataTable);
+  };
 
   return (
     <>
@@ -348,20 +381,6 @@ function ManagerThematic() {
                 <div className="flex gap-2">
                   <Autocomplete
                     aria-labelledby="province-label"
-                    placeholder="Chọn chuyên đề"
-                    variant="bordered"
-                    defaultItems={data}
-                    className="max-w-xs"
-                    selectedKey={thematicSelected}
-                    onSelectionChange={setThematicSelected}
-                    listboxProps={{
-                      emptyContent: 'Không có chuyên đề'
-                    }}
-                  >
-                    {(item) => <AutocompleteItem key={item.machuyende}>{item.tenchuyende}</AutocompleteItem>}
-                  </Autocomplete>
-                  <Autocomplete
-                    aria-labelledby="province-label"
                     placeholder="Chọn user manager"
                     variant="bordered"
                     defaultItems={dataUM || []}
@@ -373,6 +392,20 @@ function ManagerThematic() {
                     }}
                   >
                     {(item) => <AutocompleteItem key={item.SDT}>{item.usermanager.HOTEN}</AutocompleteItem>}
+                  </Autocomplete>
+                  <Autocomplete
+                    aria-labelledby="province-label"
+                    placeholder="Chọn chuyên đề"
+                    variant="bordered"
+                    defaultItems={data}
+                    className="max-w-xs"
+                    selectedKey={thematicSelected}
+                    onSelectionChange={setThematicSelected}
+                    listboxProps={{
+                      emptyContent: 'Không có chuyên đề'
+                    }}
+                  >
+                    {(item) => <AutocompleteItem key={item.machuyende}>{item.tenchuyende}</AutocompleteItem>}
                   </Autocomplete>
                 </div>
                 {/* <Input
@@ -477,6 +510,14 @@ function ManagerThematic() {
           />
         </ModalThematic>
       </div>
+      <Drawer
+        title="Chi tiết chuyên đề"
+        onClose={() => setIsShowDrawer(false)}
+        open={isshowDrawer}
+        width={600}
+      >
+        <TableDrawer data={dataDrawer} />
+      </Drawer>
     </>
   );
 }
