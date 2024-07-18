@@ -123,8 +123,9 @@ function EditDataUsermanager() {
   const [zalo, setZalo] = useState("");
   const [email, setEmail] = useState("");
   const [thematic, setThematic] = useState(new Set([]));
+  const [thematic, setThematic] = useState(new Set([]));
   const [job, setJob] = useState("");
-  const [option, setOption] = useState([]);
+  const [option, setOption] = useState(new Set([]));
   const [channel, setChannel] = useState("");
   const [course, setCourse] = useState();
   const [graduation, setGraduation] = useState("");
@@ -133,6 +134,8 @@ function EditDataUsermanager() {
   const [jobInput, setJobInput] = useState("");
 
   const [statusContact, setStatusContact] = useState("");
+
+  console.log("detailData", detailData);
 
   useEffect(() => {
     if (detailData) {
@@ -303,7 +306,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Số điện thoại ba"
-                value={phoneFather || "Trống"}
+                value={phoneFather}
                 variant="bordered"
                 onValueChange={setPhoneFather}
               />
@@ -312,7 +315,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Số điện thoại mẹ"
-                value={phoneMother || "Trống"}
+                value={phoneMother}
                 variant="bordered"
                 onValueChange={setPhoneMother}
               />
@@ -323,7 +326,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Facebook"
-                value={faceBook || "Trống"}
+                value={faceBook}
                 variant="bordered"
                 onValueChange={setFaceBook}
               />
@@ -332,7 +335,7 @@ function EditDataUsermanager() {
               <Input
                 type="text"
                 label="Zalo"
-                value={zalo || "Trống"}
+                value={zalo}
                 variant="bordered"
                 onValueChange={setZalo}
               />
@@ -371,6 +374,9 @@ function EditDataUsermanager() {
                 labelPlacement="inside"
                 selectedKeys={thematic}
                 onChange={(e) => setThematic(e.target.value)}
+                // onSelectionChange={setThematic}
+
+                onChange={(e) => setThematic(e.target.value)}
                 classNames={{
                   trigger: "h-12",
                 }}
@@ -385,7 +391,7 @@ function EditDataUsermanager() {
                           {item.data.TENCHUYENDE} - Được quản lý bởi:{" "}
                           {item.data.usermanager != null
                             ? item.data.usermanager.HOTEN
-                            : "Trống"}
+                            : ""}
                         </span>
                       </div>
                     </div>
@@ -399,11 +405,11 @@ function EditDataUsermanager() {
                   >
                     <div className="flex gap-2 items-center">
                       <div className="flex flex-col">
-                        <span className="text-tiny text-default-400">
+                        <span className="text-sm text-default-400">
                           {thematic.TENCHUYENDE} - Được quản lý bởi:{" "}
                           {thematic.usermanager != null
                             ? thematic.usermanager.HOTEN
-                            : "Trống"}
+                            : ""}
                         </span>
                       </div>
                     </div>
@@ -460,7 +466,7 @@ function EditDataUsermanager() {
                       {job?.nganh?.TENNGANH}
                     </Tag>
                   ))
-                : "Trống"}
+                : ""}
             </div>
           </div>
           <Button color="primary" onClick={handleUpdateObject}>
