@@ -10,9 +10,11 @@ const { RangePicker } = DatePicker;
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import moment from "moment";
+import useSWR from "swr";
 
 import ModalTimekeeping from "../pages/component/ModalTimekeeping";
 import excel from "../components/ExportFile/ExportFile";
+import { API_AUTH } from "../constants";
 
 function TimeLogin() {
   const [pageSize, setPageSize] = useState(20);
@@ -26,22 +28,39 @@ function TimeLogin() {
   const [time, setTime] = useState("");
   const [nameExcel, setNameExcel] = useState("Công tất cả");
 
+  // fetch
+  const { data: resTimeLogin } = useSWR(
+    `${API_AUTH}/time-login?${time}&${user}`
+  );
+
+  console.log("resTimeLogin", resTimeLogin);
+
+  useEffect(() => {
+    let cus = resTimeLogin?.results?.map((item) => ({
+      ...item,
+      key: item?.TENDANGNHAP,
+    }));
+    setListLogin(cus);
+    setTotal(resTimeLogin?.totalRows);
+    setTotalTime(resTimeLogin?.totalTime);
+  }, [time, user, resTimeLogin]);
+
   console.log("listLogin", listLogin);
 
-  const readAllTimeLogin = async () => {
-    const res = await AuthService.timeLogin(`${time}&${user}`);
+  // const readAllTimeLogin = async () => {
+  //   const res = await AuthService.timeLogin(`${time}&${user}`);
 
-    if (res && res.statusCode == 200) {
-      let cus = res?.data?.results?.map((item) => ({
-        ...item,
-        key: item?.TENDANGNHAP,
-      }));
+  //   if (res && res.statusCode == 200) {
+  //     let cus = res?.data?.results?.map((item) => ({
+  //       ...item,
+  //       key: item?.TENDANGNHAP,
+  //     }));
 
-      setListLogin(cus);
-      setTotal(res?.data?.totalRows);
-      setTotalTime(res?.data?.totalTime);
-    }
-  };
+  //     setListLogin(cus);
+  //     setTotal(res?.data?.totalRows);
+  //     setTotalTime(res?.data?.totalTime);
+  //   }
+  // };
 
   const readSelectUM = async () => {
     const res = await AuthService.timeLogin();
@@ -57,7 +76,7 @@ function TimeLogin() {
   };
 
   useEffect(() => {
-    readAllTimeLogin();
+    // readAllTimeLogin();
     readSelectUM();
   }, [user, time]);
 
@@ -193,8 +212,8 @@ function TimeLogin() {
             {data?.usermanager?.SDT
               ? "UM"
               : "" || data?.admin?.MAADMIN
-              ? "ADMIN"
-              : ""}
+                ? "ADMIN"
+                : ""}
           </div>
         );
       },
@@ -261,8 +280,8 @@ function TimeLogin() {
         TYPE: item?.usermanager?.SDT
           ? "UM"
           : "" || item?.admin?.MAADMIN
-          ? "ADMIN"
-          : "",
+            ? "ADMIN"
+            : "",
         TIME: handleTotalTimeWithItem(item?.thoigiandangnhap),
       };
     });
@@ -270,7 +289,12 @@ function TimeLogin() {
     excel.EX_Excel({ header, data, nameFile: nameExcel });
   };
   return (
-    <div>
+    <div style={{
+      padding: 24,
+      minHeight: 500,
+      background: "#fff",
+      borderRadius: "10px"
+    }}>
       <div>
         <div className="flex   justify-between align-middle  items-center">
           <div className="flex">
@@ -322,7 +346,6 @@ function TimeLogin() {
         setIsShowDrawer={setIsShowDrawer}
         dataDrawer={dataDrawer}
         setDataDrawer={setDataDrawer}
-        readAllTimeLogin={readAllTimeLogin}
         nameExcel={nameExcel}
       />
     </div>

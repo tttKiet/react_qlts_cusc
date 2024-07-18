@@ -5,13 +5,7 @@ import { DownloadOutlined } from "@ant-design/icons";
 import excel from "../../../components/ExportFile/ExportFile";
 
 function ModalTimekeeping(props) {
-  const {
-    isshowDrawer,
-    setIsShowDrawer,
-    dataDrawer,
-    readAllTimeLogin,
-    nameExcel,
-  } = props;
+  const { isshowDrawer, setIsShowDrawer, dataDrawer, nameExcel } = props;
   console.log("dataDrawer", dataDrawer);
   const dataSource = dataDrawer?.thoigiandangnhap;
 

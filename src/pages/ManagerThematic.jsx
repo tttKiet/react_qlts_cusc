@@ -15,6 +15,8 @@ import {
   Pagination,
   useDisclosure,
   Tooltip,
+  Autocomplete,
+  AutocompleteItem,
 } from "@nextui-org/react";
 import { SearchIcon } from "../components/icons/SearchIcon";
 import { ChevronDownIcon } from "../components/icons/ChevronDownIcon";
@@ -31,6 +33,8 @@ import { toast } from "react-toastify";
 import FormThematicEdit from "../components/body/FormThematicEdit";
 import ModalThematic from "../components/Modal/ModalThematic";
 import { Popconfirm } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
   "tenchuyende",
@@ -39,11 +43,16 @@ const INITIAL_VISIBLE_COLUMNS = [
   "ngaythongbao",
   "ngaytochuc",
   "noidung",
+  "soluong",
   "actions",
 ];
 function ManagerThematic() {
+  const { data: dataUM, mutate: fetchDataUM } = useSWR(`${API_USER}/user-manager`)
+  const [thematicSelected, setThematicSelected] = useState("");
+  const [SDTUM, setSDTUM] = useState("");
+
   const { data: dataThematic, mutate: fetchDataThematic } = useSWR(
-    `${API_THEMATIC}/readAll`
+    `${API_THEMATIC}/readAll?MACHUYENDE=${thematicSelected || ""}&SDT=${SDTUM || ""}`
   );
   const [record, setRecord] = useState();
 
@@ -55,6 +64,8 @@ function ManagerThematic() {
     onOpenChange: onOpenChangeEdit,
     onClose: onCloseEdit,
   } = useDisclosure();
+
+  console.log("Data thematic", dataThematic)
 
   const [filterSearchName, setFillterSearchName] = useState("");
   const data = useMemo(() => {
@@ -69,6 +80,7 @@ function ManagerThematic() {
           ngaythongbao: thematic?.THOIGIANTHONGBAO,
           ngaytochuc: thematic?.THOIGIANTOCHUCCHUYENDE,
           noidung: thematic?.NOIDUNG,
+          soluong: thematic?.truong?.khachhang?.length,
           sdt: thematic?.SDT,
         };
       }) || []
@@ -83,6 +95,7 @@ function ManagerThematic() {
     { name: "Ngày thông báo", uid: "ngaythongbao", sortable: true },
     { name: "Ngày tổ chức", uid: "ngaytochuc", sortable: true },
     { name: "Nội dung", uid: "noidung" },
+    { name: "Số khách hàng", uid: "soluong" },
     { name: "Tùy chọn", uid: "actions" },
   ];
 
@@ -231,7 +244,7 @@ function ManagerThematic() {
         />
         <div className="flex justify-between items-center gap-5">
           <span className="text-default-400 text-small">
-            Total {data.length} users
+            Tổng {data.length} chuyên đề
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
@@ -313,6 +326,8 @@ function ManagerThematic() {
     console.log(e);
   };
 
+  console.log("Data", data)
+
   return (
     <>
       <div className="">
@@ -330,7 +345,37 @@ function ManagerThematic() {
           <div className="flex flex-col gap-4 mt-5">
             <div className="flex flex-col gap-2">
               <div className="flex justify-between gap-3 items-end">
-                <Input
+                <div className="flex gap-2">
+                  <Autocomplete
+                    aria-labelledby="province-label"
+                    placeholder="Chọn chuyên đề"
+                    variant="bordered"
+                    defaultItems={data}
+                    className="max-w-xs"
+                    selectedKey={thematicSelected}
+                    onSelectionChange={setThematicSelected}
+                    listboxProps={{
+                      emptyContent: 'Không có chuyên đề'
+                    }}
+                  >
+                    {(item) => <AutocompleteItem key={item.machuyende}>{item.tenchuyende}</AutocompleteItem>}
+                  </Autocomplete>
+                  <Autocomplete
+                    aria-labelledby="province-label"
+                    placeholder="Chọn user manager"
+                    variant="bordered"
+                    defaultItems={dataUM || []}
+                    className="max-w-xs"
+                    selectedKey={SDTUM}
+                    onSelectionChange={setSDTUM}
+                    listboxProps={{
+                      emptyContent: 'Your own empty content text.'
+                    }}
+                  >
+                    {(item) => <AutocompleteItem key={item.SDT}>{item.usermanager.HOTEN}</AutocompleteItem>}
+                  </Autocomplete>
+                </div>
+                {/* <Input
                   isClearable
                   classNames={{
                     base: "w-full sm:max-w-[30%]",
@@ -342,38 +387,20 @@ function ManagerThematic() {
                   variant="bordered"
                   onClear={() => setFillterSearchName("")}
                   onValueChange={debounce(onSearchChange, 300)}
-                />
+                /> */}
                 <div className="flex gap-3">
-                  <Dropdown>
-                    <DropdownTrigger className="hidden sm:flex">
-                      <Button
-                        endContent={<ChevronDownIcon className="text-small" />}
-                        size="sm"
-                        variant="flat"
-                      >
-                        Columns
-                      </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                      disallowEmptySelection
-                      aria-label="Table Columns"
-                      closeOnSelect={false}
-                      selectedKeys={visibleColumns}
-                      selectionMode="multiple"
-                      onSelectionChange={setVisibleColumns}
-                    >
-                      {columns.map((column) => (
-                        <DropdownItem key={column.uid} className="capitalize">
-                          {column.name}
-                        </DropdownItem>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
-
+                  <Button
+                    size="sm"
+                    className="p-4 ms-auto"
+                    color="primary"
+                  >
+                    <FontAwesomeIcon icon={faFile} /> Xuất file
+                  </Button>
                   <Button
                     color="primary"
                     className="h-100 ms-auto"
                     onPress={onOpen}
+                    size="sm"
                   >
                     Thêm chuyên đề
                   </Button>
@@ -411,7 +438,7 @@ function ManagerThematic() {
               )}
             </TableHeader>
             <TableBody
-              emptyContent={"Không tìm thấy người dùng"}
+              emptyContent={"Không tìm thấy chuyên đề"}
               items={paginatedItems}
             >
               {(item) => (
