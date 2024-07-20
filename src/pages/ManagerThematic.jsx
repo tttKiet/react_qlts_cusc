@@ -35,6 +35,8 @@ import ModalThematic from "../components/Modal/ModalThematic";
 import { Popconfirm } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
+import excel from "../components/ExportFile/ExportFile";
+
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
   "tenchuyende",
@@ -47,12 +49,16 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 function ManagerThematic() {
-  const { data: dataUM, mutate: fetchDataUM } = useSWR(`${API_USER}/user-manager`)
+  const { data: dataUM, mutate: fetchDataUM } = useSWR(
+    `${API_USER}/user-manager`
+  );
   const [thematicSelected, setThematicSelected] = useState("");
   const [SDTUM, setSDTUM] = useState("");
 
   const { data: dataThematic, mutate: fetchDataThematic } = useSWR(
-    `${API_THEMATIC}/readAll?MACHUYENDE=${thematicSelected || ""}&SDT=${SDTUM || ""}`
+    `${API_THEMATIC}/readAll?MACHUYENDE=${thematicSelected || ""}&SDT=${
+      SDTUM || ""
+    }`
   );
   const [record, setRecord] = useState();
 
@@ -65,7 +71,7 @@ function ManagerThematic() {
     onClose: onCloseEdit,
   } = useDisclosure();
 
-  console.log("Data thematic", dataThematic)
+  // console.log("Data thematic", dataThematic);
 
   const [filterSearchName, setFillterSearchName] = useState("");
   const data = useMemo(() => {
@@ -133,7 +139,6 @@ function ManagerThematic() {
     return filteredUsers;
   }, [data, filterSearchName]);
 
-
   const items = useMemo(() => {
     return filteredItems;
   }, [page, filteredItems, rowsPerPage]);
@@ -155,7 +160,6 @@ function ManagerThematic() {
 
   const renderCell = useCallback((thematic, columnKey) => {
     const cellValue = thematic[columnKey];
-
 
     switch (columnKey) {
       case "thoigianphan":
@@ -223,7 +227,6 @@ function ManagerThematic() {
       setTotal(totalPages > 0 ? totalPages : 1);
     }
   }, [dataThematic, rowsPerPage]);
-
 
   const bottomContent = useMemo(() => {
     return (
@@ -326,7 +329,150 @@ function ManagerThematic() {
     console.log(e);
   };
 
-  console.log("Data", data)
+  // XU LI DU LIEU EXCEL
+  function combineData(dataDetail) {
+    const combinedResults = dataDetail?.truong?.khachhang.map((khachhang) => {
+      dataDetail?.chitietchuyende.forEach((cttd) => {
+        if (khachhang.SDT == cttd?.SDT) {
+          khachhang.chitietchuyende = cttd?.TRANGTHAI;
+        } else {
+          khachhang.chitietchuyende = "";
+        }
+      });
+      return {
+        ...khachhang,
+      };
+    });
+
+    return combinedResults;
+  }
+  const handleEXcel = () => {
+    const header = [
+      {
+        header: "STT",
+        key: "STT",
+      },
+      {
+        header: "Tên chuyên đề",
+        key: "TENCHUYENDE",
+      },
+      {
+        header: "Trường",
+        key: "TRUONG",
+      },
+      {
+        header: "Người quản lý",
+        key: "NGUOIQUANLY",
+      },
+      {
+        header: "Ngày tổ chức",
+        key: "NGAYTOCHUC",
+      },
+      {
+        header: "Đồng ý",
+        key: "DONGY",
+      },
+      {
+        header: "Không đồng ý",
+        key: "KHONGDONGY",
+      },
+      {
+        header: "Xem lại",
+        key: "XEMLAI",
+      },
+      {
+        header: "Khác",
+        key: "KHAC",
+      },
+    ];
+
+    const data = dataThematic?.results?.map((item, index) => {
+      let chitiet = combineData(item);
+      return {
+        ...item,
+        chitiet,
+      };
+    });
+
+    let dataEx = data?.map((item, index) => {
+      return {
+        STT: index + 1,
+        TENCHUYENDE: item?.TENCHUYENDE,
+        TRUONG: item?.truong?.TENTRUONG,
+        NGUOIQUANLY: item?.usermanager?.HOTEN,
+        NGAYTOCHUC: item?.THOIGIANTOCHUCCHUYENDE,
+        DONGY: item?.chitiet?.reduce((init, d) => {
+          return d?.chitietchuyende == "Đồng ý" ? init + 1 : init;
+        }, 0),
+        KHONGDONGY: item?.chitiet?.reduce((init, d) => {
+          return d?.chitietchuyende == "Không đồng ý" ? init + 1 : init;
+        }, 0),
+        XEMLAI: item?.chitiet?.reduce((init, d) => {
+          return d?.chitietchuyende == "Xem lại" ? init + 1 : init;
+        }, 0),
+        KHAC: item?.chitiet?.reduce((init, d) => {
+          return d?.chitietchuyende == "" ? init + 1 : init;
+        }, 0),
+      };
+    });
+
+    let nameExcel = "Quản lí chuyên đề";
+
+    excel.EX_Excel({ header, data: dataEx, nameFile: nameExcel });
+  };
+
+  const handleEXcelDetail = (data) => {
+    const header = [
+      {
+        header: "STT",
+        key: "STT",
+      },
+      {
+        header: "Tên chuyên đề",
+        key: "TENCHUYENDE",
+      },
+      {
+        header: "Người quản lý",
+        key: "NGUOIQUANLY",
+      },
+      {
+        header: "Ngày tổ chức",
+        key: "NGAYTOCHUC",
+      },
+      {
+        header: "Đồng ý",
+        key: "DONGY",
+      },
+      {
+        header: "Không đồng ý",
+        key: "KHONGDONGY",
+      },
+      {
+        header: "Xem lại",
+        key: "XEMLAI",
+      },
+      {
+        header: "Khác",
+        key: "KHAC",
+      },
+    ];
+
+    const data1 = data?.map((item, index) => {
+      return {
+        STT: index + 1,
+        NAME: item?.usermanager ? item?.usermanager.HOTEN : item?.admin.HOTEN,
+        PHONE: item?.usermanager ? item?.usermanager.SDT : item?.admin.SDT,
+        TYPE: item?.usermanager?.SDT
+          ? "UM"
+          : "" || item?.admin?.MAADMIN
+          ? "ADMIN"
+          : "",
+        TIME: handleTotalTimeWithItem(item?.thoigiandangnhap),
+      };
+    });
+
+    excel.EX_Excel({ header, data1, nameFile: nameExcel });
+  };
 
   return (
     <>
@@ -355,10 +501,14 @@ function ManagerThematic() {
                     selectedKey={thematicSelected}
                     onSelectionChange={setThematicSelected}
                     listboxProps={{
-                      emptyContent: 'Không có chuyên đề'
+                      emptyContent: "Không có chuyên đề",
                     }}
                   >
-                    {(item) => <AutocompleteItem key={item.machuyende}>{item.tenchuyende}</AutocompleteItem>}
+                    {(item) => (
+                      <AutocompleteItem key={item.machuyende}>
+                        {item.tenchuyende}
+                      </AutocompleteItem>
+                    )}
                   </Autocomplete>
                   <Autocomplete
                     aria-labelledby="province-label"
@@ -369,10 +519,14 @@ function ManagerThematic() {
                     selectedKey={SDTUM}
                     onSelectionChange={setSDTUM}
                     listboxProps={{
-                      emptyContent: 'Your own empty content text.'
+                      emptyContent: "Your own empty content text.",
                     }}
                   >
-                    {(item) => <AutocompleteItem key={item.SDT}>{item.usermanager.HOTEN}</AutocompleteItem>}
+                    {(item) => (
+                      <AutocompleteItem key={item.SDT}>
+                        {item.usermanager.HOTEN}
+                      </AutocompleteItem>
+                    )}
                   </Autocomplete>
                 </div>
                 {/* <Input
@@ -393,6 +547,7 @@ function ManagerThematic() {
                     size="sm"
                     className="p-4 ms-auto"
                     color="primary"
+                    onClick={handleEXcel}
                   >
                     <FontAwesomeIcon icon={faFile} /> Xuất file
                   </Button>

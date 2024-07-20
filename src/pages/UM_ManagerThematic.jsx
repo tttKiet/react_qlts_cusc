@@ -480,6 +480,6 @@ function UM_ManagerThematic() {
     </div>
 
   );
-}
+} 
 
-export default UM_ManagerThematic;
+export default UM_ManagerThematic; 
