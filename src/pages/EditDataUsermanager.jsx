@@ -123,9 +123,9 @@ function EditDataUsermanager() {
   const [faceBook, setFaceBook] = useState("");
   const [zalo, setZalo] = useState("");
   const [email, setEmail] = useState("");
-  const [thematic, setThematic] = useState(new Set([]))
+  const [thematic, setThematic] = useState(new Set([]));
   const [job, setJob] = useState("");
-  const [option, setOption] = useState(new Set([]))
+  const [option, setOption] = useState(new Set([]));
   const [channel, setChannel] = useState("");
   const [course, setCourse] = useState();
   const [graduation, setGraduation] = useState("");
@@ -135,7 +135,7 @@ function EditDataUsermanager() {
 
   const [statusContact, setStatusContact] = useState("");
 
-  console.log("detailData", detailData)
+  console.log("detailData", detailData);
 
   useEffect(() => {
     if (detailData) {
@@ -199,42 +199,40 @@ function EditDataUsermanager() {
 
   const handleUpdateObject = async () => {
     try {
-      const SDTUM = dataThematic?.find((item) => item.MACHUYENDE == thematic).SDT;
+      const SDTUM = dataThematic?.find(
+        (item) => item.MACHUYENDE == thematic
+      ).SDT;
+
       const data = {
         chuyendethamgia: {
           SDT: phone,
           TRANGTHAI: option,
           MACHUYENDE: thematic,
-          SDT_UM: SDTUM
+          SDT_UM: SDTUM,
         },
-        nganhyeuthich: {
-
-        }
-      }
+        nganhyeuthich: {},
+      };
 
       const dataInfo = {
         customer: {
           SDT: phone,
           MANGHENGHIEP: job,
         },
-        data: {
-
-        }
-      }
+        data: {},
+      };
 
       const res = await CustomerService.updateObject(data);
       const resCustomer = await CustomerService.updateCustomer(dataInfo);
       if (res.statusCode === 200 && resCustomer.statusCode === 200) {
         mutate();
-        toast.success("Cập nhật thông tin thành công")
+        toast.success("Cập nhật thông tin thành công");
       } else {
-        toast.error("Cập nhật thất bại")
+        toast.error("Cập nhật thất bại");
       }
-
     } catch (e) {
-      toast.error(e.message)
+      toast.error(e.message);
     }
-  }
+  };
 
   const handleUpdateRegister = async () => {
     try {
@@ -384,19 +382,35 @@ function EditDataUsermanager() {
                 }}
                 renderValue={(items) => {
                   return items.map((item) => (
-                    <div key={item.data.MACHUYENDE} className="flex items-center gap-2">
+                    <div
+                      key={item.data.MACHUYENDE}
+                      className="flex items-center gap-2"
+                    >
                       <div className="flex flex-col">
-                        <span className="text-default-500">{item.data.TENCHUYENDE} - Được quản lý bởi: {item.data.usermanager != null ? item.data.usermanager.HOTEN : ''}</span>
+                        <span className="text-default-500">
+                          {item.data.TENCHUYENDE} - Được quản lý bởi:{" "}
+                          {item.data.usermanager != null
+                            ? item.data.usermanager.HOTEN
+                            : ""}
+                        </span>
                       </div>
                     </div>
                   ));
                 }}
               >
                 {(thematic) => (
-                  <SelectItem key={thematic.MACHUYENDE} textValue={thematic.MACHUYENDE}>
+                  <SelectItem
+                    key={thematic.MACHUYENDE}
+                    textValue={thematic.MACHUYENDE}
+                  >
                     <div className="flex gap-2 items-center">
                       <div className="flex flex-col">
-                        <span className="text-sm text-default-400">{thematic.TENCHUYENDE} - Được quản lý bởi:  {thematic.usermanager != null ? thematic.usermanager.HOTEN : ''}</span>
+                        <span className="text-sm text-default-400">
+                          {thematic.TENCHUYENDE} - Được quản lý bởi:{" "}
+                          {thematic.usermanager != null
+                            ? thematic.usermanager.HOTEN
+                            : ""}
+                        </span>
                       </div>
                     </div>
                   </SelectItem>
@@ -408,13 +422,10 @@ function EditDataUsermanager() {
                 label="Lựa chọn"
                 variant="bordered"
                 selectedKeys={option}
-
                 onChange={(e) => setOption([e.target.value])}
               >
                 {options.map((option) => (
-                  <SelectItem key={option.value}>
-                    {option.label}
-                  </SelectItem>
+                  <SelectItem key={option.value}>{option.label}</SelectItem>
                 ))}
               </Select>
             </div>
@@ -451,11 +462,10 @@ function EditDataUsermanager() {
             <div className="mt-2">
               {detailData?.nganhyeuthich.length != 0
                 ? detailData?.nganhyeuthich.map((job, index) => (
-
-                  <Tag key={index} bordered={false} color="processing">
-                    {job?.nganh?.TENNGANH}
-                  </Tag>
-                ))
+                    <Tag key={index} bordered={false} color="processing">
+                      {job?.nganh?.TENNGANH}
+                    </Tag>
+                  ))
                 : ""}
             </div>
           </div>
