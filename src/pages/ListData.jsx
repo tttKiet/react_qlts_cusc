@@ -68,7 +68,6 @@ import excel from "../components/ExportFile/ExportFile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 function ListData() {
-
   const contacts = [
     { value: "", lable: "Tất cả" },
     { value: 1, lable: "Liên hệ lần 1" },
@@ -98,10 +97,14 @@ function ListData() {
   }, [provinceSelected]);
   const { data: dataSchool } = useSWR(urlSchool);
 
-  const { data: dataJob } = useSWR(`${API_DATA}/job-like?schoolCode=${schoolSelected || ""}`);
+  const { data: dataJob } = useSWR(
+    `${API_DATA}/job-like?schoolCode=${schoolSelected || ""}`
+  );
 
   const { data: dataCustomer, mutate: fetchDataCusomter } = useSWR(
-    `${API_DATA}/customer?provinceCode=${provinceSelected || ""}&schoolCode=${schoolSelected || ""}&jobCode=${jobSelected || ""}&lan=${contactSelected || ""}`
+    `${API_DATA}/customer?provinceCode=${provinceSelected || ""}&schoolCode=${
+      schoolSelected || ""
+    }&jobCode=${jobSelected || ""}&lan=${contactSelected || ""}`
   );
   const [filterSearchName, setFillterSearchName] = useState("");
   const columns = [
@@ -124,18 +127,10 @@ function ListData() {
           id: index + 1,
           sdt: customer?.dulieukhachhang?.SDT || "",
           hoten: customer?.HOTEN || "",
-          email:
-            (customer?.EMAIL === "Không có" ? "" : customer?.EMAIL) ||
-            "",
-          sdtba:
-            (customer?.SDTBA === "Không có" ? "" : customer?.SDTBA) ||
-            "",
-          sdtme:
-            (customer?.SDTME === "Không có" ? "" : customer?.SDTME) ||
-            "",
-          zalo:
-            (customer?.ZALO === "Không có" ? "" : customer?.ZALO) ||
-            "",
+          email: (customer?.EMAIL === "Không có" ? "" : customer?.EMAIL) || "",
+          sdtba: (customer?.SDTBA === "Không có" ? "" : customer?.SDTBA) || "",
+          sdtme: (customer?.SDTME === "Không có" ? "" : customer?.SDTME) || "",
+          zalo: (customer?.ZALO === "Không có" ? "" : customer?.ZALO) || "",
           tentruong: customer?.truong?.TENTRUONG || "",
           nganh: customer?.nganhyeuthich,
         };
@@ -481,22 +476,44 @@ function ListData() {
         key: "EMAIL",
       },
     ];
-    const data2 = [
-      {
-        STT: 1,
-        HOTEN: "Phan dai cat",
-        CCCD: "123456789012",
-        TRUONG: "CAN THO",
-        DIENTHOAI: "0328472724",
-        DIENTHOAIBA: "0328472724",
-        DINETHOAIME: "",
-        ZALO: "",
-        FACEBOOK: "",
-        EMAIL: "phandaicat12032002@gmail.com",
-      },
-    ];
+
+    if (contactSelected) {
+      header.push({
+        header: `Liên hệ lần ${contactSelected}`,
+        key: `LAN_${contactSelected}`,
+      });
+    } else {
+      for (let i = 1; i <= 7; i++) {
+        header.push({
+          header: `Liên hệ lần ${i}`,
+          key: `LAN_${i}`,
+        });
+      }
+    }
+
+    console.log("header", header);
 
     const data = dataCustomer?.map((item, index) => {
+      const contactDetailsMap = {};
+
+      if (contactSelected) {
+        const contactDetail = item.contactDetails.find(
+          (cd) => cd.LAN === contactSelected.toString()
+        );
+        contactDetailsMap[`LAN_${contactSelected}`] = contactDetail
+          ? contactDetail.KETQUA
+          : null;
+      } else {
+        for (let i = 1; i <= 7; i++) {
+          const contactDetail = item.contactDetails.find(
+            (cd) => cd.LAN === i.toString()
+          );
+          contactDetailsMap[`LAN_${i}`] = contactDetail
+            ? contactDetail.KETQUA
+            : null;
+        }
+      }
+
       return {
         STT: index + 1,
         HOTEN: item?.HOTEN,
@@ -508,10 +525,11 @@ function ListData() {
         ZALO: item?.dulieukhachhang?.SDTZALO,
         FACEBOOK: item?.dulieukhachhang?.FACEBOOK,
         EMAIL: item?.EMAIL,
+        ...contactDetailsMap,
       };
     });
 
-    excel.EX_Excel({ header, data, nameFile: "Danh sách khách hàng" });
+    excel.EX_Excel({ header, data, nameFile: "Dữ liệu khách hàng" });
   };
 
   return (
@@ -541,7 +559,10 @@ function ListData() {
                   onSelectionChange={(value) => setProvinceSelected(value)}
                 >
                   {dataProvince?.map((province) => (
-                    <AutocompleteItem key={province.MATINH} value={province.MATINH}>
+                    <AutocompleteItem
+                      key={province.MATINH}
+                      value={province.MATINH}
+                    >
                       {province.TENTINH}
                     </AutocompleteItem>
                   ))}
@@ -558,7 +579,10 @@ function ListData() {
                   onSelectionChange={(value) => setSchoolSelected(value)}
                 >
                   {dataSchool?.map((school) => (
-                    <AutocompleteItem key={school.MATRUONG} value={school.MATRUONG}>
+                    <AutocompleteItem
+                      key={school.MATRUONG}
+                      value={school.MATRUONG}
+                    >
                       {school.TENTRUONG || ""}
                     </AutocompleteItem>
                   ))}
