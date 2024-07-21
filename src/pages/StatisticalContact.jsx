@@ -31,6 +31,7 @@ function StatisticalContact() {
   const [maTinh, setMaTinh] = useState("");
   const [maTruong, setMaTruong] = useState("");
   const [sdtUM, setSdtUM] = useState("");
+  const [year, setYear] = useState(2024);
 
   const {
     data: dataProvince,
@@ -71,6 +72,9 @@ function StatisticalContact() {
     if (sdtUM) {
       data = `SDT_UM=${sdtUM}`;
     }
+    if (year) {
+      data = `year=${year}`;
+    }
     return data;
   });
   const index = sdtUM ? 3 : 2;
@@ -81,8 +85,6 @@ function StatisticalContact() {
     return data || [];
   }, [data]);
 
-  console.log("chartContact", chartContact);
-
   const handleChangeSelectTinh = (value) => {
     setMaTinh(value);
   };
@@ -91,6 +93,9 @@ function StatisticalContact() {
   };
   const handleChangeSelectUM = (value) => {
     setSdtUM(value);
+  };
+  const handleChangeSelectYear = (value) => {
+    setYear(value);
   };
 
   // handleDataChart1
@@ -112,37 +117,44 @@ function StatisticalContact() {
       {
         label: "Đã liên hệ",
         data: dataCharrJS1,
-        backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-        ],
-        borderColor: [
-          'rgb(75, 192, 192)',
-        ],
+        backgroundColor: ["rgba(75, 192, 192, 0.2)"],
+        borderColor: ["rgb(75, 192, 192)"],
         borderWidth: 1,
       },
-
     ],
   };
   // handleDataChart21
-  const defaultLabels = ["Hẹn nộp phiếu ĐKXT", "Quan tâm", "Chưa gặp", "Theo dõi", "Đóng"];
+  const defaultLabels = [
+    "Hẹn nộp phiếu ĐKXT",
+    "Quan tâm",
+    "Chưa gặp",
+    "Theo dõi",
+    "Đóng",
+  ];
 
   const labelsChartJS21 = useMemo(() => {
-    const lan_1_labels = chartContact?.lan_1?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_1_labels.includes(label));
+    const lan_1_labels =
+      chartContact?.lan_1?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_1_labels.includes(label)
+    );
     return [...lan_1_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS21 = useMemo(() => {
-    const lan_1_data = chartContact?.lan_1?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_1?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_1_data =
+      chartContact?.lan_1?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_1?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_1_data, ...missingData];
   }, [chartContact]);
 
   const dataChart21 = useMemo(() => {
-    if (dataCharrJS21.every(value => value === 0)) {
+    if (dataCharrJS21.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -173,25 +185,30 @@ function StatisticalContact() {
     }
   }, [labelsChartJS21, dataCharrJS21]);
 
-
   // handleDataChart22
   const labelsChartJS22 = useMemo(() => {
-    const lan_2_labels = chartContact?.lan_2?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_2_labels.includes(label));
+    const lan_2_labels =
+      chartContact?.lan_2?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_2_labels.includes(label)
+    );
     return [...lan_2_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS22 = useMemo(() => {
-    const lan_2_data = chartContact?.lan_2?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_2?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_2_data =
+      chartContact?.lan_2?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_2?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_2_data, ...missingData];
   }, [chartContact]);
 
   const dataChart22 = useMemo(() => {
-    if (dataCharrJS22.every(value => value === 0)) {
+    if (dataCharrJS22.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -224,22 +241,28 @@ function StatisticalContact() {
 
   // handleDataChart23
   const labelsChartJS23 = useMemo(() => {
-    const lan_3_labels = chartContact?.lan_3?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_3_labels.includes(label));
+    const lan_3_labels =
+      chartContact?.lan_3?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_3_labels.includes(label)
+    );
     return [...lan_3_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS23 = useMemo(() => {
-    const lan_3_data = chartContact?.lan_3?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_3?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_3_data =
+      chartContact?.lan_3?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_3?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_3_data, ...missingData];
   }, [chartContact]);
 
   const dataChart23 = useMemo(() => {
-    if (dataCharrJS23.every(value => value === 0)) {
+    if (dataCharrJS23.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -272,22 +295,28 @@ function StatisticalContact() {
 
   // handleDataChart24
   const labelsChartJS24 = useMemo(() => {
-    const lan_4_labels = chartContact?.lan_4?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_4_labels.includes(label));
+    const lan_4_labels =
+      chartContact?.lan_4?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_4_labels.includes(label)
+    );
     return [...lan_4_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS24 = useMemo(() => {
-    const lan_4_data = chartContact?.lan_4?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_4?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_4_data =
+      chartContact?.lan_4?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_4?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_4_data, ...missingData];
   }, [chartContact]);
 
   const dataChart24 = useMemo(() => {
-    if (dataCharrJS24.every(value => value === 0)) {
+    if (dataCharrJS24.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -318,24 +347,29 @@ function StatisticalContact() {
     }
   }, [labelsChartJS24, dataCharrJS24]);
 
-
   // handleDataChart25
   const labelsChartJS25 = useMemo(() => {
-    const lan_5_labels = chartContact?.lan_5?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_5_labels.includes(label));
+    const lan_5_labels =
+      chartContact?.lan_5?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_5_labels.includes(label)
+    );
     return [...lan_5_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS25 = useMemo(() => {
-    const lan_5_data = chartContact?.lan_5?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_5?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_5_data =
+      chartContact?.lan_5?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_5?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_5_data, ...missingData];
   }, [chartContact]);
   const dataChart25 = useMemo(() => {
-    if (dataCharrJS25.every(value => value === 0)) {
+    if (dataCharrJS25.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -368,22 +402,28 @@ function StatisticalContact() {
 
   // handleDataChart26
   const labelsChartJS26 = useMemo(() => {
-    const lan_6_labels = chartContact?.lan_6?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_6_labels.includes(label));
+    const lan_6_labels =
+      chartContact?.lan_6?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_6_labels.includes(label)
+    );
     return [...lan_6_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS26 = useMemo(() => {
-    const lan_6_data = chartContact?.lan_6?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_6?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_6_data =
+      chartContact?.lan_6?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_6?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_6_data, ...missingData];
   }, [chartContact]);
 
   const dataChart26 = useMemo(() => {
-    if (dataCharrJS26.every(value => value === 0)) {
+    if (dataCharrJS26.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -443,22 +483,28 @@ function StatisticalContact() {
   // };
 
   const labelsChartJS27 = useMemo(() => {
-    const lan_7_labels = chartContact?.lan_7?.map((item) => item?.TENTRANGTHAI) || [];
-    const missingLabels = defaultLabels.filter(label => !lan_7_labels.includes(label));
+    const lan_7_labels =
+      chartContact?.lan_7?.map((item) => item?.TENTRANGTHAI) || [];
+    const missingLabels = defaultLabels.filter(
+      (label) => !lan_7_labels.includes(label)
+    );
     return [...lan_7_labels, ...missingLabels];
   }, [chartContact]);
 
   const dataCharrJS27 = useMemo(() => {
-    const lan_7_data = chartContact?.lan_7?.map((item) => parseInt(item?.percent)) || [];
-    const missingData = defaultLabels.map(label => {
-      const item = chartContact?.contactStatus?.lan_7?.find(entry => entry.TENTRANGTHAI === label);
+    const lan_7_data =
+      chartContact?.lan_7?.map((item) => parseInt(item?.percent)) || [];
+    const missingData = defaultLabels.map((label) => {
+      const item = chartContact?.contactStatus?.lan_7?.find(
+        (entry) => entry.TENTRANGTHAI === label
+      );
       return item ? parseInt(item.percent) : 0;
     });
     return [...lan_7_data, ...missingData];
   }, [chartContact]);
 
   const dataChart27 = useMemo(() => {
-    if (dataCharrJS27.every(value => value === 0)) {
+    if (dataCharrJS27.every((value) => value === 0)) {
       return {
         labels: ["Không có dữ liệu"],
         datasets: [
@@ -489,220 +535,308 @@ function StatisticalContact() {
     }
   }, [labelsChartJS27, dataCharrJS27]);
 
-
   const [selected, setSelected] = useState("all");
   const onChangeTabs = (e) => {
     setMaTinh("");
     setMaTruong("");
     setSdtUM("");
-    setSelected(e)
-  }
+    setSelected(e);
+  };
 
   return (
     <div>
-      <div style={{
-        padding: 24,
-        minHeight: 425,
-        background: "#fff",
-        borderRadius: "10px"
-      }} className="shadow-lg">
+      <div
+        style={{
+          padding: 24,
+          minHeight: 425,
+          background: "#fff",
+          borderRadius: "10px",
+        }}
+        className="shadow-lg"
+      >
         <div>
-          <h1 className='font-bold text-lg mb-2'>Thống kê liên hệ</h1>
-          <Tabs
-            aria-label="Options"
-            selectedKey={selected}
-            onSelectionChange={(e) => onChangeTabs(e)}
-            variant="light"
-          >
-            <Tab key="all" title="Tất cả">
-            </Tab>
-            <Tab key="province" title="Tỉnh">
-              <Select
-                placeholder="Chọn tỉnh đi nhé"
-                style={{
-                  width: 300,
-                }}
-                onChange={handleChangeSelectTinh}
-                options={provinces?.map((item) => {
-                  return {
-                    label: item?.TENTINH,
-                    value: item?.MATINH,
-                  };
-                })}
-              />
-            </Tab>
-            <Tab key="school" title="Trường">
-              <div className="flex gap-2">
-                <Select
-                  placeholder="Chọn tỉnh đi nhé"
-                  style={{
-                    width: 300,
-                  }}
-                  onChange={handleChangeSelectTinh}
-                  options={provinces?.map((item) => {
-                    return {
-                      label: item?.TENTINH,
-                      value: item?.MATINH,
-                    };
-                  })}
-                />
+          <h1 className="font-bold text-lg mb-2">Thống kê liên hệ</h1>
+          <div className="flex justify-between">
+            <div>
+              <Tabs
+                aria-label="Options"
+                selectedKey={selected}
+                onSelectionChange={(e) => onChangeTabs(e)}
+                variant="light"
+              >
+                <Tab key="all" title="Tất cả"></Tab>
+                <Tab key="province" title="Tỉnh">
+                  <Select
+                    placeholder="Chọn tỉnh đi nhé"
+                    style={{
+                      width: 300,
+                    }}
+                    onChange={handleChangeSelectTinh}
+                    options={provinces?.map((item) => {
+                      return {
+                        label: item?.TENTINH,
+                        value: item?.MATINH,
+                      };
+                    })}
+                  />
+                </Tab>
+                <Tab key="school" title="Trường">
+                  <div className="flex gap-2">
+                    <Select
+                      placeholder="Chọn tỉnh đi nhé"
+                      style={{
+                        width: 300,
+                      }}
+                      onChange={handleChangeSelectTinh}
+                      options={provinces?.map((item) => {
+                        return {
+                          label: item?.TENTINH,
+                          value: item?.MATINH,
+                        };
+                      })}
+                    />
 
-                <Select
-                  placeholder="Chọn trường đi nhé"
-                  style={{
-                    width: 300,
-                  }}
-                  onChange={handleChangeSelectTruong}
-                  options={schools?.map((item) => {
-                    return {
-                      label: item?.TENTRUONG,
-                      value: item?.MATRUONG,
-                    };
-                  })}
-                />
-              </div>
-            </Tab>
-            <Tab key="UM" title="User Manager">
-              <Select
-                placeholder="Chọn user manager đi nhé"
-                style={{
-                  width: 300,
-                }}
-                onChange={handleChangeSelectUM}
-                options={sdt_UMs?.map((item) => {
-                  return {
-                    label: item?.HOTEN,
-                    value: item?.SDT,
-                  };
-                })}
-              />
-            </Tab>
-          </Tabs>
+                    <Select
+                      placeholder="Chọn trường đi nhé"
+                      style={{
+                        width: 300,
+                      }}
+                      onChange={handleChangeSelectTruong}
+                      options={schools?.map((item) => {
+                        return {
+                          label: item?.TENTRUONG,
+                          value: item?.MATRUONG,
+                        };
+                      })}
+                    />
+                  </div>
+                </Tab>
+                <Tab key="UM" title="User Manager">
+                  <Select
+                    placeholder="Chọn user manager đi nhé"
+                    style={{
+                      width: 300,
+                    }}
+                    onChange={handleChangeSelectUM}
+                    options={sdt_UMs?.map((item) => {
+                      return {
+                        label: item?.HOTEN,
+                        value: item?.SDT,
+                      };
+                    })}
+                  />
+                </Tab>
+              </Tabs>
+            </div>
+            <div className="mr-80">
+              <Tabs
+              // aria-label="Options"
+              // selectedKey={selected}
+              // onSelectionChange={(e) => onChangeTabs(e)}
+              // variant="light"
+              >
+                <Tab key="year" title="Năm">
+                  <Select
+                    placeholder="Chọn năm nhé"
+                    style={{
+                      width: 200,
+                    }}
+                    onChange={handleChangeSelectYear}
+                    options={[
+                      {
+                        label: 2024,
+                        value: 2024,
+                      },
+                      {
+                        label: 2023,
+                        value: 2023,
+                      },
+                      {
+                        label: 2022,
+                        value: 2022,
+                      },
+                      {
+                        label: 2021,
+                        value: 2021,
+                      },
+                      {
+                        label: 2020,
+                        value: 2020,
+                      },
+                    ]}
+                  />
+                </Tab>
+              </Tabs>
+            </div>
+          </div>
         </div>
         <div className="ss1 max-w-[1000px] flex m-auto">
           <Bar data={dataChart1} />
-
         </div>
-        <h1 className="text-center font-medium text-[17px]">Thống kê số lần gọi theo ngày</h1>
+        <h1 className="text-center font-medium text-[17px]">
+          Thống kê số lần gọi theo ngày
+        </h1>
       </div>
       <div className="flex flex-wrap justify-between mt-5">
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 1
           </div>
-          <Pie data={dataChart21} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart21}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 2
           </div>
-          <Pie data={dataChart22} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart22}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 3
           </div>
 
-          <Pie data={dataChart23} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart23}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 4
           </div>
 
-          <Pie data={dataChart24} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart24}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
       </div>
       <div className="flex flex-wrap justify-between mt-5">
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 5
           </div>
 
-          <Pie data={dataChart25} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart25}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 6
           </div>
 
-          <Pie data={dataChart26} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart26}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
-        <div className="w-72 shadow-lg" style={{
-          background: "#fff",
-          borderRadius: "10px",
-          padding: "5px"
-        }}>
+        <div
+          className="w-72 shadow-lg"
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "5px",
+          }}
+        >
           <div className="p-2 font-medium">
             Thống kê trạng thái liên hệ lần 7
           </div>
-          <Pie data={dataChart27} options={{
-            plugins: {
-              legend: {
-                position: 'bottom',
+          <Pie
+            data={dataChart27}
+            options={{
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
               },
-            },
-          }} />
+            }}
+          />
         </div>
       </div>
     </div>
