@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Table,
   TableHeader,
@@ -36,8 +42,8 @@ import ModalThematic from "../components/Modal/ModalThematic";
 import { Drawer, Popconfirm } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
+import DrawerThematicAD from "./component/DrawerThematicAD.jsx";
 import excel from "../components/ExportFile/ExportFile";
-import TableDrawer from "./component/ModalTimekeeping/TableDrawer";
 
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
@@ -51,6 +57,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 function ManagerThematic() {
+  const [nameThematicDetail, setNameThematicDetail] = useState("");
   const { data: dataUM, mutate: fetchDataUM } = useSWR(
     `${API_USER}/user-manager`
   );
@@ -89,7 +96,7 @@ function ManagerThematic() {
           soluong: thematic?.truong?.khachhang?.length,
           sdt: thematic?.SDT,
           truong: thematic?.truong,
-          chitietchuyende: thematic?.chitietchuyende
+          chitietchuyende: thematic?.chitietchuyende,
         };
       }) || []
     );
@@ -163,6 +170,7 @@ function ManagerThematic() {
   const renderCell = useCallback((thematic, columnKey) => {
     const cellValue = thematic[columnKey];
 
+    // { console.log("thematic", thematic) }
     switch (columnKey) {
       case "thoigianphan":
         return (
@@ -339,23 +347,15 @@ function ManagerThematic() {
     console.log(e);
   };
 
- 
-  // XU LI DU LIEU EXCEL
- 
   // Drawer
   const [isshowDrawer, setIsShowDrawer] = useState(false);
   const [dataDrawer, setDataDrawer] = useState([]);
 
- 
   function combineData(dataDetail) {
     const combinedResults = dataDetail?.truong?.khachhang.map((khachhang) => {
       dataDetail?.chitietchuyende.forEach((cttd) => {
         if (khachhang.SDT == cttd?.SDT) {
           khachhang.chitietchuyende = cttd?.TRANGTHAI;
- 
-        } else {
-          khachhang.chitietchuyende = "";
- 
         }
       });
       return {
@@ -365,7 +365,7 @@ function ManagerThematic() {
 
     return combinedResults;
   }
- 
+
   const handleEXcel = () => {
     const header = [
       {
@@ -441,64 +441,46 @@ function ManagerThematic() {
     excel.EX_Excel({ header, data: dataEx, nameFile: nameExcel });
   };
 
-  const handleEXcelDetail = (data) => {
+  const handleEXcelDetail = (data, name) => {
     const header = [
       {
         header: "STT",
         key: "STT",
       },
       {
-        header: "Tên chuyên đề",
-        key: "TENCHUYENDE",
+        header: "Họ tên khách hàng",
+        key: "HOTEN",
       },
       {
-        header: "Người quản lý",
-        key: "NGUOIQUANLY",
+        header: "Số diện thoại",
+        key: "SDT",
       },
       {
-        header: "Ngày tổ chức",
-        key: "NGAYTOCHUC",
-      },
-      {
-        header: "Đồng ý",
-        key: "DONGY",
-      },
-      {
-        header: "Không đồng ý",
-        key: "KHONGDONGY",
-      },
-      {
-        header: "Xem lại",
-        key: "XEMLAI",
-      },
-      {
-        header: "Khác",
-        key: "KHAC",
+        header: "Trạng thái",
+        key: "TRANGTHAI",
       },
     ];
 
-    const data1 = data?.map((item, index) => {
+    const dataEx = data?.map((item, index) => {
       return {
         STT: index + 1,
-        NAME: item?.usermanager ? item?.usermanager.HOTEN : item?.admin.HOTEN,
-        PHONE: item?.usermanager ? item?.usermanager.SDT : item?.admin.SDT,
-        TYPE: item?.usermanager?.SDT
-          ? "UM"
-          : "" || item?.admin?.MAADMIN
-          ? "ADMIN"
-          : "",
-        TIME: handleTotalTimeWithItem(item?.thoigiandangnhap),
+        HOTEN: item?.HOTEN,
+        SDT: item?.SDT,
+        TRANGTHAI: item?.chitietchuyende || "Khác",
       };
     });
 
-    excel.EX_Excel({ header, data1, nameFile: nameExcel });
- 
+    let nameExcel = name;
+
+    excel.EX_Excel({ header, data: dataEx, nameFile: nameExcel });
+  };
 
   const haneleShowModalDetail = (data) => {
+    console.log(data?.tenchuyende);
     const dataTable = combineData(data);
     setIsShowDrawer(true);
     setDataDrawer(dataTable);
- 
+    setNameThematicDetail(data?.tenchuyende);
   };
 
   return (
@@ -528,12 +510,12 @@ function ManagerThematic() {
                     selectedKey={SDTUM}
                     onSelectionChange={setSDTUM}
                     listboxProps={{
-                      emptyContent: "Không có chuyên đề",
+                      emptyContent: "Your own empty content text.",
                     }}
                   >
                     {(item) => (
-                      <AutocompleteItem key={item.machuyende}>
-                        {item.tenchuyende}
+                      <AutocompleteItem key={item.SDT}>
+                        {item.usermanager.HOTEN}
                       </AutocompleteItem>
                     )}
                   </Autocomplete>
@@ -546,30 +528,17 @@ function ManagerThematic() {
                     selectedKey={thematicSelected}
                     onSelectionChange={setThematicSelected}
                     listboxProps={{
-                      emptyContent: "Your own empty content text.",
+                      emptyContent: "Không có chuyên đề",
                     }}
                   >
                     {(item) => (
-                      <AutocompleteItem key={item.SDT}>
-                        {item.usermanager.HOTEN}
+                      <AutocompleteItem key={item.machuyende}>
+                        {item.tenchuyende}
                       </AutocompleteItem>
                     )}
- 
                   </Autocomplete>
                 </div>
-                {/* <Input
-                  isClearable
-                  classNames={{
-                    base: "w-full sm:max-w-[30%]",
-                    inputWrapper: "border-1",
-                  }}
-                  placeholder="Tìm kiếm theo tên chuyên đề"
-                  size="sm"
-                  startContent={<SearchIcon className="text-default-300" />}
-                  variant="bordered"
-                  onClear={() => setFillterSearchName("")}
-                  onValueChange={debounce(onSearchChange, 300)}
-                /> */}
+
                 <div className="flex gap-3">
                   <Button
                     size="sm"
@@ -666,7 +635,11 @@ function ManagerThematic() {
         open={isshowDrawer}
         width={600}
       >
-        <TableDrawer data={dataDrawer} />
+        <DrawerThematicAD
+          dataDrawer={dataDrawer}
+          nameThematicDetail={nameThematicDetail}
+          handleEXcelDetail={handleEXcelDetail}
+        />
       </Drawer>
     </>
   );

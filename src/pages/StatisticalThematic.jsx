@@ -124,10 +124,6 @@ function StatisticalThematic() {
     return [...missingData];
   }, [chartContact]);
 
-  console.log("labelChart", labelChart);
-
-  console.log(dataChart);
-
   const dataBar = {
     labels: defaultLabels,
     datasets: [
@@ -175,7 +171,7 @@ function StatisticalThematic() {
           onSelectionChange={(e) => onChangeTabs(e)}
           variant="light"
         >
-          <Tab key="all" title="Tất cả">
+          <Tab key="all" title="Chọn chuyên đề">
             <Select
               placeholder="Chọn chuyên đề đi nhé"
               style={{
@@ -190,7 +186,7 @@ function StatisticalThematic() {
               })}
             />
           </Tab>
-          <Tab key="province" title="Tỉnh">
+          {/* <Tab key="province" title="Tỉnh">
             <div className="flex gap-2">
               <Select
                 placeholder="Chọn tỉnh đi nhé"
@@ -277,7 +273,7 @@ function StatisticalThematic() {
                 };
               })}
             />
-          </Tab>
+          </Tab> */}
         </Tabs>
         <div className="max-w-[950px] flex m-auto">
           <Bar
