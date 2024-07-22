@@ -218,6 +218,7 @@ function UM_ManagerFile() {
                     key={item?.MAHOSO}
                     href={`/api/v1/file/downLoadFile?MAHOSO=${item?.MAHOSO}`}
                     className="flex items-center my-2 cursor-pointer text-blue-600"
+                    target="_blank"
                   >
                     <div>
                       <IconFile size={17} />
