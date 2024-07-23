@@ -30,7 +30,7 @@ import StatisticalDay from "./pages/StatisticalDay";
 import StatisticalThematic from "./pages/StatisticalThematic";
 import TimeLogin from "./pages/TimeLogin";
 import UserManagerHomePage from "./pages/UserManagerHomePage";
-
+import Story from "./pages/Story";
 import { useEffect } from "react";
 import ManagerFile from "./pages/ManagerFile";
 import UM_ManagerFile from "./pages/UM_ManagerFile";
@@ -104,6 +104,10 @@ function App() {
         {
           path: "user",
           element: <ManagerUser />,
+        },
+        {
+          path: "story",
+          element: <Story />,
         },
         {
           path: "user/:id",

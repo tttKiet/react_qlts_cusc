@@ -8,6 +8,7 @@ import {
   LogoutOutlined,
   AreaChartOutlined,
 } from "@ant-design/icons";
+import { MdHistoryToggleOff } from "react-icons/md";
 import {
   Breadcrumb,
   Button,
@@ -89,6 +90,11 @@ const items = [
     <Link to={"/admin/file"}>Quản lý hồ sơ</Link>,
     "/admin/file",
     <IconFile size={16} />
+  ),
+  getItem(
+    <Link to={"/admin/story"}>Nhật ký hoạt động</Link>,
+    "/admin/story",
+    <MdHistoryToggleOff size={16} />
   ),
 ];
 
