@@ -287,7 +287,7 @@ function TimeLogin() {
     });
 
     excel.EX_Excel({ header, data, nameFile: nameExcel });
-  };
+  }; 
   return (
     <div style={{
       padding: 24,
